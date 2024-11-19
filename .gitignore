@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 **/src/main/resources/application.properties
+/src/main/resources/application.properties
 
 ### STS ###
 .apt_generated
@@ -24,7 +25,7 @@ bin/
 *.iml
 *.ipr
 out/
-!**/src/main/**/out/
+!**/src/main/**/out
 !**/src/test/**/out/
 
 ### NetBeans ###
@@ -36,3 +37,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### build.gradle ###
+/build.gradle
+
+
