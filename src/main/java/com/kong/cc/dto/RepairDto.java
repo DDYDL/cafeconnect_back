@@ -8,6 +8,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.kong.cc.entity.Repair;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.kong.cc.entity.Item;
@@ -35,4 +36,7 @@ public class RepairDto {
 	
     private Integer storeCode;
     private String itemCode;
+
+
+
 }
