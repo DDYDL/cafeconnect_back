@@ -28,4 +28,9 @@ public class ItemMajorCategory {
 	
 	@OneToMany(mappedBy="itemMajorCategory", fetch=FetchType.LAZY)
 	private List<Item> itemList = new ArrayList<>();
+	
+	@OneToMany(mappedBy="ItemMajorCategoryMd", fetch=FetchType.LAZY)
+	private List<ItemMiddleCategory> itemMiddelCategoryList = new ArrayList<>();
+	
+	
 }
