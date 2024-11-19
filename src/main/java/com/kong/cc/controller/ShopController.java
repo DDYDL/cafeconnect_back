@@ -28,7 +28,6 @@ public class ShopController {
 //  @GetMapping("/deleteOrder") // OrderListForStore.js
 //	@GetMapping("/orderDetail") // OrderDetailForStore.js
 	
-	
 //가맹점 상품구매에 따른 지출내역
 //  @PostMapping("/expenseList") // ExpenseListByItems.js	
 	
@@ -38,5 +37,6 @@ public class ShopController {
 //  @PostMapping("/mainStoreOrderListByKeyWord") // OrderListForMainStore.js	
 //  @PostMapping("/changeOrderStatus") // OrderListForMainStore.js
 //	@GetMapping("/mainStoreOrderDetail") // OrderDetailForMainStore.js
+	
 	
 }
