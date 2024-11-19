@@ -14,7 +14,7 @@ public class MainStoreService {
 
     private final MainStoreRepository mainStoreRepository;
 
-    MainStore join(MainStoreDto mainStoreDto){
+    public MainStore join(MainStoreDto mainStoreDto){
 
         MainStore mainStore = MainStore.builder()
                 .username(mainStoreDto.getUsername())
