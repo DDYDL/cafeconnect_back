@@ -14,10 +14,12 @@ import com.kong.cc.dto.MemberDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,6 +31,8 @@ public class Member {
 	private String username;
 	private String password;
 	
+	private String deptName;
+	
 	private String roles;
 	private String provider;
 	private String providerId;
@@ -36,11 +40,15 @@ public class Member {
 	@OneToMany(mappedBy="member", fetch=FetchType.LAZY)
 	private List<Store> storeList = new ArrayList<>();
 	
+	@OneToMany(mappedBy="memberMain", fetch=FetchType.LAZY)
+	private List<Notice> noticeList = new ArrayList<>();
+	
 	public MemberDto toDto() {
 		return MemberDto.builder()
 				.memberNum(memberNum)
 				.username(username)
 				.password(password)
+				.deptName(deptName)
 				.roles(roles)
 				.provider(provider)
 				.providerId(providerId)

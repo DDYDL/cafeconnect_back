@@ -42,7 +42,8 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 		String uri = request.getRequestURI();
 		
 		// 로그인(인증)이 필요없는 요청은 그대로 진행
-		if(!(uri.contains("/user") || uri.contains("/admit") || uri.contains("/manager"))) {
+		// store나 mainstore가 아니면
+		if(!(uri.contains("/store") || uri.contains("/mainstore"))) {
 			chain.doFilter(request, response);
 			return;
 		}
@@ -80,8 +81,9 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 			if(username==null || username.equals("")) throw new Exception("로그인 필요"); // 사용자가 없을 때
 			
 			Optional<Member> member = memberRepository.findByUsername(username);
-			if(member==null) throw new Exception("로그인 필요"); // 사용자가 DB에 없을 때
+			if(member.get()==null) throw new Exception("로그인 필요"); // 사용자가 DB에 없을 때
 			
+			// roles와 url이 맞는지 체크, 안 맞으면 권한 에러 나도록
 			// 여기까지 왔으면 로그인 인증 성공(user 있음)
 			
 			// 1-3. User를 Authentication로 생성하여 Security Session에 넣어준다.(그러면 Controller에서 사용할 수 있다.)
@@ -90,6 +92,8 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 					null, principalDetails.getAuthorities()); // user를 principalDetails로 싸아놓고, 권한도 줘서
 			SecurityContextHolder.getContext().setAuthentication(auth); // Authentication으로 만듬
 			
+			System.out.println("============");
+			System.out.println(member);
 			chain.doFilter(request, response);
 			return;
 		} catch(Exception e) {
@@ -114,7 +118,7 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 				System.out.println(username);
 				if(username==null || username.equals("")) throw new Exception("로그인 필요"); // 사용자가 없을 때
 				Optional<Member> member = memberRepository.findByUsername(username);
-				if(member==null) throw new Exception("로그인 필요"); // 사용자가 DB에 없을 때
+				if(member.get()==null) throw new Exception("로그인 필요"); // 사용자가 DB에 없을 때
 				
 				// accessToken, refreshToken 다시 만들어 보낸다.
 				String reAccessToken = jwtToken.makeAccessToken(username);

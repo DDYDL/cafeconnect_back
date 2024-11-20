@@ -73,8 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.addFilter(new JwtAuthrizationFilter(authenticationManager(), memberRepository))
 			.authorizeRequests()
 			.antMatchers("/store/**").authenticated() // 로그인 필수
-			.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
-			.antMatchers("/manager/**").access("hasRole('ROLE_MANAGER')")
+			.antMatchers("/mainstore/**").access("hasRole('ROLE_MAINSTORE')")
 			.anyRequest().permitAll();
 	}
 }
