@@ -30,7 +30,7 @@ public class ItemSubCategory {
 
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="itemCategoryMiddleNum")
-	private ItemMiddleCategory ItemMajorCategorySb;
+	private ItemMiddleCategory ItemMiddleCategorySb;
 	
 	
 	@OneToMany(mappedBy="itemSubCategory", fetch=FetchType.LAZY)

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class MainStoreController {
 
     private final MainStoreService mainStoreService;
@@ -19,11 +20,17 @@ public class MainStoreController {
     @PostMapping("/main/insert")  //JoinAccount.js
     public ResponseEntity<Object> mainInsert(MainStoreDto mainStoreDto) {
         try {
+
+
             MainStore mainStore = mainStoreService.join(mainStoreDto);
+            if(mainStore == null){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+            }
             return new ResponseEntity<>(HttpStatus.OK);
 
         } catch (Exception e) {
-            System.out.println(e);
+            log.error("Exception",e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

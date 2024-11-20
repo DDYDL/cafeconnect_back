@@ -6,6 +6,6 @@ import com.kong.cc.entity.Repair;
 
 public interface RepairRepository extends JpaRepository<Repair, Integer> {
 
-    Repair findByrepairNum(Integer repairNum);
+    Repair findByRepairNum(Integer repairNum);
 
 }
