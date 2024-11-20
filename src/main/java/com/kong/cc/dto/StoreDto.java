@@ -18,6 +18,7 @@ import com.kong.cc.entity.Member;
 import com.kong.cc.entity.ShopOrder;
 import com.kong.cc.entity.Repair;
 import com.kong.cc.entity.Stock;
+import com.kong.cc.entity.Store;
 import com.kong.cc.entity.WishItem;
 
 import lombok.AllArgsConstructor;
@@ -52,5 +53,30 @@ public class StoreDto {
 	private Date openingDate;
 	private String storeStatus;
 	 
-	 private Integer memberNum;
+	private Integer memberNum;
+	
+	public Store toEntity() {
+		Store store = Store.builder()
+				.storeCode(storeCode)
+				.storeName(storeName)
+				.storeAddress(storeAddress)
+				.storeAddressNum(storeAddressNum)
+				.storePhone(storePhone)
+				.storeOpenTime(storeOpenTime)
+				.storeCloseTime(storeCloseTime)
+				.storeCloseDate(storeCloseDate)
+				.storeAddressNum(storeAddressNum)
+				.ownerName(ownerName)
+				.ownerPhone(ownerPhone)
+				.managerName(managerName)
+				.managerPhone(managerPhone)
+				.contractPeriodStart(contractPeriodStart)
+				.contractPeriodEnd(contractPeriodEnd)
+				.contractDate(contractDate)
+				.openingDate(openingDate)
+				.storeStatus(storeStatus)
+				.member(Member.builder().memberNum(memberNum).build())
+				.build();
+		return store;
+	}
 }

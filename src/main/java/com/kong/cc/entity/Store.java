@@ -1,9 +1,11 @@
 package com.kong.cc.entity;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.kong.cc.dto.StoreDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -78,4 +82,29 @@ public class Store {
 	 
 	 @OneToMany(mappedBy="storeSa", fetch=FetchType.LAZY)
 	 private List<Sales> salesList = new ArrayList<>();
+	 
+	 public StoreDto toDto() {
+		 	StoreDto storeDto = StoreDto.builder()
+					.storeCode(storeCode)
+					.storeName(storeName)
+					.storeAddress(storeAddress)
+					.storeAddressNum(storeAddressNum)
+					.storePhone(storePhone)
+					.storeOpenTime(storeOpenTime)
+					.storeCloseTime(storeCloseTime)
+					.storeCloseDate(storeCloseDate)
+					.storeAddressNum(storeAddressNum)
+					.ownerName(ownerName)
+					.ownerPhone(ownerPhone)
+					.managerName(managerName)
+					.managerPhone(managerPhone)
+					.contractPeriodStart(contractPeriodStart)
+					.contractPeriodEnd(contractPeriodEnd)
+					.contractDate(contractDate)
+					.openingDate(openingDate)
+					.storeStatus(storeStatus)
+					.memberNum(member.getMemberNum())
+					.build();
+			return storeDto;
+		}
 }
