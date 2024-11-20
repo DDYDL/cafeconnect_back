@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.kong.cc.dto.MemberDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +29,21 @@ public class Member {
 	private String username;
 	private String password;
 	
+	private String roles;
+	private String provider;
+	private String providerId;
+	
 	@OneToMany(mappedBy="member", fetch=FetchType.LAZY)
 	private List<Store> storeList = new ArrayList<>();
+	
+	public MemberDto toDto() {
+		return MemberDto.builder()
+				.memberNum(memberNum)
+				.username(username)
+				.password(password)
+				.roles(roles)
+				.provider(provider)
+				.providerId(providerId)
+				.build();
+	}
 }
