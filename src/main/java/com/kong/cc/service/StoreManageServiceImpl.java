@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.kong.cc.dto.StoreDto;
+import com.kong.cc.entity.Store;
 import com.kong.cc.repository.StoreDslRepository;
 import com.kong.cc.repository.StoreRepository;
 import com.kong.cc.util.PageInfo;
@@ -43,6 +44,13 @@ public class StoreManageServiceImpl implements StoreManageService {
 		page.setStartPage(startPage);
 		page.setEndPage(endPage);
 		return storeDtoList;
+	}
+
+	@Override
+	public Integer addStore(StoreDto storeDto) throws Exception {
+		Store store = storeDto.toEntity();
+		storeRepository.save(store);		
+		return store.getStoreCode();
 	}
 
 }

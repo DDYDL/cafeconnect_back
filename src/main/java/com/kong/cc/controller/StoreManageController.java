@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 public class StoreManageController {
 	
 	private final StoreManageService storeManageService;
-	private final HttpSession session;
 	
   @GetMapping("/storeListMain") 	 // StoreListMain.js
   public ResponseEntity<Map<String,Object>> boardList(@RequestParam(value="page", required=false, defaultValue = "1") Integer page,
@@ -45,8 +44,18 @@ public class StoreManageController {
 		}
 	}	
 	
-	
-//  @GetMapping("/addStoreMain")  	 // AddStoreMain.js
+  	@GetMapping("/addStoreMain")  	 // AddStoreMain.js
+	public ResponseEntity<String> addStore(StoreDto storeDto) {
+		System.out.println(storeDto);
+		try {
+			Integer storeCode = storeManageService.addStore(storeDto);
+			return new ResponseEntity<String>(String.valueOf(storeCode), HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>("가맹점 등록 오류", HttpStatus.BAD_REQUEST);
+		}
+	}		
+  	
 //  @GetMapping("/selectDeleteList") // RestoreStoreMain.js
 //  @PostMapping("/restoreStore")    // RestoreStoreMain.js
 //  @GetMapping("/storeDetailMain")  // StoreDetailMain.js

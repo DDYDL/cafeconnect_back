@@ -7,4 +7,5 @@ import com.kong.cc.util.PageInfo;
 
 public interface StoreManageService {
 	List<StoreDto> storeList(PageInfo page, String type, String word) throws Exception;
+	Integer addStore(StoreDto storeDto) throws Exception;
 }
