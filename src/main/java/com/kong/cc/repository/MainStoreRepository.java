@@ -6,4 +6,6 @@ import com.kong.cc.entity.MainStore;
 
 public interface MainStoreRepository extends JpaRepository<MainStore, String> {
 
+
+
 }
