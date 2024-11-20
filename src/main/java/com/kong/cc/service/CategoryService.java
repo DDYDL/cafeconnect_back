@@ -27,8 +27,7 @@ public class CategoryService {
     }
 
     public ItemMiddleCategory saveMiddleCategory(ItemMiddleCategoryForm itemMiddleCategoryForm){
-        ItemMiddleCategoryForm.builder()
-                .itemCategoryMajorNum(itemMiddleCategoryForm.getItemCategoryMajorNum())
+        return null;
 
     }
 
