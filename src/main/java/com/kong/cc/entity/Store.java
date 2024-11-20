@@ -5,12 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +21,7 @@ import lombok.Setter;
 @Entity
 public class Store {
 	 @Id
+	 @GeneratedValue(strategy = GenerationType.IDENTITY)
 	 private Integer storeCode;
 	 private String storeName;
 	 private String storeAddress;

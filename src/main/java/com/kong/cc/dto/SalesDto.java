@@ -29,4 +29,6 @@ public class SalesDto {
 	
 	private Integer storeCode;
 	private String menuCode;
+	private String menuName;
+
 }
