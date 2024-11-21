@@ -21,14 +21,15 @@ public class SalesManagementMainController {
 
     // 가맹점별 상세주문내역
     @GetMapping("/itemRevenue/{storeCode}")
-    public ResponseEntity<List<ShopOrderDto>> itemRevenue(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate orderDate, @PathVariable Integer storeCode) throws Exception {
+    public ResponseEntity<List<ShopOrderDto>> itemRevenue(@RequestParam Date startDate, @RequestParam Date endDate, @PathVariable Integer storeCode) throws Exception {
 
-        System.out.println("orderDate: " + orderDate + ", storeCode: " + storeCode);
+        System.out.println("startDate: " + startDate + "endDate: " + endDate + ", storeCode: " + storeCode);
 
         try {
             // 정상 처리: 서비스에서 반환된 데이터를 그대로 응답 본문에 담아 반환
-            List<ShopOrderDto> shopOrderDtoList = this.salesManagementMainService.itemRevenue(orderDate, storeCode);
-            System.out.println("orderDate: " + orderDate + ", storeCode: " + storeCode);
+            List<ShopOrderDto> shopOrderDtoList = this.salesManagementMainService.itemRevenue(startDate, endDate, storeCode);
+            System.out.println("startDate: " + startDate + "endDate: " + endDate + ", storeCode: " + storeCode);
+
             return ResponseEntity.ok(shopOrderDtoList); // HTTP 200 OK 상태와 데이터를 반환
 
         } catch (Exception e) {

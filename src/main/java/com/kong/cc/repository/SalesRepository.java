@@ -10,4 +10,6 @@ import java.util.List;
 public interface SalesRepository extends JpaRepository<Sales, Integer> {
 
 //    List<Sales> findByMenuList(List<Menu> menuList);
+
+
 }

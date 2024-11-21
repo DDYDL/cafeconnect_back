@@ -37,6 +37,7 @@ public class Sales {
 	private Integer salesStatus;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
+//	@JoinColumn(name="storeCode")
 	@JoinColumn(name="store_code")
 	private Store storeSa;
 	

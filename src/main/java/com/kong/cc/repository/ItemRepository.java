@@ -16,5 +16,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     @Query("select i from Item i where i.itemName like '%:keyword%'")
     List<Item> findMenuListByKeyword(@Param("keyword") String keyword);
 
+    //상민
+    List<Item> findByItemCodeIn(List<String> itemCodes);
 
 }

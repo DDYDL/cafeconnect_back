@@ -26,14 +26,15 @@ public class ShopOrder {
 	private String orderCode;
 	private Integer orderCount;
 	
-//	@Temporal(TemporalType.TIMESTAMP)
-	private LocalDate orderDate;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date orderDate;
 	private String orderState;
 	private String orderDelivery;
 	private String orderPayment;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="storeCode")
+//	@JoinColumn(name="storeCode")
+	@JoinColumn(name="store_code")
 	private Store storeO;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
