@@ -13,9 +13,4 @@ import java.util.List;
 public interface MemberRepository extends JpaRepository<Member, Integer> {
 	public Optional<Member> findByUsername(String username);
 	public Member findByProviderAndProviderId(String provider, String providerId);
-
-    Menu findBymenuCode(String menuCode);
-
-    @Query("select m from Menu m where m.menuName like '%:keyword%'")
-    List<Menu> findMenuListByKeyword(@Param("keyword") String keyword);
 }

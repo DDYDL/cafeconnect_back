@@ -32,7 +32,6 @@ public class ItemSubCategory {
 	@JoinColumn(name="itemCategoryMiddleNum")
 	private ItemMiddleCategory ItemMiddleCategorySb;
 	
-	
 	@OneToMany(mappedBy="itemSubCategory", fetch=FetchType.LAZY)
 	private List<Item> itemList = new ArrayList<>();
 }
