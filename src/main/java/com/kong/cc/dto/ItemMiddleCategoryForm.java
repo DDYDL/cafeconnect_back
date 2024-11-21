@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class ItemMiddleCategoryForm {
 
     private String itemCategoryName;
-    private Integer itemCategoryMajorNum;
+    private String itemCategoryMajorName;
 
 }
