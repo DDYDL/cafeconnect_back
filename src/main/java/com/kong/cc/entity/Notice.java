@@ -36,5 +36,5 @@ public class Notice {
     
     @ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="mainStoreId")
-	private MainStore mainStore;
+	private Member memberMain;
 }

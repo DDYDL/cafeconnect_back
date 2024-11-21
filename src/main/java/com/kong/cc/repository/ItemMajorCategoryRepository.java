@@ -6,4 +6,6 @@ import com.kong.cc.entity.ItemMajorCategory;
 
 public interface ItemMajorCategoryRepository extends JpaRepository<ItemMajorCategory, Integer> {
 
+    ItemMajorCategory findByItemCategoryName(String itemCategoryName);
+
 }

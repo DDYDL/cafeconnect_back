@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.kong.cc.dto.StoreDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -74,4 +76,26 @@ public class Store {
 	 
 	 @OneToMany(mappedBy="storeSa", fetch=FetchType.LAZY)
 	 private List<Sales> salesList = new ArrayList<>();
+	 
+	 public StoreDto toDto() {
+			return StoreDto.builder()
+					.storeCode(storeCode)
+					.storeName(storeName)
+					.storeAddress(storeAddress)
+					.storePhone(storePhone)
+					.storeOpenTime(storeOpenTime)
+					.storeCloseTime(storeCloseTime)
+					.storeCloseDate(storeCloseDate)
+					.ownerName(ownerName)
+					.ownerPhone(ownerPhone)
+					.managerName(managerName)
+					.managerPhone(managerPhone)
+					.contractPeriodStart(contractPeriodStart)
+					.contractPeriodEnd(contractPeriodEnd)
+					.contractDate(contractDate)
+					.openingDate(openingDate)
+					.storeStatus(storeStatus)
+					.memberNum(member.getMemberNum())
+					.build();
+		}
 }

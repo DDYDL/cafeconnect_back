@@ -31,7 +31,7 @@ public class Sales {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer salesNum;
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	private Date salesDate;
 	private Integer salesCount;
 	private Integer salesStatus;

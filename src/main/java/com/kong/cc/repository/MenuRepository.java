@@ -1,13 +1,17 @@
 package com.kong.cc.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.kong.cc.entity.Menu;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface MenuRepository extends JpaRepository<Menu, Integer> {
 
-    Optional<Menu> findByMenuName(String menuName);
+    Menu findByMenuCode(String menuCode);
+    
+    @Query("select m from Menu m where m.menuName like '%:keyword%'")
+    List<Menu> findMenuListByKeyword(@Param("keyword") String keyword);
 }
