@@ -1,18 +1,5 @@
 package com.kong.cc.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-
-import com.kong.cc.entity.ImageFile;
-import com.kong.cc.entity.MenuCategory;
-import com.kong.cc.entity.Sales;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

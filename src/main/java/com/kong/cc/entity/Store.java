@@ -93,7 +93,6 @@ public class Store {
 					.storeOpenTime(storeOpenTime)
 					.storeCloseTime(storeCloseTime)
 					.storeCloseDate(storeCloseDate)
-					.storeAddressNum(storeAddressNum)
 					.ownerName(ownerName)
 					.ownerPhone(ownerPhone)
 					.managerName(managerName)

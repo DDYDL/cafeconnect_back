@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
 
-    Item findByitemCode(String itemCode);
+    Item findByItemCode(String itemCode);
 
     @Query("select i from Item i where i.itemName like '%:keyword%'")
     List<Item> findMenuListByKeyword(@Param("keyword") String keyword);

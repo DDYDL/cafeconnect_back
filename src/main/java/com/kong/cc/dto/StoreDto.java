@@ -1,19 +1,8 @@
 package com.kong.cc.dto;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-
-import com.kong.cc.entity.Alarm;
-import com.kong.cc.entity.Ask;
-import com.kong.cc.entity.Cart;
-import com.kong.cc.entity.Complain;
 import com.kong.cc.entity.Member;
 import com.kong.cc.entity.ShopOrder;
 import com.kong.cc.entity.Repair;
@@ -61,11 +50,13 @@ public class StoreDto {
 				.storeName(storeName)
 				.storeAddress(storeAddress)
 				.storeAddressNum(storeAddressNum)
+				.storeCode(storeCode)
+				.storeName(storeName)
+				.storeAddress(storeAddress)
 				.storePhone(storePhone)
 				.storeOpenTime(storeOpenTime)
 				.storeCloseTime(storeCloseTime)
 				.storeCloseDate(storeCloseDate)
-				.storeAddressNum(storeAddressNum)
 				.ownerName(ownerName)
 				.ownerPhone(ownerPhone)
 				.managerName(managerName)

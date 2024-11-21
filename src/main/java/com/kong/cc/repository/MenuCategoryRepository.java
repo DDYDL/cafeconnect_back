@@ -6,4 +6,6 @@ import com.kong.cc.entity.MenuCategory;
 
 public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Integer> {
 
+    MenuCategory findByMenuCategoryName(String menuCategoryName);
+
 }
