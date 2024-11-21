@@ -1,24 +1,10 @@
 package com.kong.cc.dto;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-
-import com.kong.cc.entity.Alarm;
-import com.kong.cc.entity.Ask;
-import com.kong.cc.entity.Cart;
-import com.kong.cc.entity.Complain;
 import com.kong.cc.entity.Member;
-import com.kong.cc.entity.ShopOrder;
-import com.kong.cc.entity.Repair;
-import com.kong.cc.entity.Stock;
-import com.kong.cc.entity.WishItem;
+import com.kong.cc.entity.Store;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,5 +38,27 @@ public class StoreDto {
 	private Date openingDate;
 	private String storeStatus;
 	 
-	 private Integer memberNum;
+	private Integer memberNum;
+	
+	public Store toEntity() {
+		return Store.builder()
+				.storeCode(storeCode)
+				.storeName(storeName)
+				.storeAddress(storeAddress)
+				.storePhone(storePhone)
+				.storeOpenTime(storeOpenTime)
+				.storeCloseTime(storeCloseTime)
+				.storeCloseDate(storeCloseDate)
+				.ownerName(ownerName)
+				.ownerPhone(ownerPhone)
+				.managerName(managerName)
+				.managerPhone(managerPhone)
+				.contractPeriodStart(contractPeriodStart)
+				.contractPeriodEnd(contractPeriodEnd)
+				.contractDate(contractDate)
+				.openingDate(openingDate)
+				.storeStatus(storeStatus)
+				.member(Member.builder().memberNum(memberNum).build())
+				.build();
+	}
 }

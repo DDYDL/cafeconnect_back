@@ -34,7 +34,7 @@ public class ItemMiddleCategory {
 	@OneToMany(mappedBy="itemMiddleCategory", fetch=FetchType.LAZY)
 	private List<Item> itemList = new ArrayList<>();
 	
-	@OneToMany(mappedBy="ItemMajorCategorySb", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="ItemMiddleCategorySb", fetch=FetchType.LAZY)
 	private List<ItemSubCategory> itemSubCategoryList = new ArrayList<>();
 	
 }
