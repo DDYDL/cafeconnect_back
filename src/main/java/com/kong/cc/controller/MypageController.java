@@ -77,7 +77,36 @@ public class MypageController {
 		}
 	}
 	
-//	@GetMapping("/selectStoreList") // MyStoreManage.js
-//	@PostMapping("/addStore") // MyStoreManage.js
-//	@GetMapping("/deleteStore") // MyStoreManage.js
+	@GetMapping("/selectStoreList/{memberNum}") // MyStoreManage.js
+	public ResponseEntity<List<StoreDto>> selectStoreList(@PathVariable Integer memberNum) {
+		try {
+			List<StoreDto> storeDtoList = mypageService.selectStoreList(memberNum);
+			return new ResponseEntity<List<StoreDto>>(storeDtoList, HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<StoreDto>>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/addStore") // MyStoreManage.js
+	public ResponseEntity<String> addStore(@RequestBody StoreDto storeDto) {
+		try {
+			mypageService.addStore(storeDto);
+			return new ResponseEntity<String>("true", HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping("/deleteStore/{storeCode}") // MyStoreManage.js
+	public ResponseEntity<String> deleteStore(@PathVariable Integer storeCode) {
+		try {
+			mypageService.deleteStore(storeCode);
+			return new ResponseEntity<String>("true", HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+	}
 }

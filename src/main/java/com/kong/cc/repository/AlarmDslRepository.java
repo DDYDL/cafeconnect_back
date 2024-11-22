@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import com.kong.cc.entity.Alarm;
 import com.kong.cc.entity.QAlarm;
+import com.kong.cc.entity.QStore;
+import com.kong.cc.entity.Store;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,14 @@ public class AlarmDslRepository {
 		
 		return jpaQueryFactory.selectFrom(alarm)
 				.where(alarm.storeAr.storeCode.eq(storeCode))
+				.fetch();
+	}
+	
+	public List<Store> selectStoreList(Integer memberNum) throws Exception {
+		QStore store = QStore.store;
+		
+		return jpaQueryFactory.selectFrom(store)
+				.where(store.member.memberNum.eq(memberNum))
 				.fetch();
 	}
 }

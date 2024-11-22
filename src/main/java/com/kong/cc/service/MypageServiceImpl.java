@@ -51,4 +51,24 @@ public class MypageServiceImpl implements MypageService {
 		return "true";
 	}
 
+	@Override
+	public List<StoreDto> selectStoreList(Integer memberNum) throws Exception {
+		return alarmDslRepository.selectStoreList(memberNum).stream().map(s->s.toDto()).collect(Collectors.toList());
+	}
+
+	@Override
+	public String addStore(StoreDto storeDto) throws Exception {
+		storeDto.setStoreStatus("운영중");
+		storeRepository.save(storeDto.toEntity());
+		return "true";
+	}
+
+	@Override
+	public String deleteStore(Integer storeCode) throws Exception {
+		StoreDto storeDto = storeRepository.findById(storeCode).orElseThrow(()->new Exception("해당 가맹점 없음")).toDto();
+		storeDto.setStoreStatus("삭제신청");
+		storeRepository.save(storeDto.toEntity());
+		return "true";
+	}
+
 }
