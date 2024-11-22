@@ -16,7 +16,7 @@ public class MemberServiceImpl implements MemberService {
 
 	private final MemberRepository memberRepository;
 
-    public Member join(MemberDto memberDto) throws Exception{
+    public Member join(MemberDto memberDto) throws Exception {
 
     	Member member = Member.builder()
                 .username(memberDto.getUsername())
