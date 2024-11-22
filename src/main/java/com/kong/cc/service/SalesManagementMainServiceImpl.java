@@ -38,8 +38,8 @@ public class SalesManagementMainServiceImpl implements SalesManagementMainServic
         List<ShopOrder> shopOrderList = jpaQueryFactory
                 .selectFrom(shopOrder)
                 .where(
-                        shopOrder.orderDate.between(startDate, endDate),
-                        shopOrder.storeO.storeCode.eq(storeCode)
+                shopOrder.orderDate.between(startDate, endDate),
+                shopOrder.storeO.storeCode.eq(storeCode)
                 )
                 .fetch();
 
@@ -48,8 +48,13 @@ public class SalesManagementMainServiceImpl implements SalesManagementMainServic
                 .map(order -> order.getItemO().getItemCode())
                 .collect(Collectors.toList());
 
+        System.out.println("itemCodeList = " + itemCodeList);
+
         // itemCode 목록을 사용해 Item 정보를 가져오기
-        List<Item> itemList = itemRepository.findByItemCodeIn(itemCodeList);
+        List<Item> itemList = jpaQueryFactory
+                .selectFrom(item)
+                .where(item.itemCode.in(itemCodeList))
+                .fetch();
 
         // ShopOrderDto 리스트를 위한 결과 저장
         List<ShopOrderDto> shopOrderDtoList = new ArrayList<>();

@@ -17,7 +17,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SalesManagementMainController {
 
- private SalesManagementMainService salesManagementMainService;
+    private SalesManagementMainService salesManagementMainService;
 
     // 가맹점별 상세주문내역
     @GetMapping("/itemRevenue/{storeCode}")
