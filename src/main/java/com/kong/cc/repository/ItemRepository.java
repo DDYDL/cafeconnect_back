@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.kong.cc.entity.Item;
 
-public interface ItemRepository extends JpaRepository<Item, Integer> {
+public interface ItemRepository extends JpaRepository<Item, String> {
 
     Item findByItemCode(String itemCode);
 
