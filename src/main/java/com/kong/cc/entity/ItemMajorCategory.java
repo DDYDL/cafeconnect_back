@@ -2,14 +2,16 @@ package com.kong.cc.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import com.kong.cc.dto.ItemMajorCategoryForm;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,8 +31,19 @@ public class ItemMajorCategory {
 	@OneToMany(mappedBy="itemMajorCategory", fetch=FetchType.LAZY)
 	private List<Item> itemList = new ArrayList<>();
 	
-	@OneToMany(mappedBy="ItemMajorCategoryMd", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="itemMajorCategoryMd", fetch=FetchType.LAZY)
 	private List<ItemMiddleCategory> itemMiddelCategoryList = new ArrayList<>();
+	
+
+	public ItemMajorCategoryForm toDto() {
+		
+		
+		return ItemMajorCategoryForm.builder()
+				.itemCategoryNum(itemCategoryNum)
+				.itemCategoryName(itemCategoryName)
+				.midCategories(itemMiddelCategoryList.stream().map(ItemMiddleCategory::toDto).collect(Collectors.toList()))
+				.build();
+	}
 	
 	
 }

@@ -1,18 +1,12 @@
 package com.kong.cc.entity;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
-import org.hibernate.annotations.DynamicInsert;
+import com.kong.cc.dto.ShopOrderDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,6 +37,20 @@ public class ShopOrder {
 	private Store storeO;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="itemCode")
+	@JoinColumn(name="item_code")
 	private Item itemO;
+	
+	public ShopOrderDto toDto() {
+		return ShopOrderDto.builder()
+				.orderNum(orderNum)
+				.orderCode(orderCode)
+				.orderCount(orderCount)
+				.orderDate(orderDate)
+				.orderState(orderState)
+				.orderDelivery(orderDelivery)
+				.orderPayment(orderPayment)
+				.storeCode(storeO.getStoreCode())
+				.itemCode(itemO.getItemCode())
+				.build();
+	}
 }

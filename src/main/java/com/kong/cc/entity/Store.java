@@ -1,16 +1,13 @@
 package com.kong.cc.entity;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import com.kong.cc.dto.StoreDto;
 
@@ -51,7 +48,7 @@ public class Store {
 	 private String storeStatus;
 	 
 	 @ManyToOne(fetch=FetchType.LAZY)
-	 @JoinColumn(name="memberNum")
+	 @JoinColumn(name="memberNum" , nullable=true)
 	 private Member member;
 	 
 	 @OneToMany(mappedBy="storeAr", fetch=FetchType.LAZY)
@@ -82,10 +79,11 @@ public class Store {
 	 private List<Sales> salesList = new ArrayList<>();
 	 
 	 public StoreDto toDto() {
-			return StoreDto.builder()
+		 	StoreDto storeDto = StoreDto.builder()
 					.storeCode(storeCode)
 					.storeName(storeName)
 					.storeAddress(storeAddress)
+					.storeAddressNum(storeAddressNum)
 					.storePhone(storePhone)
 					.storeOpenTime(storeOpenTime)
 					.storeCloseTime(storeCloseTime)
@@ -99,7 +97,12 @@ public class Store {
 					.contractDate(contractDate)
 					.openingDate(openingDate)
 					.storeStatus(storeStatus)
-					.memberNum(member.getMemberNum())
 					.build();
+			
+		 	if(member!=null) {
+				storeDto.setMemberNum(member.getMemberNum());
+			}
+		 	
+			return storeDto;
 		}
 }

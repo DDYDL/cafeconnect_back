@@ -11,13 +11,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import com.querydsl.core.annotations.QueryProjection;
+import com.kong.cc.dto.ItemDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,42 +34,6 @@ public class Item {
 	private String itemCapacity;
 	private Integer itemUnitQuantity;
 	private String itemUnit;
-
-	@QueryProjection
-	public Item(String itemCapacity,
-				String itemCode,
-				String itemCountryOrigin,
-				ImageFile itemImageFile,
-				ItemMajorCategory itemMajorCategory,
-				ItemMiddleCategory itemMiddleCategory,
-				String itemName,
-				Integer itemPrice,
-				String itemStandard,
-				String itemStorage,
-				ItemSubCategory itemSubCategory,
-				String itemUnit,
-				Integer itemUnitQuantity
-				) {
-
-		this.itemCapacity = itemCapacity;
-		this.itemCode = itemCode;
-		this.itemCountryOrigin = itemCountryOrigin;
-		this.itemImageFile = itemImageFile;
-		this.itemMajorCategory = itemMajorCategory;
-		this.itemMiddleCategory = itemMiddleCategory;
-		this.itemName = itemName;
-		this.itemPrice = itemPrice;
-		this.itemStandard = itemStandard;
-		this.itemStorage = itemStorage;
-		this.itemSubCategory = itemSubCategory;
-		this.itemUnit = itemUnit;
-		this.itemUnitQuantity = itemUnitQuantity;
-
-
-
-
-	}
-
 	private String itemStandard;
 	private String itemStorage;
 	private String itemCountryOrigin;
@@ -101,4 +68,22 @@ public class Item {
 	
 	@OneToMany(mappedBy="itemS", fetch=FetchType.LAZY)
 	private List<Stock> stockList = new ArrayList<>();
+	
+	public ItemDto toDto() {
+	    return ItemDto.builder()
+	            .itemCode(itemCode)
+	            .itemName(itemName)
+	            .itemPrice(itemPrice)
+	            .itemCapacity(itemCapacity)
+	            .itemUnitQuantity(itemUnitQuantity)
+	            .itemUnit(itemUnit)
+	            .itemStandard(itemStandard)
+	            .itemStorage(itemStorage)
+	            .itemCountryOrigin(itemCountryOrigin)
+	            .itemMajorCategoryNum(itemMajorCategory != null ? itemMajorCategory.getItemCategoryNum() : null)
+	            .itemMiddleCategoryNum(itemMiddleCategory != null ? itemMiddleCategory.getItemCategoryNum() : null)
+	            .itemSubCategoryNum(itemSubCategory != null ? itemSubCategory.getItemCategoryNum() : null)
+	            .itemFileNum(itemImageFile != null ? itemImageFile.getFileNum() : null)
+	            .build();
+	}
 }

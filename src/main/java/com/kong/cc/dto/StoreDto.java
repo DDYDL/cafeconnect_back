@@ -4,7 +4,11 @@ import java.time.LocalTime;
 import java.util.Date;
 
 import com.kong.cc.entity.Member;
+import com.kong.cc.entity.ShopOrder;
+import com.kong.cc.entity.Repair;
+import com.kong.cc.entity.Stock;
 import com.kong.cc.entity.Store;
+import com.kong.cc.entity.WishItem;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,8 +44,15 @@ public class StoreDto {
 	 
 	private Integer memberNum;
 	
+	// 추가
+	private String stockCount;
+	
 	public Store toEntity() {
-		return Store.builder()
+		Store store = Store.builder()
+				.storeCode(storeCode)
+				.storeName(storeName)
+				.storeAddress(storeAddress)
+				.storeAddressNum(storeAddressNum)
 				.storeCode(storeCode)
 				.storeName(storeName)
 				.storeAddress(storeAddress)
@@ -58,7 +69,12 @@ public class StoreDto {
 				.contractDate(contractDate)
 				.openingDate(openingDate)
 				.storeStatus(storeStatus)
-				.member(Member.builder().memberNum(memberNum).build())
 				.build();
+		
+		if(memberNum!=null) {
+			store.setMember(Member.builder().memberNum(memberNum).build());
+		}
+		
+		return store;
 	}
 }
