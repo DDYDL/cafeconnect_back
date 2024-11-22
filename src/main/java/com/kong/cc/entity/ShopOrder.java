@@ -37,7 +37,7 @@ public class ShopOrder {
 	private Store storeO;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="item_code")
+	@JoinColumn(name="itemCode")
 	private Item itemO;
 	
 	public ShopOrderDto toDto() {

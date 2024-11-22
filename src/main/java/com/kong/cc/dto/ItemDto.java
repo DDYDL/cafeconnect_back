@@ -32,6 +32,8 @@ public class ItemDto {
 	private Integer itemSubCategoryNum;
 	private Integer itemFileNum;
 	
+	private Integer wishItemNum;
+	
 	public Item toEntity() {
 		return Item.builder()
 				.itemCode(itemCode)
