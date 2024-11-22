@@ -21,6 +21,7 @@ public class SalesDto {
 	private List<String> menuNameList;
 	private List<Integer> salesCountList;
 	private Integer salesStatus;
+	private Integer salesCount;
 
 	private List<SalesItem>  salesData;
 

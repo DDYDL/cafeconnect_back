@@ -37,11 +37,10 @@ public class Sales {
 	private Integer salesStatus;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-//	@JoinColumn(name="storeCode")
-	@JoinColumn(name="store_code")
+	@JoinColumn(name="storeCode")
 	private Store storeSa;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="menu_code")
+	@JoinColumn(name="menuCode")
 	private Menu menu;
 }

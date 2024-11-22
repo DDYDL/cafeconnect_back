@@ -25,7 +25,6 @@ import lombok.Setter;
 @Entity
 public class Store {
 	 @Id
-	 @GeneratedValue(strategy = GenerationType.IDENTITY)
 	 private Integer storeCode;
 	 private String storeName;
 	 private String storeAddress;

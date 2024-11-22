@@ -33,8 +33,7 @@ public class ShopOrder {
 	private String orderPayment;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-//	@JoinColumn(name="storeCode")
-	@JoinColumn(name="store_code")
+	@JoinColumn(name="storeCode")
 	private Store storeO;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
