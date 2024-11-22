@@ -6,9 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kong.cc.dto.AlarmDto;
+import com.kong.cc.dto.StoreDto;
 import com.kong.cc.service.MypageService;
 
 import lombok.RequiredArgsConstructor;
@@ -52,8 +55,27 @@ public class MypageController {
 		}
 	}
 	
-//	@GetMapping("/selectStore") // MyStoreInfo.js
-//	@PostMapping("/updateStore") // MyStoreInfo.js
+	@GetMapping("/selectStore/{storeCode}") // MyStoreInfo.js
+	public ResponseEntity<StoreDto> selectStore(@PathVariable Integer storeCode) {
+		try {
+			StoreDto storeDto = mypageService.selectStore(storeCode);
+			return new ResponseEntity<StoreDto>(storeDto, HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<StoreDto>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/updateStore") // MyStoreInfo.js
+	public ResponseEntity<String> updateStore(@RequestBody StoreDto storeDto) {
+		try {
+			mypageService.updateStore(storeDto);
+			return new ResponseEntity<String>("true", HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 //	@GetMapping("/selectStoreList") // MyStoreManage.js
 //	@PostMapping("/addStore") // MyStoreManage.js

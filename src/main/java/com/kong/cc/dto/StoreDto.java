@@ -1,14 +1,15 @@
 package com.kong.cc.dto;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.kong.cc.entity.Member;
-import com.kong.cc.entity.ShopOrder;
-import com.kong.cc.entity.Repair;
-import com.kong.cc.entity.Stock;
 import com.kong.cc.entity.Store;
-import com.kong.cc.entity.WishItem;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,8 +28,14 @@ public class StoreDto {
 	private String storeAddressNum;
 	private String storePhone;
 	
-	private LocalTime storeOpenTime;
-	private LocalTime storeCloseTime;
+	@JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd kk:mm:ss") // 원하는 형태의 LocalDateTime 설정
+	private LocalDateTime storeOpenTime;
+	@JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd kk:mm:ss") // 원하는 형태의 LocalDateTime 설정
+	private LocalDateTime storeCloseTime;
 	private String storeCloseDate;
 	
 	private String ownerName;
