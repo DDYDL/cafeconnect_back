@@ -2,16 +2,15 @@ package com.kong.cc.controller;
 
 import com.kong.cc.dto.ItemResponseDto;
 import com.kong.cc.dto.RepairResponseDto;
+import com.kong.cc.dto.RepairSearchCondition;
 import com.kong.cc.dto.RepairUpdateForm;
 import com.kong.cc.service.RepairService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -26,13 +25,26 @@ public class RepairController {
 	private final RepairService repairService;
 
 	@GetMapping("/repairListByKeyword")  //RepairList.js
-    public ResponseEntity<Object> repairListByKeyword(String keyword){
-        return null;
+    public ResponseEntity<Object> repairListByKeyword(Integer pageNum, Integer pageSize, String keyword){
+
+        try{
+            Page<RepairResponseDto> page = repairService.repairListByKeyword(pageNum,pageSize,keyword);
+            return new ResponseEntity<>(page,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/repairListByCategory") //RepairList.js
-    public ResponseEntity<Object> repairListByCategory(Integer categoryNum){
-        return null;
+    public ResponseEntity<Object> repairListByCategory(Integer pageNum, Integer pageSize,@ModelAttribute RepairSearchCondition condition){
+        try{
+            Page<RepairResponseDto> page = repairService.repairListByCategory(pageNum,pageSize,condition);
+            return new ResponseEntity<>(page,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/machineList")  //RepairList.js

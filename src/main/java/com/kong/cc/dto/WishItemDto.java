@@ -14,4 +14,6 @@ public class WishItemDto {
 	
 	private Integer storeCode;
 	private String itemCode;
+	
+	
 }

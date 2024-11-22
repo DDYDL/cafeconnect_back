@@ -38,7 +38,7 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
     public Page<ItemResponseDto> findItemResponseDtoListByKeyword(String keyword, Pageable pageable) {
         QueryResults<Item> itemQueryResults = queryFactory
                 .selectFrom(item)
-                .where(item.itemName.like(keyword))
+                .where(item.itemName.like("%"+keyword+"%"))
                 .fetchResults();
 
         List<Item> content = itemQueryResults.getResults();
@@ -61,7 +61,7 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
                                 .itemMajorCategoryName(i.getItemMajorCategory().getItemCategoryName())
                                 .itemMiddleCategoryName(i.getItemMiddleCategory().getItemCategoryName())
                                 .itemSubCategoryName(i.getItemSubCategory().getItemCategoryName())
-                                .imageUrl(imageUrl(i.getItemImageFile().getFileDirectory()))
+                                .imageUrl(imageUrl(i.getItemImageFile().getFileDirectory(),i.getItemImageFile().getFileName()))
                                 .build();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -90,6 +90,7 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
                         .itemMajorCategoryName(i.getItemMajorCategory().getItemCategoryName())
                         .itemMiddleCategoryName(i.getItemMiddleCategory().getItemCategoryName())
                         .itemSubCategoryName(i.getItemSubCategory().getItemCategoryName())
+                        .imageUrl(i.getItemImageFile().getFileDirectory()+i.getItemImageFile().getFileName())
                         .build();
             }catch (Exception e){
                 throw new RuntimeException(e);
@@ -139,8 +140,8 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
         return itemCategorySubName != null ? itemSubCategory.itemCategoryName.eq(itemCategorySubName) : null;
     }
 
-    private String imageUrl(String fileDirectory) throws IOException {
-        Path imagePath = Paths.get(fileDirectory);
+    private String imageUrl(String fileDirectory,String fileName) throws IOException {
+        Path imagePath = Paths.get(fileDirectory+fileName);
         byte[] imageBytes = Files.readAllBytes(imagePath);
         String base64Image = Base64Utils.encodeToString(imageBytes);
 

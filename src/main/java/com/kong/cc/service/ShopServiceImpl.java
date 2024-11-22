@@ -1,6 +1,8 @@
 package com.kong.cc.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -56,6 +58,7 @@ public class ShopServiceImpl implements ShopService {
 		return shopDslRepo.checkIsWishedItem(itemCode, storeCode);
 	}
 
+	//상세 페이지 관심상품 토글 - 관심 상품 등록, 삭제 
 	@Override
 	public Boolean toggleWishItem(String itemCode, Integer storeCode) throws Exception {
 		//이미 등록된 상품인지 확인
@@ -74,5 +77,27 @@ public class ShopServiceImpl implements ShopService {
 		   return false;
 			}
 		}
+
+	//카테고리 선택 없는 전체 관심상품 리스트 
+	@Override
+	public List<ItemDto> selectAllWishItems(Integer storeCode) throws Exception {
+			return shopDslRepo.selectAllWishItems(storeCode);
+	}
+
+	@Override
+	public List<ItemDto> selectAllWishItemsByCategory(Integer storeCode, Integer majorNum, Integer middleNum,Integer subNum) throws Exception {
+		
+		return shopDslRepo.selectAllWishItemsByCategroy(storeCode, majorNum, middleNum, subNum);
+	}
+
+	//wishItem 에서 선택된 상품만 관심 상품 해제 
+	@Override
+	public Boolean deleteCheckedWishItem(Integer storeCode,List<Integer>wishItemNumList) throws Exception {
+		if(shopDslRepo.deleteCheckedWishItem(storeCode,wishItemNumList)==wishItemNumList.size()) {
+			return true;
+		}else {
+			return false;	
+		}
+	}
 
 }
