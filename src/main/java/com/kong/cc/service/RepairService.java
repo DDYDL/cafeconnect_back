@@ -2,11 +2,16 @@ package com.kong.cc.service;
 
 import com.kong.cc.dto.RepairDto;
 import com.kong.cc.dto.RepairResponseDto;
+import com.kong.cc.dto.RepairSearchCondition;
 import com.kong.cc.dto.RepairUpdateForm;
 import com.kong.cc.entity.Item;
 import com.kong.cc.entity.Repair;
+import com.kong.cc.repository.RepairQuerydslRepositoryImpl;
 import com.kong.cc.repository.RepairRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +24,7 @@ import java.util.Date;
 public class RepairService {
 
     private final RepairRepository repairRepository;
+    private final RepairQuerydslRepositoryImpl repairQuerydslRepository;
 
 
     public RepairResponseDto selectRepairByRepairNum(Integer repairNum) {
@@ -58,5 +64,16 @@ public class RepairService {
         repair.setRepairAnswerDate(new Date());
         repair.setRepairStatus(repairUpdateForm.getRepairStatus());
 
+    }
+
+    public Page<RepairResponseDto> repairListByKeyword(Integer pageNum, Integer pageSize, String keyword) {
+        PageRequest pageRequest = PageRequest.of(pageNum , pageSize, Sort.by(Sort.Direction.ASC, "repairNum"));
+        return repairQuerydslRepository.findRepairResponseDtoListByKeyword(keyword,pageRequest);
+
+    }
+
+    public Page<RepairResponseDto> repairListByCategory(Integer pageNum, Integer pageSize, RepairSearchCondition condition) {
+        PageRequest pageRequest = PageRequest.of(pageNum , pageSize, Sort.by(Sort.Direction.ASC, "repairNum"));
+        return repairQuerydslRepository.findRepairResponseDtoListByCategory(condition,pageRequest);
     }
 }

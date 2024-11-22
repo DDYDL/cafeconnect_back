@@ -20,8 +20,8 @@ public class MenuController {
 
     private final MenuService menuService;
 
-    @PostMapping(value = "/addMenu" ,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)  //MenuInsert.js
-    public ResponseEntity<Object> addMenu(@RequestPart("menuSaveForm") MenuSaveForm menuSaveForm, @RequestPart("file") MultipartFile file ){
+    @PostMapping(value = "/addMenu" ,consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.MULTIPART_FORM_DATA_VALUE})  //MenuInsert.js
+    public ResponseEntity<Object> addMenu(@RequestPart MenuSaveForm menuSaveForm, @RequestPart("file") MultipartFile file ){
         try{
             menuService.saveMenu(menuSaveForm,file);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -32,10 +32,10 @@ public class MenuController {
     }
 
 
-    @PostMapping("/updateMenu/{menuCode}")  //MenuUpdate.js
+    @PostMapping(value = "/updateMenu/{menuCode}",consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.MULTIPART_FORM_DATA_VALUE})  //MenuUpdate.js
     public ResponseEntity<Object> updateMenu(@PathVariable String menuCode,
-                                             @RequestBody MenuUpdateForm menuUpdateForm,
-                                             @RequestParam(name = "file",required = false) MultipartFile file){
+                                             @RequestPart MenuUpdateForm menuUpdateForm,
+                                             @RequestPart(name = "file") MultipartFile file){
 
         try{
             menuService.updateMenu(menuCode,menuUpdateForm,file);
@@ -46,7 +46,7 @@ public class MenuController {
         }
     }
 
-    @GetMapping("/selectMenuByItemCode/{menuCode}")  //MenuDetail.js
+    @GetMapping("/selectMenuByMenuCode/{menuCode}")  //MenuDetail.js
     public ResponseEntity<MenuResponseDto> selectMenuByMenuCode(@PathVariable String menuCode){
 
         try{
@@ -86,11 +86,11 @@ public class MenuController {
 
     }
 
-    @GetMapping("/deleteItem/{menuCode}") //ItemDetail.js
+    @GetMapping("/deleteMenu/{menuCode}") //ItemDetail.js
     public ResponseEntity<Object> deleteMenu(@PathVariable String menuCode){
 
         try{
-            menuService.deleteMenu(menuCode);;
+            menuService.deleteMenu(menuCode);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             log.error("Exception",e);

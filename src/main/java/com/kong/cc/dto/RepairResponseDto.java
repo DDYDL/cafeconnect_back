@@ -20,6 +20,7 @@ public class RepairResponseDto {
     private Date repairAnswerDate;
     private String storeName;
     private String itemCode;
+    private String itemName;
     private String itemCategoryMajorName;
     private String itemCategoryMiddleName;
 }

@@ -76,6 +76,7 @@ public class MenuService {
 
         MenuCategory menuCategory = menuCategoryRepository.findByMenuCategoryName(menuSaveForm.getMenuCategoryName());
         Menu.MenuBuilder menuBuilder = Menu.builder()
+                .menuCode(UUID.randomUUID().toString())
                 .menuName(menuSaveForm.getMenuName())
                 .menuPrice(menuSaveForm.getMenuPrice())
                 .menuCapacity(menuSaveForm.getMenuCapacity())
@@ -94,7 +95,6 @@ public class MenuService {
         }
 
         Menu menu = menuBuilder.build();
-        imageFile.setMenu(menu);
         menuRepository.save(menu);
 
 
@@ -179,7 +179,8 @@ public class MenuService {
         }
         ImageFile imageFile = menu.getMenuImageFile();
         String fileDirectory = imageFile.getFileDirectory();
-        Path imagePath = Paths.get(fileDirectory);
+        String fileName = imageFile.getFileName();
+        Path imagePath = Paths.get(fileDirectory+fileName);
         byte[] imageBytes = Files.readAllBytes(imagePath);
         String base64Image = Base64Utils.encodeToString(imageBytes);
         String menuCategoryName = menu.getMenuCategory().getMenuCategoryName();

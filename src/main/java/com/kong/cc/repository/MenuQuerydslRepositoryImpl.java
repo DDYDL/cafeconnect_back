@@ -39,7 +39,7 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
 
 
         QueryResults<Menu> menuQueryResults = queryFactory.selectFrom(menu)
-                .where(menu.menuName.like(keyword))
+                .where(menu.menuName.like("%"+keyword+"%"))
                 .fetchResults();
 
         List<Menu> content = menuQueryResults.getResults();
@@ -62,7 +62,7 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
                                 .protein(m.getProtein())
                                 .menuStatus(m.getMenuStatus())
                                 .menuCategoryName(m.getMenuCategory().getMenuCategoryName())
-                                .imageUrl(imageUrl(m.getMenuImageFile().getFileDirectory()))
+                                .imageUrl(imageUrl(m.getMenuImageFile().getFileDirectory(),m.getMenuImageFile().getFileName()))
                                 .build();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -107,7 +107,7 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
                                 .protein(m.getProtein())
                                 .menuStatus(m.getMenuStatus())
                                 .menuCategoryName(m.getMenuCategory().getMenuCategoryName())
-                                .imageUrl(imageUrl(m.getMenuImageFile().getFileDirectory()))
+                                .imageUrl(imageUrl(m.getMenuImageFile().getFileDirectory(),m.getMenuImageFile().getFileName()))
                                 .build();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -118,9 +118,9 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
 
     }
 
-    private String imageUrl(String fileDirectory) throws IOException {
+    private String imageUrl(String fileDirectory,String fileName) throws IOException {
 
-        Path imagePath = Paths.get(fileDirectory);
+        Path imagePath = Paths.get(fileDirectory+fileName);
         byte[] imageBytes = Files.readAllBytes(imagePath);
         String base64Image = Base64Utils.encodeToString(imageBytes);
 
