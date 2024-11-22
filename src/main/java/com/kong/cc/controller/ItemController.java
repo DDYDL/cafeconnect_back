@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,8 +18,9 @@ public class ItemController {
     private final ItemService itemService;
 
 
-    @PostMapping("/addItem")  //ItemInsert.js
-    public ResponseEntity<Object> addItem(@RequestBody ItemSaveForm itemSaveForm, @RequestParam("file") MultipartFile file){
+    @PostMapping(value = "/addItem",consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.MULTIPART_FORM_DATA_VALUE})  //ItemInsert.js
+    public ResponseEntity<Object> addItem(@RequestPart ItemSaveForm itemSaveForm,
+                                          @RequestPart ("file") MultipartFile file){
         try{
             itemService.saveItem(itemSaveForm,file);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -31,8 +33,8 @@ public class ItemController {
 
     @PostMapping("/updateItem/{itemCode}") //ItemUpdate.js
     public ResponseEntity<Object> updateItem(@PathVariable String itemCode,
-                                             @RequestBody ItemUpdateForm itemUpdateForm ,
-                                             @RequestParam(name = "file", required = false) MultipartFile file){
+                                             @RequestPart ItemUpdateForm itemUpdateForm ,
+                                             @RequestPart("file") MultipartFile file){
         try{
             itemService.updateItem(itemCode,itemUpdateForm,file);
             return new ResponseEntity<>(HttpStatus.OK);

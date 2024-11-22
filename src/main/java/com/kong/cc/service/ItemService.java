@@ -70,6 +70,7 @@ public class ItemService {
         ItemSubCategory itemSubCategory = itemSubCategoryRepository.findByItemCategoryName(itemSaveForm.getItemCategorySubName());
 
         Item.ItemBuilder itemBuilder = Item.builder()
+                .itemCode(UUID.randomUUID().toString())
                 .itemName(itemSaveForm.getItemName())
                 .itemPrice(itemSaveForm.getItemPrice())
                 .itemCapacity(itemSaveForm.getItemCapacity())
@@ -197,7 +198,8 @@ public class ItemService {
         }
         ImageFile imageFile = item.getItemImageFile();
         String fileDirectory = imageFile.getFileDirectory();
-        Path imagePath = Paths.get(fileDirectory);
+        String fileName = imageFile.getFileName();
+        Path imagePath = Paths.get(fileDirectory+fileName);
         byte[] imageBytes = Files.readAllBytes(imagePath);
         String base64Image = Base64Utils.encodeToString(imageBytes);
         String itemMajorCategoryName = item.getItemMajorCategory().getItemCategoryName();
