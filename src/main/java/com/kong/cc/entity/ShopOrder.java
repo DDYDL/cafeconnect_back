@@ -6,7 +6,7 @@ import java.util.Date;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.DynamicInsert;
+import com.kong.cc.dto.ShopOrderDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,4 +40,18 @@ public class ShopOrder {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="item_code")
 	private Item itemO;
+	
+	public ShopOrderDto toDto() {
+		return ShopOrderDto.builder()
+				.orderNum(orderNum)
+				.orderCode(orderCode)
+				.orderCount(orderCount)
+				.orderDate(orderDate)
+				.orderState(orderState)
+				.orderDelivery(orderDelivery)
+				.orderPayment(orderPayment)
+				.storeCode(storeO.getStoreCode())
+				.itemCode(itemO.getItemCode())
+				.build();
+	}
 }

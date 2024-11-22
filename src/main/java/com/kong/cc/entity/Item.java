@@ -11,12 +11,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.kong.cc.dto.ItemDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -64,4 +68,22 @@ public class Item {
 	
 	@OneToMany(mappedBy="itemS", fetch=FetchType.LAZY)
 	private List<Stock> stockList = new ArrayList<>();
+	
+	public ItemDto toDto() {
+	    return ItemDto.builder()
+	            .itemCode(itemCode)
+	            .itemName(itemName)
+	            .itemPrice(itemPrice)
+	            .itemCapacity(itemCapacity)
+	            .itemUnitQuantity(itemUnitQuantity)
+	            .itemUnit(itemUnit)
+	            .itemStandard(itemStandard)
+	            .itemStorage(itemStorage)
+	            .itemCountryOrigin(itemCountryOrigin)
+	            .itemMajorCategoryNum(itemMajorCategory != null ? itemMajorCategory.getItemCategoryNum() : null)
+	            .itemMiddleCategoryNum(itemMiddleCategory != null ? itemMiddleCategory.getItemCategoryNum() : null)
+	            .itemSubCategoryNum(itemSubCategory != null ? itemSubCategory.getItemCategoryNum() : null)
+	            .itemFileNum(itemImageFile != null ? itemImageFile.getFileNum() : null)
+	            .build();
+	}
 }

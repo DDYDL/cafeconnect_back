@@ -1,9 +1,11 @@
 package com.kong.cc.entity;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
@@ -78,10 +80,11 @@ public class Store {
 	 private List<Sales> salesList = new ArrayList<>();
 	 
 	 public StoreDto toDto() {
-			return StoreDto.builder()
+		 	StoreDto storeDto = StoreDto.builder()
 					.storeCode(storeCode)
 					.storeName(storeName)
 					.storeAddress(storeAddress)
+					.storeAddressNum(storeAddressNum)
 					.storePhone(storePhone)
 					.storeOpenTime(storeOpenTime)
 					.storeCloseTime(storeCloseTime)
@@ -97,5 +100,6 @@ public class Store {
 					.storeStatus(storeStatus)
 					.memberNum(member.getMemberNum())
 					.build();
+			return storeDto;
 		}
 }
