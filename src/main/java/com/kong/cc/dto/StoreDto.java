@@ -69,8 +69,12 @@ public class StoreDto {
 				.contractDate(contractDate)
 				.openingDate(openingDate)
 				.storeStatus(storeStatus)
-				.member(Member.builder().memberNum(memberNum).build())
 				.build();
+		
+		if(memberNum!=null) {
+			store.setMember(Member.builder().memberNum(memberNum).build());
+		}
+		
 		return store;
 	}
 }

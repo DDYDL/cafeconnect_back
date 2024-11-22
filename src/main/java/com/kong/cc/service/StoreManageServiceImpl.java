@@ -93,7 +93,7 @@ public class StoreManageServiceImpl implements StoreManageService {
 	public Integer restoreStore(Integer storeCode) throws Exception {
 		Store store = storeRepository.findById(storeCode).orElseThrow(()->new Exception("가맹점 코드 오류"));
 		if(store!=null) {
-			store.setStoreStatus(" ");
+			store.setStoreStatus("");
 		}
 		storeRepository.save(store);		
 		return store.getStoreCode();
@@ -107,8 +107,8 @@ public class StoreManageServiceImpl implements StoreManageService {
 
 	@Override
 	public Integer createStoreCode() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		Integer storeCode = storeDslRepository.selectLastStoreCode();
+		return storeCode+1;
 	}
 
 }
