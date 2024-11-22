@@ -11,6 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.kong.cc.dto.MenuDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,5 +51,22 @@ public class Menu {
    
    @OneToOne(fetch=FetchType.LAZY)
    @JoinColumn(name="menuFileNum")
-   private ImageFile menuImageFile; 
+   private ImageFile menuImageFile;
+   
+   public MenuDto toDto() {
+	   return MenuDto.builder()
+			   .menuCode(menuCode)
+			   .menuName(menuName)
+			   .menuPrice(menuPrice)
+			   .menuCapacity(menuCapacity)
+			   .caffeine(caffeine)
+			   .calories(calories)
+			   .carbohydrate(carbohydrate)
+			   .sugar(sugar)
+			   .natrium(natrium)
+			   .fat(fat)
+			   .protein(protein)
+			   .menuStatus(menuStatus)
+			   .build();
+   }
 }

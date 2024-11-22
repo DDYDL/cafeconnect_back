@@ -66,7 +66,9 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 		}
 
 		accessToken = accessToken.replace(JwtProperties.TOKEN_PREFIX, ""); // 앞에 붙은 bearer 떼기
-
+		
+		System.out.println(accessToken);
+		
 		try {
 			// 1. Access Token check
 			// 1-1. 보안키, 만료시간 check
@@ -75,6 +77,7 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 				.verify(accessToken) // 만료시간 지났는지 체크
 				.getClaim("sub")
 				.asString();
+			System.out.println("------------");
 			System.out.println(username);
 
 			// 1-2. username check

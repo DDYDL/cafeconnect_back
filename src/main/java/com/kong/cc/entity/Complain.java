@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.kong.cc.dto.ComplainDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,4 +44,19 @@ public class Complain {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="storeCode")
     private Store storeCo;
+    
+    public ComplainDto toDto() {
+    	return ComplainDto.builder()
+    			.complainNum(complainNum)
+    			.userName(userName)
+    			.userPhone(userPhone)
+    			.complainTitle(complainTitle)
+    			.complainContent(complainContent)
+    			.complainDate(complainDate)
+    			.complainStatus(complainStatus)
+    			.complainAnswer(complainAnswer)
+    			.complainAnswerDate(complainAnswerDate)
+    			.storeCode(storeCo.getStoreCode())
+    			.build();
+    }
 }

@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.kong.cc.dto.MenuCategoryDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,4 +29,11 @@ public class MenuCategory {
 	
 	@OneToMany(mappedBy="menuCategory", fetch=FetchType.LAZY)
 	private List<Menu> menuList = new ArrayList<>();
+	
+	public MenuCategoryDto toDto() {
+		return MenuCategoryDto.builder()
+				.menuCategoryNum(menuCategoryNum)
+				.menuCategoryName(menuCategoryName)
+				.build();
+	}
 }

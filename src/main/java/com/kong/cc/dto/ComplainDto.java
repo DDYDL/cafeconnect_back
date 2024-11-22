@@ -2,6 +2,9 @@ package com.kong.cc.dto;
 
 import java.util.Date;
 
+import com.kong.cc.entity.Complain;
+import com.kong.cc.entity.Store;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,4 +27,19 @@ public class ComplainDto {
     private Date complainAnswerDate;
     
     private Integer storeCode;
+    
+    public Complain toEntity() {
+    	return Complain.builder()
+    			.complainNum(complainNum)
+    			.userName(userName)
+    			.userPhone(userPhone)
+    			.complainTitle(complainTitle)
+    			.complainContent(complainContent)
+    			.complainDate(complainDate)
+    			.complainStatus(complainStatus)
+    			.complainAnswer(complainAnswer)
+    			.complainAnswerDate(complainAnswerDate)
+    			.storeCo(Store.builder().storeCode(storeCode).build())
+    			.build();
+    }
 }
