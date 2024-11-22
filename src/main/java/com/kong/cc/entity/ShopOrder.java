@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.DynamicInsert;
+import com.kong.cc.dto.ShopOrderDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,4 +45,18 @@ public class ShopOrder {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="itemCode")
 	private Item itemO;
+	
+	public ShopOrderDto toDto() {
+		return ShopOrderDto.builder()
+				.orderNum(orderNum)
+				.orderCode(orderCode)
+				.orderCount(orderCount)
+				.orderDate(orderDate)
+				.orderState(orderState)
+				.orderDelivery(orderDelivery)
+				.orderPayment(orderPayment)
+				.storeCode(storeO.getStoreCode())
+				.itemCode(itemO.getItemCode())
+				.build();
+	}
 }

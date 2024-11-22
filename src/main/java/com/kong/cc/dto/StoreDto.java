@@ -44,6 +44,9 @@ public class StoreDto {
 	 
 	private Integer memberNum;
 	
+	// 추가
+	private String stockCount;
+	
 	public Store toEntity() {
 		Store store = Store.builder()
 				.storeCode(storeCode)
