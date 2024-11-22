@@ -31,7 +31,8 @@ public class ItemDto {
 	private Integer itemMiddleCategoryNum;
 	private Integer itemSubCategoryNum;
 	private Integer itemFileNum;
-	
+
+
 	private Integer wishItemNum;
 	
 	public Item toEntity() {
