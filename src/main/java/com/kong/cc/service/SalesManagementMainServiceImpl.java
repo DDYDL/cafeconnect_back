@@ -1,21 +1,20 @@
 package com.kong.cc.service;
 
 import com.kong.cc.dto.ItemDto;
-import com.kong.cc.dto.ShopOrderDto;
-import com.kong.cc.entity.*;
+import com.kong.cc.entity.QItem;
+import com.kong.cc.entity.QShopOrder;
+import com.kong.cc.entity.QStore;
 import com.kong.cc.repository.*;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,71 +29,86 @@ public class SalesManagementMainServiceImpl implements SalesManagementMainServic
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<ShopOrderDto> itemRevenue(Date startDate, Date endDate, Integer storeCode) {
-        QShopOrder shopOrder = QShopOrder.shopOrder;
-        QItem item = QItem.item;
+    public List<ItemDto> itemRevenue(Date startDate, Date endDate, Integer storeCode) {
+        QShopOrder shopOrder = QShopOrder.shopOrder; // Order 테이블
+        QItem item = QItem.item; // Item 테이블
+        QStore store = QStore.store; // Store 테이블
 
-        // 1. Order 테이블에서 storeCode와 start/endDate가 일치하는 OrderList
-        List<ShopOrder> shopOrderList = jpaQueryFactory
-                .selectFrom(shopOrder)
+        System.out.println("(service)startDate = " + startDate + "  (service)endDate = " + endDate);
+
+        // LocalDate를 Date로 변환하는 방법
+//        Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+//        Date end = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+
+
+
+        // 1. 가맹점 및 날짜 조건에 맞는 Item 정보 조회
+
+                List<ItemDto> result =  jpaQueryFactory
+                .select(
+                        Projections.constructor(
+                                ItemDto.class,
+                                item.itemCode,
+                                item.itemName,
+                                item.itemPrice,
+                                item.itemCapacity,
+                                item.itemUnitQuantity,
+                                item.itemUnit,
+                                item.itemStandard,
+                                item.itemStorage,
+                                item.itemCountryOrigin,
+                                item.itemMajorCategory.itemCategoryNum,
+                                item.itemMiddleCategory.itemCategoryNum,
+                                item.itemSubCategory.itemCategoryNum,
+                                item.itemImageFile.fileNum
+                        )
+                )
+                .from(shopOrder)
+                .join(shopOrder.storeO, store)
+                .join(shopOrder.itemO, item)
                 .where(
-                shopOrder.orderDate.between(startDate, endDate),
-                shopOrder.storeO.storeCode.eq(storeCode)
+                        // Date를 LocalDate로 변환하여 비교
+//                        Expressions.dateTemplate(LocalDate.class, "{0}", shopOrder.orderDate).between(startDate, endDate),
+//                        shopOrder.storeO.storeCode.eq(storeCode)
+
+                        shopOrder.orderDate.between(startDate, endDate),
+                        shopOrder.storeO.storeCode.eq(storeCode)
                 )
                 .fetch();
 
-        // 2. Order에서 가져온 itemCode 목록을 사용해 아이템 정보 조회
-        List<String> itemCodeList = shopOrderList.stream()
-                .map(order -> order.getItemO().getItemCode())
-                .collect(Collectors.toList());
+//        System.out.println("(service)startDate = " + startDate + "  (service)endDate = " + endDate);
+//        System.out.println("(service)start = " + start + "  (service)end = " + end);
+//        System.out.println("(service)storeCode = " + storeCode);
 
-        System.out.println("itemCodeList = " + itemCodeList);
+        System.out.println("result = " + result);  // 빈 리스트일 경우 확인
 
-        // itemCode 목록을 사용해 Item 정보를 가져오기
-        List<Item> itemList = jpaQueryFactory
-                .selectFrom(item)
-                .where(item.itemCode.in(itemCodeList))
-                .fetch();
+        return result;
+    }
+};
 
-        // ShopOrderDto 리스트를 위한 결과 저장
-        List<ShopOrderDto> shopOrderDtoList = new ArrayList<>();
 
-        // 아이템 정보 및 주문 정보 매칭
-        for (ShopOrder order : shopOrderList) {
-            String itemCode = order.getItemO().getItemCode();
-
-            // 해당 itemCode에 맞는 아이템 정보 찾기
-            Item itemInfo = itemList.stream()
-                    .filter(i -> i.getItemCode().equals(itemCode))
-                    .findFirst()
-                    .orElse(null);
-
-            if (itemInfo != null) {
-                // 카테고리 정보 가져오기
-                Integer majorCategoryNum = itemInfo.getItemMajorCategory() != null ? itemInfo.getItemMajorCategory().getItemCategoryNum() : null;
-                Integer middleCategoryNum = itemInfo.getItemMiddleCategory() != null ? itemInfo.getItemMiddleCategory().getItemCategoryNum() : null;
-                Integer subCategoryNum = itemInfo.getItemSubCategory() != null ? itemInfo.getItemSubCategory().getItemCategoryNum() : null;
-
-                // ShopOrderDto 생성
-                ShopOrderDto dto = ShopOrderDto.builder()
-                        .orderNum(order.getOrderNum())
-                        .orderCode(order.getOrderCode())
-                        .orderCount(order.getOrderCount())
-                        .orderState(order.getOrderState())
-                        .orderDelivery(order.getOrderDelivery())
-                        .orderPayment(order.getOrderPayment())
-                        .storeCode(order.getStoreO().getStoreCode())
-                        .itemCode(itemInfo.getItemCode())  // itemCode
-
-//                        .majorCategoryNum(majorCategoryNum)  // 카테고리 정보
-//                        .middleCategoryNum(middleCategoryNum)  // 카테고리 정보
-//                        .subCategoryNum(subCategoryNum)  // 카테고리 정보
-                        .build();
-
-                // 리스트에 추가
-                shopOrderDtoList.add(dto);
-            }
-        }
-
-        return shopOrderDtoList;
-    }};
+//                .stream()
+//                .map(t -> {
+//                    ItemDto itemDto = Objects.requireNonNull(t.get(0, Item.class)).toDto();
+//                    itemDto.setItemCode(t.get(1, String.class));
+//                    itemDto.setItemName(t.get(2, String.class));
+//                    itemDto.setItemPrice(t.get(3, Integer.class));
+//                    itemDto.setItemCapacity(t.get(4, String.class));
+//                    itemDto.setItemUnitQuantity(t.get(5,Integer.class));
+//                    itemDto.setItemUnit(t.get(6, String.class));
+//                    itemDto.setItemStandard(t.get(7, String.class));
+//                    itemDto.setItemStorage(t.get(8, String.class));
+//                    itemDto.setItemCountryOrigin(t.get(9, String.class));
+//                    itemDto.setItemMajorCategoryNum(t.get(10, Integer.class));
+//                    itemDto.setItemMiddleCategoryNum(t.get(11, Integer.class));
+//                    itemDto.setItemSubCategoryNum(t.get(12, Integer.class));
+//                    itemDto.setItemFileNum(t.get(13, Integer.class));
+//
+//                    System.out.println("itemDto = " + itemDto);
+//
+//                    return itemDto;
+//
+//                })
+//                .collect(Collectors.toList());
+//    }
