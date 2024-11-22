@@ -1,5 +1,7 @@
 package com.kong.cc.dto;
 
+import com.kong.cc.entity.Menu;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,5 +27,22 @@ public class MenuDto {
 	private String menuStatus;
 	
 	private Integer menuCategoryNum;
-	private Integer menuFileNum; 
+	private Integer menuFileNum;
+	
+	public Menu toEntity() {
+		   return Menu.builder()
+				   .menuCode(menuCode)
+				   .menuName(menuName)
+				   .menuPrice(menuPrice)
+				   .menuCapacity(menuCapacity)
+				   .caffeine(caffeine)
+				   .calories(calories)
+				   .carbohydrate(carbohydrate)
+				   .sugar(sugar)
+				   .natrium(natrium)
+				   .fat(fat)
+				   .protein(protein)
+				   .menuStatus(menuStatus)
+				   .build();
+	   }
 }

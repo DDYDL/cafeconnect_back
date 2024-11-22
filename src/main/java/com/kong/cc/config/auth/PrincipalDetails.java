@@ -44,7 +44,9 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 		if(member!=null) {
 			return member.getUsername();			
 		} else {
-			return String.valueOf(attributes.get("username"));
+			System.out.println("==========================");
+			System.out.println(attributes.get("id"));
+			return String.valueOf(attributes.get("id"));
 		}
 	}
 

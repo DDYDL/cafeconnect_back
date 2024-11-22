@@ -3,6 +3,7 @@ package com.kong.cc.service;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,11 +14,13 @@ import com.kong.cc.dto.ShopOrderDto;
 import com.kong.cc.dto.StockDto;
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.entity.Stock;
+import com.kong.cc.entity.Store;
 import com.kong.cc.repository.ItemRepository;
 import com.kong.cc.repository.ShopOrderRepository;
 import com.kong.cc.repository.StockDslRepository;
 import com.kong.cc.repository.StockRepository;
 import com.kong.cc.repository.StoreRepository;
+import com.querydsl.core.Tuple;
 
 import lombok.RequiredArgsConstructor;
 
@@ -111,9 +114,17 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public List<StoreDto> selectStockByItemCode(String itemCode) throws Exception {
-		//List<StockDto> stockDtoList = stockDslRepository.selectStockByItemCode(itemCode).stream().map(s->s.getStoreCode()).collect(Collectors.toList());
-		//return stockDslRepository.selectStockByItemCode(itemCode);
-		return null;
+	public List<StoreDto> selectStoreByItemCode(String itemCode) throws Exception {
+		List<Tuple> tupleList = stockDslRepository.selectStoreByItemCode(itemCode);
+		List<StoreDto> storeDtoList = new ArrayList<>();
+		for(Tuple tuple : tupleList) {
+			StoreDto storeDto = tuple.get(0, Store.class).toDto();
+			storeDto.setStockCount(tuple.get(1, Integer.class));
+			System.out.println("========================");
+			System.out.println(storeDto);
+			
+			storeDtoList.add(storeDto);
+		}
+		return storeDtoList;
 	}
 }

@@ -140,11 +140,11 @@ public class StockController {
 		}
 	}
 	
-	
-	@GetMapping("/selectStockByItemCode/{itemCode}") // StiockOtherStoreItem.js
-	public ResponseEntity<List<StoreDto>> selectStockByItemCode(@PathVariable String itemCode) {
+	//같은 가맹점 행 합치기, 수량은 합산
+	@GetMapping("/selectStoreByItemCode/{itemCode}") // StockOtherStoreItem.js
+	public ResponseEntity<List<StoreDto>> selectStoreByItemCode(@PathVariable String itemCode) {
 		try {
-			List<StoreDto> storeDtoList = stockService.selectStockByItemCode(itemCode);
+			List<StoreDto> storeDtoList = stockService.selectStoreByItemCode(itemCode);
 			return new ResponseEntity<List<StoreDto>>(storeDtoList, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();

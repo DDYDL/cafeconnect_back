@@ -50,12 +50,12 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService {
 		System.out.println(member);
 		// 1-1. 이미 가입되어 있으면 정보 수정
 		if(member!=null) {
-			member.setUsername(oAuth2UserInfo.getEmail());
+			member.setUsername(oAuth2UserInfo.getUsername());
 			memberRepository.save(member);
 		} else { // 1-2. 가입되어 있지 않으면 삽입
 			Member nMember = Member.builder()
 							// 소셜 로그인 시 username을 이메일로 설정
-							.username(oAuth2UserInfo.getEmail())
+							.username(oAuth2UserInfo.getUsername())
 							.roles("ROLE_STORE")
 							.provider(oAuth2UserInfo.getProvider())
 							.providerId(oAuth2UserInfo.getProviderId())

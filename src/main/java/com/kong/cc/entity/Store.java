@@ -1,13 +1,17 @@
 package com.kong.cc.entity;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalTime;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.kong.cc.dto.StoreDto;
 
@@ -31,10 +35,18 @@ public class Store {
 	 private String storeAddressNum;
 	 private String storePhone;
 	   
-	 private LocalTime storeOpenTime;
-	 private LocalTime storeCloseTime;
+//	 @JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
+//	 @JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
+//	 @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd kk:mm:ss") // 원하는 형태의 LocalDateTime 설정
+	 @Column(columnDefinition = "TIMESTAMP")
+	 private Timestamp storeOpenTime;
+//	 @JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
+//	 @JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
+//	 @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd kk:mm:ss") // 원하는 형태의 LocalDateTime 설정
+	 @Column(columnDefinition = "TIMESTAMP")
+	 private Timestamp storeCloseTime;
 	 private String storeCloseDate;
-	   
+	 
 	 private String ownerName;
 	 private String ownerPhone;
 	 private String managerName;
