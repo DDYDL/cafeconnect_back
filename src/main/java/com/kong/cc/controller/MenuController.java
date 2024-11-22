@@ -6,7 +6,9 @@ import com.kong.cc.dto.MenuUpdateForm;
 import com.kong.cc.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,10 +20,10 @@ public class MenuController {
 
     private final MenuService menuService;
 
-    @PostMapping("/addMenu")  //MenuInsert.js
-    public ResponseEntity<Object> addMenu(MenuSaveForm menuSaveForm, @RequestParam("file") MultipartFile multipartFile ){
+    @PostMapping(value = "/addMenu" ,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)  //MenuInsert.js
+    public ResponseEntity<Object> addMenu(@RequestPart("menuSaveForm") MenuSaveForm menuSaveForm, @RequestPart("file") MultipartFile file ){
         try{
-            menuService.saveMenu(menuSaveForm,multipartFile);
+            menuService.saveMenu(menuSaveForm,file);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             log.error("Exception",e);
@@ -32,11 +34,11 @@ public class MenuController {
 
     @PostMapping("/updateMenu/{menuCode}")  //MenuUpdate.js
     public ResponseEntity<Object> updateMenu(@PathVariable String menuCode,
-                                             MenuUpdateForm menuUpdateForm,
-                                             @RequestParam(name = "file",required = false) MultipartFile multipartFile){
+                                             @RequestBody MenuUpdateForm menuUpdateForm,
+                                             @RequestParam(name = "file",required = false) MultipartFile file){
 
         try{
-            menuService.updateMenu(menuCode,menuUpdateForm,multipartFile);
+            menuService.updateMenu(menuCode,menuUpdateForm,file);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             log.error("Exception",e);
@@ -58,14 +60,30 @@ public class MenuController {
     }
 
     @GetMapping("/menuListByCategory")  //MenuList.js
-    public ResponseEntity<Object> menuListByCategory(Integer categoryNum){
-        return null;
+    public ResponseEntity<Object> menuListByCategory(Integer pageNum, Integer pageSize, String categoryName){
+        try{
+            Page<MenuResponseDto> page = menuService.menuResponseDtoListByCategory(pageNum,pageSize,categoryName);
+            return new ResponseEntity<>(page,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 
     @GetMapping("/menuListByKeyword")  //MenuList.js
-    public ResponseEntity<Object> menuListByKeyword( String keyword){
-        return null;
+    public ResponseEntity<Object> menuListByKeyword(Integer pageNum, Integer pageSize, String keyword){
+
+        try{
+            Page<MenuResponseDto> page = menuService.menuResponseDtoListByKeyword(pageNum,pageSize,keyword);
+            return new ResponseEntity<>(page,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @GetMapping("/deleteItem/{menuCode}") //ItemDetail.js
@@ -79,4 +97,6 @@ public class MenuController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+
 }

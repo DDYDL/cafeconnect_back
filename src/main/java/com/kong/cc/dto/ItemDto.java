@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ItemDto {
 	private String itemCode;
-	
+
 	private String itemName;
 	private Integer itemPrice;
 	private String itemCapacity;

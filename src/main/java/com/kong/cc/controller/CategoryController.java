@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +18,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("/addMajorCategory")  //Category.js
-    public ResponseEntity<Object> addMajorCategory(ItemMajorCategoryForm itemMajorCategoryForm){
+    public ResponseEntity<Object> addMajorCategory(@RequestBody ItemMajorCategoryForm itemMajorCategoryForm){
         try{
             categoryService.saveMajorCategory(itemMajorCategoryForm);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -32,7 +29,7 @@ public class CategoryController {
     }
 
     @PostMapping("/addMiddleCategory")  //Category.js
-    public ResponseEntity<Object> addMiddleCategory(ItemMiddleCategoryForm itemMiddleCategoryForm){
+    public ResponseEntity<Object> addMiddleCategory(@RequestBody ItemMiddleCategoryForm itemMiddleCategoryForm){
         try{
             categoryService.saveMiddleCategory(itemMiddleCategoryForm);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -43,7 +40,7 @@ public class CategoryController {
     }
 
     @PostMapping("/addSubCategory")  //Category.js
-    public ResponseEntity<Object> addSubCategory(ItemSubCategoryForm itemSubCategoryForm){
+    public ResponseEntity<Object> addSubCategory(@RequestBody ItemSubCategoryForm itemSubCategoryForm){
         try{
             categoryService.saveSubCategory(itemSubCategoryForm);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -60,7 +57,7 @@ public class CategoryController {
 
 
     @PostMapping("/deleteMajorCategory")  //Category.js
-    public ResponseEntity<Object> deleteMajorCategory(ItemMajorCategoryForm itemMajorCategoryForm){
+    public ResponseEntity<Object> deleteMajorCategory(@RequestBody ItemMajorCategoryForm itemMajorCategoryForm){
         try{
             categoryService.deleteMajorCategory(itemMajorCategoryForm);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -71,7 +68,7 @@ public class CategoryController {
 
     }
     @PostMapping("/deleteMiddleCategory")  //Category.js
-    public ResponseEntity<Object> deleteMiddleCategory(ItemMiddleCategoryForm itemMiddleCategoryForm){
+    public ResponseEntity<Object> deleteMiddleCategory(@RequestBody ItemMiddleCategoryForm itemMiddleCategoryForm){
         try{
             categoryService.deleteMiddleCategory(itemMiddleCategoryForm);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -82,7 +79,7 @@ public class CategoryController {
         }
     }
     @PostMapping("/deleteSubCategory")  //Category.js
-    public ResponseEntity<Object> deleteSubCategory(ItemSubCategoryForm itemSubCategoryForm){
+    public ResponseEntity<Object> deleteSubCategory(@RequestBody ItemSubCategoryForm itemSubCategoryForm){
         try{
             categoryService.deleteSubCategory(itemSubCategoryForm);
             return new ResponseEntity<>(HttpStatus.OK);

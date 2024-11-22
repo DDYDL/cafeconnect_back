@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +31,42 @@ public class Item {
 	private String itemCapacity;
 	private Integer itemUnitQuantity;
 	private String itemUnit;
+
+	@QueryProjection
+	public Item(String itemCapacity,
+				String itemCode,
+				String itemCountryOrigin,
+				ImageFile itemImageFile,
+				ItemMajorCategory itemMajorCategory,
+				ItemMiddleCategory itemMiddleCategory,
+				String itemName,
+				Integer itemPrice,
+				String itemStandard,
+				String itemStorage,
+				ItemSubCategory itemSubCategory,
+				String itemUnit,
+				Integer itemUnitQuantity
+				) {
+
+		this.itemCapacity = itemCapacity;
+		this.itemCode = itemCode;
+		this.itemCountryOrigin = itemCountryOrigin;
+		this.itemImageFile = itemImageFile;
+		this.itemMajorCategory = itemMajorCategory;
+		this.itemMiddleCategory = itemMiddleCategory;
+		this.itemName = itemName;
+		this.itemPrice = itemPrice;
+		this.itemStandard = itemStandard;
+		this.itemStorage = itemStorage;
+		this.itemSubCategory = itemSubCategory;
+		this.itemUnit = itemUnit;
+		this.itemUnitQuantity = itemUnitQuantity;
+
+
+
+
+	}
+
 	private String itemStandard;
 	private String itemStorage;
 	private String itemCountryOrigin;
