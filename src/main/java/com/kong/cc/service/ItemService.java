@@ -1,14 +1,25 @@
 package com.kong.cc.service;
 
-import com.kong.cc.dto.ItemResponseDto;
-import com.kong.cc.dto.ItemSaveForm;
-import com.kong.cc.dto.ItemUpdateForm;
+import com.kong.cc.dto.*;
 import com.kong.cc.entity.*;
 import com.kong.cc.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -16,14 +27,43 @@ import org.springframework.web.multipart.MultipartFile;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final ItemQuerydslRepositoryImpl itemQueryDslRepository;
     private final ImageFileRepository imageFileRepository;
     private final ItemMajorCategoryRepository itemMajorCategoryRepository;
     private final ItemMiddleCategoryRepository itemMiddleCategoryRepository;
     private final ItemSubCategoryRepository itemSubCategoryRepository;
 
-    public void saveItem(ItemSaveForm itemSaveForm, MultipartFile multipartFile) {
+    @Value("${upload.path}")
+    private String uploadDir;
+
+    public void saveItem(ItemSaveForm itemSaveForm, MultipartFile file) {
 
         ImageFile imageFile = null;
+        if (file.isEmpty()){
+            throw new RuntimeException("해당하는 파일이 없습니다");
+        }
+
+        try{
+            File directory = new File(uploadDir);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            String originalFilename = file.getOriginalFilename();
+            int index = originalFilename.indexOf(".");
+            String originalName = UUID.randomUUID().toString() + file.getOriginalFilename().substring(index);
+            File saveFile = new File(directory, originalName);
+            file.transferTo(saveFile);
+
+            imageFile = ImageFile.builder()
+                    .fileContentType(file.getContentType())
+                    .fileUploadDate(new Date())
+                    .fileName(originalName)
+                    .fileSize(file.getSize())
+                    .fileDirectory(uploadDir)
+                    .build();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
         imageFileRepository.save(imageFile);
         ItemMajorCategory itemMajorCategory = itemMajorCategoryRepository.findByItemCategoryName(itemSaveForm.getItemCategoryMajorName());
         ItemMiddleCategory itemMiddleCategory = itemMiddleCategoryRepository.findByItemCategoryName(itemSaveForm.getItemCategoryMiddleName());
@@ -54,8 +94,34 @@ public class ItemService {
         itemRepository.save(item);
     }
 
-    public void updateItem(String itemCode, ItemUpdateForm itemUpdateForm, MultipartFile multipartFile) {
+    public void updateItem(String itemCode, ItemUpdateForm itemUpdateForm, MultipartFile file) {
         ImageFile imageFile = null;
+        if (file.isEmpty()){
+            throw new RuntimeException("해당하는 파일이 없습니다");
+        }
+
+        try{
+            File directory = new File(uploadDir);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            String originalFilename = file.getOriginalFilename();
+            int index = originalFilename.indexOf(".");
+            String originalName = UUID.randomUUID().toString() + file.getOriginalFilename().substring(index);
+            File saveFile = new File(directory, originalName);
+            file.transferTo(saveFile);
+
+            imageFile = ImageFile.builder()
+                    .fileContentType(file.getContentType())
+                    .fileUploadDate(new Date())
+                    .fileName(originalName)
+                    .fileSize(file.getSize())
+                    .fileDirectory(uploadDir)
+                    .build();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
         imageFileRepository.save(imageFile);
 
         ItemMajorCategory itemMajorCategory = itemMajorCategoryRepository.findByItemCategoryName(itemUpdateForm.getItemCategoryMajorName());
@@ -124,15 +190,20 @@ public class ItemService {
         itemRepository.delete(item);
     }
 
-    public ItemResponseDto selectItemByItemCode(String itemCode) {
+    public ItemResponseDto selectItemByItemCode(String itemCode) throws IOException {
         Item item = itemRepository.findByItemCode(itemCode);
         if(item == null){
             throw new IllegalArgumentException("해당하는 아이템이 없습니다");
         }
+        ImageFile imageFile = item.getItemImageFile();
+        String fileDirectory = imageFile.getFileDirectory();
+        Path imagePath = Paths.get(fileDirectory);
+        byte[] imageBytes = Files.readAllBytes(imagePath);
+        String base64Image = Base64Utils.encodeToString(imageBytes);
         String itemMajorCategoryName = item.getItemMajorCategory().getItemCategoryName();
         String itemMiddleCategoryName = item.getItemMiddleCategory().getItemCategoryName();
         String itemSubCategoryName = item.getItemSubCategory().getItemCategoryName();
-        String imageUrl = null;
+        String imageUrl = base64Image;
         return  ItemResponseDto.builder()
                 .itemCode(item.getItemCode())
                 .itemName(item.getItemName())
@@ -147,5 +218,18 @@ public class ItemService {
                 .itemSubCategoryName(itemSubCategoryName)
                 .imageUrl(imageUrl)
                 .build();
+    }
+
+    public Page<ItemResponseDto> itemResponseDtoListByKeyword(Integer pageNum, Integer pageSize, String keyword) {
+        PageRequest pageRequest = PageRequest.of(pageNum , pageSize, Sort.by(Sort.Direction.ASC, "itemCode"));
+        return itemQueryDslRepository.findItemResponseDtoListByKeyword(keyword,pageRequest);
+
+
+    }
+
+    public Page<ItemResponseDto> itemResponseDtoListByCategory(Integer pageNum, Integer pageSize, ItemSearchCondition condition) {
+        PageRequest pageRequest = PageRequest.of(pageNum , pageSize, Sort.by(Sort.Direction.ASC, "itemCode"));
+        Page<Item> page = itemQueryDslRepository.findItemListByCategory(condition, pageRequest);
+        return itemQueryDslRepository.findItemResponseDtoListByCategory(page);
     }
 }

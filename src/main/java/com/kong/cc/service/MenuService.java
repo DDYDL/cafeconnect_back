@@ -6,14 +6,25 @@ import com.kong.cc.dto.MenuUpdateForm;
 import com.kong.cc.entity.ImageFile;
 import com.kong.cc.entity.Menu;
 import com.kong.cc.entity.MenuCategory;
-import com.kong.cc.repository.ImageFileRepository;
-import com.kong.cc.repository.MenuCategoryRepository;
-import com.kong.cc.repository.MenuRepository;
+import com.kong.cc.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -22,12 +33,47 @@ import org.springframework.web.multipart.MultipartFile;
 public class MenuService {
 
     private final MenuRepository menuRepository;
+    private final MenuQuerydslRepositoryImpl menuQuerydslRepository;
     private final MenuCategoryRepository menuCategoryRepository;
     private final ImageFileRepository imageFileRepository;
 
-    public void saveMenu(MenuSaveForm menuSaveForm, MultipartFile multipartFile) {
+
+    @Value("${upload.path}")
+    private String uploadDir;
+
+
+
+    public void saveMenu(MenuSaveForm menuSaveForm, MultipartFile file) {
         ImageFile imageFile = null;
+        if (file.isEmpty()){
+            throw new RuntimeException("해당하는 파일이 없습니다");
+        }
+
+        try{
+            File directory = new File(uploadDir);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            String originalFilename = file.getOriginalFilename();
+            int index = originalFilename.indexOf(".");
+            String originalName = UUID.randomUUID().toString() + file.getOriginalFilename().substring(index);
+            File saveFile = new File(directory, originalName);
+            file.transferTo(saveFile);
+
+            imageFile = ImageFile.builder()
+                    .fileContentType(file.getContentType())
+                    .fileUploadDate(new Date())
+                    .fileName(originalName)
+                    .fileSize(file.getSize())
+                    .fileDirectory(uploadDir)
+                    .build();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
+
         imageFileRepository.save(imageFile);
+
         MenuCategory menuCategory = menuCategoryRepository.findByMenuCategoryName(menuSaveForm.getMenuCategoryName());
         Menu.MenuBuilder menuBuilder = Menu.builder()
                 .menuName(menuSaveForm.getMenuName())
@@ -40,20 +86,46 @@ public class MenuService {
                 .natrium(menuSaveForm.getNatrium())
                 .fat(menuSaveForm.getFat())
                 .protein(menuSaveForm.getProtein())
-                .menuStatus(menuSaveForm.getMenuStatus());
+                .menuStatus(menuSaveForm.getMenuStatus())
+                .menuImageFile(imageFile);
 
         if(menuCategory != null){
             menuBuilder.menuCategory(menuCategory);
         }
 
         Menu menu = menuBuilder.build();
+        imageFile.setMenu(menu);
         menuRepository.save(menu);
 
 
     }
 
-    public void updateMenu(String menuCode, MenuUpdateForm menuUpdateForm, MultipartFile multipartFile) {
+    public void updateMenu(String menuCode, MenuUpdateForm menuUpdateForm, MultipartFile file) {
         ImageFile imageFile = null;
+        try{
+            File directory = new File(uploadDir);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            String originalFilename = file.getOriginalFilename();
+            int index = originalFilename.indexOf(".");
+            String originalName = UUID.randomUUID().toString() + file.getOriginalFilename().substring(index);
+            File saveFile = new File(directory, originalName);
+            file.transferTo(saveFile);
+
+            imageFile = ImageFile.builder()
+                    .fileContentType(file.getContentType())
+                    .fileUploadDate(new Date())
+                    .fileName(originalName)
+                    .fileSize(file.getSize())
+                    .fileDirectory(uploadDir)
+                    .build();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
+
+
         imageFileRepository.save(imageFile);
         MenuCategory menuCategory = menuCategoryRepository.findByMenuCategoryName(menuUpdateForm.getMenuCategoryName());
         Menu menu = menuRepository.findByMenuCode(menuCode);
@@ -74,6 +146,7 @@ public class MenuService {
         menu.setFat(menuUpdateForm.getFat());
         menu.setProtein(menuUpdateForm.getProtein());
         menu.setMenuStatus(menuUpdateForm.getMenuStatus());
+        menu.setMenuImageFile(imageFile);
 
         if(menuCategory != null){
             menu.setMenuCategory(menuCategory);
@@ -99,14 +172,18 @@ public class MenuService {
 
     }
 
-    public MenuResponseDto selectMenuByMenuCode(String menuCode) {
+    public MenuResponseDto selectMenuByMenuCode(String menuCode) throws IOException {
         Menu menu = menuRepository.findByMenuCode(menuCode);
         if(menu == null){
             throw new IllegalArgumentException("해당하는 메뉴가 없습니다");
         }
-
+        ImageFile imageFile = menu.getMenuImageFile();
+        String fileDirectory = imageFile.getFileDirectory();
+        Path imagePath = Paths.get(fileDirectory);
+        byte[] imageBytes = Files.readAllBytes(imagePath);
+        String base64Image = Base64Utils.encodeToString(imageBytes);
         String menuCategoryName = menu.getMenuCategory().getMenuCategoryName();
-        String imageUrl = null;
+        String imageUrl = base64Image;
 
 
         return MenuResponseDto.builder()
@@ -128,5 +205,15 @@ public class MenuService {
 
 
 
+    }
+
+    public Page<MenuResponseDto> menuResponseDtoListByKeyword(int pageNum, int pageSize, String keyword) {
+        PageRequest pageRequest = PageRequest.of(pageNum , pageSize, Sort.by(Sort.Direction.ASC, "menuCode"));
+        return menuQuerydslRepository.findMenuResponseDtoListByKeyword(keyword,pageRequest);
+    }
+
+    public Page<MenuResponseDto> menuResponseDtoListByCategory(int pageNum, int pageSize, String categoryName) {
+        PageRequest pageRequest = PageRequest.of(pageNum , pageSize, Sort.by(Sort.Direction.ASC, "menuCode"));
+        return menuQuerydslRepository.findMenuResponseDtoListByCategory(categoryName,pageRequest);
     }
 }
