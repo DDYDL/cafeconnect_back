@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kong.cc.config.auth.PrincipalDetails;
@@ -33,7 +34,7 @@ public class MemberController {
 //	@PostMapping("/loginMainStore") // LoginMainStore.js
 
     @PostMapping("/main/insert")  //JoinAccount.js
-    public ResponseEntity<Object> mainInsert(MemberDto memberDto) {
+    public ResponseEntity<Object> mainInsert(@RequestBody MemberDto memberDto) {
         try {
 
             Member member = memberService.join(memberDto);

@@ -1,11 +1,10 @@
 package com.kong.cc.controller;
 
-import com.kong.cc.dto.ItemResponseDto;
-import com.kong.cc.dto.ItemSaveForm;
-import com.kong.cc.dto.ItemUpdateForm;
+import com.kong.cc.dto.*;
 import com.kong.cc.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +18,9 @@ public class ItemController {
 
 
     @PostMapping("/addItem")  //ItemInsert.js
-    public ResponseEntity<Object> addItem(ItemSaveForm itemSaveForm, @RequestParam("file") MultipartFile multipartFile){
+    public ResponseEntity<Object> addItem(@RequestBody ItemSaveForm itemSaveForm, @RequestParam("file") MultipartFile file){
         try{
-            itemService.saveItem(itemSaveForm,multipartFile);
+            itemService.saveItem(itemSaveForm,file);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             log.error("Exception",e);
@@ -32,10 +31,10 @@ public class ItemController {
 
     @PostMapping("/updateItem/{itemCode}") //ItemUpdate.js
     public ResponseEntity<Object> updateItem(@PathVariable String itemCode,
-                                             ItemUpdateForm itemUpdateForm ,
-                                             @RequestParam(name = "file", required = false) MultipartFile multipartFile){
+                                             @RequestBody ItemUpdateForm itemUpdateForm ,
+                                             @RequestParam(name = "file", required = false) MultipartFile file){
         try{
-            itemService.updateItem(itemCode,itemUpdateForm,multipartFile);
+            itemService.updateItem(itemCode,itemUpdateForm,file);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             log.error("Exception",e);
@@ -66,9 +65,28 @@ public class ItemController {
         }
     }
 
-    @GetMapping("/itemList") //ItemList.js
-    public ResponseEntity<Object> itemList(){
-        return null;
+    @GetMapping("/itemListByKeyword") //ItemList.js
+    public ResponseEntity<Object> itemListByKeyword(Integer pageNum, Integer pageSize, String keyword){
+        try{
+            Page<ItemResponseDto> page = itemService.itemResponseDtoListByKeyword(pageNum,pageSize,keyword);
+            return new ResponseEntity<>(page,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/itemListByCategory") //ItemList.js
+    public ResponseEntity<Object> itemListByCategory(Integer pageNum, Integer pageSize, @ModelAttribute ItemSearchCondition condition){
+        try{
+            Page<ItemResponseDto> page = itemService.itemResponseDtoListByCategory(pageNum,pageSize,condition);
+            return new ResponseEntity<>(page,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 

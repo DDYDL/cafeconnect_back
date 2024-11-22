@@ -62,7 +62,7 @@ public class Store {
 	 private String storeStatus;
 	 
 	 @ManyToOne(fetch=FetchType.LAZY)
-	 @JoinColumn(name="memberNum", nullable = true)
+	 @JoinColumn(name="memberNum" , nullable=true)
 	 private Member member;
 	 
 	 @OneToMany(mappedBy="storeAr", fetch=FetchType.LAZY)
@@ -111,8 +111,12 @@ public class Store {
 					.contractDate(contractDate)
 					.openingDate(openingDate)
 					.storeStatus(storeStatus)
-					.memberNum(member.getMemberNum())
 					.build();
+			
+		 	if(member!=null) {
+				storeDto.setMemberNum(member.getMemberNum());
+			}
+		 	
 			return storeDto;
 		}
 }
