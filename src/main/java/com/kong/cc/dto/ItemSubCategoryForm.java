@@ -12,7 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ItemSubCategoryForm {
 
+	private Integer itemCategoryNum;
     private String itemCategoryName;
+    
     private String itemCategoryMiddleName;
+    private Integer itemCategoryMiddleNum;
 
 }

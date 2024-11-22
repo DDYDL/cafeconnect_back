@@ -70,20 +70,20 @@ public class Item {
 	private List<Stock> stockList = new ArrayList<>();
 	
 	public ItemDto toDto() {
-		return ItemDto.builder()
-				.itemCode(itemCode)
-				.itemName(itemName)
-				.itemPrice(itemPrice)
-				.itemCapacity(itemCapacity)
-				.itemUnitQuantity(itemUnitQuantity)
-				.itemUnit(itemUnit)
-				.itemStandard(itemStandard)
-				.itemStorage(itemStorage)
-				.itemCountryOrigin(itemCountryOrigin)
-				.itemMajorCategoryNum(itemMajorCategory.getItemCategoryNum())
-				.itemMiddleCategoryNum(itemMiddleCategory.getItemCategoryNum())
-				.itemSubCategoryNum(itemSubCategory.getItemCategoryNum())
-				.itemFileNum(itemImageFile.getFileNum())
-				.build();
+	    return ItemDto.builder()
+	            .itemCode(itemCode)
+	            .itemName(itemName)
+	            .itemPrice(itemPrice)
+	            .itemCapacity(itemCapacity)
+	            .itemUnitQuantity(itemUnitQuantity)
+	            .itemUnit(itemUnit)
+	            .itemStandard(itemStandard)
+	            .itemStorage(itemStorage)
+	            .itemCountryOrigin(itemCountryOrigin)
+	            .itemMajorCategoryNum(itemMajorCategory != null ? itemMajorCategory.getItemCategoryNum() : null)
+	            .itemMiddleCategoryNum(itemMiddleCategory != null ? itemMiddleCategory.getItemCategoryNum() : null)
+	            .itemSubCategoryNum(itemSubCategory != null ? itemSubCategory.getItemCategoryNum() : null)
+	            .itemFileNum(itemImageFile != null ? itemImageFile.getFileNum() : null)
+	            .build();
 	}
 }
