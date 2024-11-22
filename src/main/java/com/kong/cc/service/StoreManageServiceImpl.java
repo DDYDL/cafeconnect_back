@@ -27,9 +27,14 @@ public class StoreManageServiceImpl implements StoreManageService {
 		PageRequest pageRequest = PageRequest.of(page.getCurPage()-1, 10);
 		List<StoreDto> storeDtoList = null;
 		Long allCnt = 0L;
+		Integer statusNum;
 		
-		switch(status) {
-			case "Req": 
+		if (status.equals("Req")) statusNum=1;  
+		else if (status.equals("Delete")) statusNum=2;  
+		else statusNum=0;  
+		
+		switch(statusNum) {
+			case 1: 
 				if(word==null || word.trim().equals("")) {
 					storeDtoList = storeDslRepository.findDeleteReqStoreListByPaging(pageRequest).stream()
 							.map(s->s.toDto()).collect(Collectors.toList());
@@ -39,8 +44,8 @@ public class StoreManageServiceImpl implements StoreManageService {
 							.stream().map(s->s.toDto()).collect(Collectors.toList());
 					allCnt = storeDslRepository.searchDeleteReqStoreCount(type, word);
 				}
-				
-			case "Delete": 
+				break;
+			case 2: 
 				if(word==null || word.trim().equals("")) {
 					storeDtoList = storeDslRepository.findDeleteStoreListByPaging(pageRequest).stream()
 							.map(s->s.toDto()).collect(Collectors.toList());
@@ -50,6 +55,7 @@ public class StoreManageServiceImpl implements StoreManageService {
 							.stream().map(s->s.toDto()).collect(Collectors.toList());
 					allCnt = storeDslRepository.searchDeleteStoreCount(type, word);
 				}
+				break;
 				
 			default:
 				if(word==null || word.trim().equals("")) {
@@ -61,6 +67,7 @@ public class StoreManageServiceImpl implements StoreManageService {
 							.stream().map(s->s.toDto()).collect(Collectors.toList());
 					allCnt = storeDslRepository.searchStoreCount(type, word);
 				}
+				break;
 		}
 		Integer allPage = (int)(Math.ceil(allCnt.doubleValue()/pageRequest.getPageSize()));
 		Integer startPage = (page.getCurPage()-1)/10*10+1;
@@ -80,6 +87,61 @@ public class StoreManageServiceImpl implements StoreManageService {
 	}
 
 	@Override
+	public Integer modifyStore(StoreDto storeDto) throws Exception {
+		Store oStore = storeRepository.findById(storeDto.getStoreCode()).get();
+		Store mStore = storeDto.toEntity();
+		
+		if(!(mStore.getStoreName()==null)&&!(mStore.getStoreName().equals(oStore))) {
+			oStore.setStoreName(mStore.getStoreName());
+		}
+		if(!(mStore.getStoreAddress()==null)&&!(mStore.getStoreAddress().equals(oStore))) {
+			oStore.setStoreAddress(mStore.getStoreAddress());
+		}
+		if(!(mStore.getStoreAddressNum()==null)&&!(mStore.getStoreAddressNum().equals(oStore))) {
+			oStore.setStoreAddressNum(mStore.getStoreAddressNum());
+		}
+		if(!(mStore.getStorePhone()==null)&&!(mStore.getStorePhone().equals(oStore))) {
+			oStore.setStorePhone(mStore.getStorePhone());
+		}
+		if(!(mStore.getStoreOpenTime()==null) && !(mStore.getStoreOpenTime().equals(oStore))) {
+			oStore.setStoreOpenTime(mStore.getStoreOpenTime());
+		}
+		if(!(mStore.getStoreCloseTime()==null)&&!(mStore.getStoreCloseTime().equals(oStore))) {
+			oStore.setStoreCloseTime(mStore.getStoreCloseTime());
+		}
+		if(!(mStore.getStoreCloseDate()==null)&&!(mStore.getStoreCloseDate().equals(oStore))) {
+			oStore.setStoreCloseDate(mStore.getStoreCloseDate());
+		}
+		if(!(mStore.getOwnerName()==null)&&!(mStore.getOwnerName().equals(oStore))) {
+			oStore.setOwnerName(mStore.getOwnerName());
+		}
+		if(!(mStore.getOwnerPhone()==null)&&!(mStore.getOwnerPhone().equals(oStore))) {
+			oStore.setOwnerPhone(mStore.getOwnerPhone());
+		}
+		if(!(mStore.getManagerName()==null)&&!(mStore.getManagerName().equals(oStore))) {
+			oStore.setManagerName(mStore.getManagerName());
+		}
+		if(!(!(mStore.getManagerPhone()==null)&&mStore.getManagerPhone().equals(oStore))) {
+			oStore.setManagerPhone(mStore.getManagerPhone());
+		}
+		if(!(mStore.getContractPeriodStart()==null)&&!(mStore.getContractPeriodStart().equals(oStore))) {
+			oStore.setContractPeriodStart(mStore.getContractPeriodStart());
+		}
+		if(!(mStore.getContractPeriodEnd()==null)&&!(mStore.getContractPeriodEnd().equals(oStore))) {
+			oStore.setContractPeriodEnd(mStore.getContractPeriodEnd());
+		}
+		if(!(mStore.getContractDate()==null)&&!(mStore.getContractDate().equals(oStore))) {
+			oStore.setContractDate(mStore.getContractDate());
+		}
+		if(!(mStore.getOpeningDate()==null)&&!(mStore.getOpeningDate().equals(oStore))) {
+			oStore.setOpeningDate(mStore.getOpeningDate());
+		}
+
+		storeRepository.save(oStore);		
+		return oStore.getStoreCode();
+	}
+
+	@Override
 	public Integer deleteStore(Integer storeCode) throws Exception {
 		Store store = storeRepository.findById(storeCode).orElseThrow(()->new Exception("가맹점 코드 오류"));
 		if(store!=null) {
@@ -93,7 +155,7 @@ public class StoreManageServiceImpl implements StoreManageService {
 	public Integer restoreStore(Integer storeCode) throws Exception {
 		Store store = storeRepository.findById(storeCode).orElseThrow(()->new Exception("가맹점 코드 오류"));
 		if(store!=null) {
-			store.setStoreStatus(" ");
+			store.setStoreStatus("");
 		}
 		storeRepository.save(store);		
 		return store.getStoreCode();
@@ -107,8 +169,9 @@ public class StoreManageServiceImpl implements StoreManageService {
 
 	@Override
 	public Integer createStoreCode() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		Integer storeCode = storeDslRepository.selectLastStoreCode();
+		return storeCode+1;
 	}
+
 
 }

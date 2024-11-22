@@ -10,6 +10,7 @@ public interface StoreManageService {
 	StoreDto storeDetail(Integer storeCode) throws Exception;
 	Integer createStoreCode() throws Exception; 
 	Integer addStore(StoreDto storeDto) throws Exception;
+	Integer modifyStore(StoreDto storeDto) throws Exception;
 	Integer deleteStore(Integer storeCode) throws Exception;
 	Integer restoreStore(Integer storeCode) throws Exception;
 }
