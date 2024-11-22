@@ -114,8 +114,8 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public List<StoreDto> selectStockByItemCode(String itemCode) throws Exception {
-		List<Tuple> tupleList = stockDslRepository.selectStockByItemCode(itemCode);
+	public List<StoreDto> selectStoreByItemCode(String itemCode) throws Exception {
+		List<Tuple> tupleList = stockDslRepository.selectStoreByItemCode(itemCode);
 		List<StoreDto> storeDtoList = new ArrayList<>();
 		for(Tuple tuple : tupleList) {
 			StoreDto storeDto = tuple.get(0, Store.class).toDto();

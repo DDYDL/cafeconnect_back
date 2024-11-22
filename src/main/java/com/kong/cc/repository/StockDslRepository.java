@@ -2,6 +2,7 @@ package com.kong.cc.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.kong.cc.entity.QItem;
@@ -63,12 +64,12 @@ public class StockDslRepository {
 	}
 	
 	// 상품 선택 시 해당 상품의 재고가 있는 가맹점과 재고 수 가져오기
-	public List<Tuple> selectStockByItemCode(String itemCode) {
+	public List<Tuple> selectStoreByItemCode(String itemCode) {
 		QStore store = QStore.store;
 		QStock stock = QStock.stock;
 		
 		return jpaQueryFactory.select(store, stock.stockCount)
-				.from(store, stock)
+				.from(store)
 				.leftJoin(stock)
 				.on(stock.storeSt.storeCode.eq(store.storeCode))
 				.where(stock.itemS.itemCode.eq(itemCode))

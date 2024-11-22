@@ -48,7 +48,7 @@ public class Store {
 	 private String storeStatus;
 	 
 	 @ManyToOne(fetch=FetchType.LAZY)
-	 @JoinColumn(name="memberNum")
+	 @JoinColumn(name="memberNum", nullable = true)
 	 private Member member;
 	 
 	 @OneToMany(mappedBy="storeAr", fetch=FetchType.LAZY)

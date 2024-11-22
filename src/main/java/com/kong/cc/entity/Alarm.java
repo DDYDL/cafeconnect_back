@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.kong.cc.dto.AlarmDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,4 +39,15 @@ public class Alarm {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="storeCode")
 	private Store storeAr;
+	
+	public AlarmDto toDto() {
+		return AlarmDto.builder()
+				.alarmNum(alarmNum)
+				.alarmType(alarmType)
+				.alarmContent(alarmContent)
+				.alarmDate(alarmDate)
+				.alarmStatus(alarmStatus)
+				.storeCode(storeAr.getStoreCode())
+				.build();
+	}
 }

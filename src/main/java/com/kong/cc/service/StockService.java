@@ -18,5 +18,5 @@ public interface StockService {
 	public List<StockDto> selectStockByKeyword(Integer storeCode, String keyword) throws Exception;
 	public List<ItemDto> selectItemList() throws Exception;
 	public List<ItemDto> selectItemByName(String itemName) throws Exception;
-	public List<StoreDto> selectStockByItemCode(String itemCode) throws Exception;
+	public List<StoreDto> selectStoreByItemCode(String itemCode) throws Exception;
 }
