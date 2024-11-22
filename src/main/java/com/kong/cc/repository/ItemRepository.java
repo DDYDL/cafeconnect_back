@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ItemRepository extends JpaRepository<Item, Integer> {
+public interface ItemRepository extends JpaRepository<Item, String> {
 
     Item findByItemCode(String itemCode);
 
@@ -19,4 +19,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     //상민
     List<Item> findByItemCodeIn(List<String> itemCodes);
 
+    public List<Item> findByItemNameContaining(String itemName) throws Exception;
 }
+
+
