@@ -51,6 +51,7 @@ public class StoreManageController {
 		try {
 			Integer storeCode = storeManageService.createStoreCode();
 			storeDto.setStoreCode(storeCode);
+			storeDto.setStoreStatus("");
 			storeManageService.addStore(storeDto);
 			return new ResponseEntity<String>(String.valueOf(storeCode), HttpStatus.OK);
 		} catch(Exception e) {
@@ -63,7 +64,7 @@ public class StoreManageController {
 	public ResponseEntity<String> modifyStore(StoreDto storeDto) {
 		System.out.println(storeDto);
 		try {
-			Integer storeCode = storeManageService.addStore(storeDto);
+			Integer storeCode = storeManageService.modifyStore(storeDto);
 			return new ResponseEntity<String>(String.valueOf(storeCode), HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
