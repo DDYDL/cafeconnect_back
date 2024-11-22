@@ -2,6 +2,7 @@ package com.kong.cc.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.kong.cc.dto.ItemMiddleCategoryForm;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,12 +32,25 @@ public class ItemMiddleCategory {
 
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="itemCategoryMajorNum")
-	private ItemMajorCategory ItemMajorCategoryMd;
+	private ItemMajorCategory itemMajorCategoryMd;
 
 	@OneToMany(mappedBy="itemMiddleCategory", fetch=FetchType.LAZY)
 	private List<Item> itemList = new ArrayList<>();
 	
-	@OneToMany(mappedBy="ItemMiddleCategorySb", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="itemMiddleCategorySb", fetch=FetchType.LAZY)
 	private List<ItemSubCategory> itemSubCategoryList = new ArrayList<>();
+
+	
+	public ItemMiddleCategoryForm toDto() {
+		
+		return ItemMiddleCategoryForm.builder()
+				.itemCategoryNum(itemCategoryNum)
+				.itemCategoryName(itemCategoryName)
+				.itemCategoryMajorName(itemMajorCategoryMd.getItemCategoryName())
+				.itemCategoryMajorNum(itemMajorCategoryMd.getItemCategoryNum())
+				.subCategories(itemSubCategoryList.stream().map(ItemSubCategory::toDto).collect(Collectors.toList()))
+				.build();
+	}
+	
 	
 }

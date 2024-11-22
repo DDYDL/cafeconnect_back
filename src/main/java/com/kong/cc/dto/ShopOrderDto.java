@@ -21,6 +21,7 @@ public class ShopOrderDto {
 	private String orderCode;
 	private Integer orderCount;
 	private Date orderDate;
+
 	private String orderState;
 	private String orderDelivery;
 	private String orderPayment;

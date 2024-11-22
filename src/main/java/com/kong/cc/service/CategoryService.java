@@ -1,5 +1,12 @@
 package com.kong.cc.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.kong.cc.dto.ItemMajorCategoryForm;
 import com.kong.cc.dto.ItemMiddleCategoryForm;
 import com.kong.cc.dto.ItemSubCategoryForm;
@@ -9,9 +16,8 @@ import com.kong.cc.entity.ItemSubCategory;
 import com.kong.cc.repository.ItemMajorCategoryRepository;
 import com.kong.cc.repository.ItemMiddleCategoryRepository;
 import com.kong.cc.repository.ItemSubCategoryRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -41,7 +47,7 @@ public class CategoryService {
 
         }
         ItemMiddleCategory itemMiddleCategory = ItemMiddleCategory.builder()
-                .ItemMajorCategoryMd(itemMajorCategory)
+                .itemMajorCategoryMd(itemMajorCategory)
                 .itemCategoryName(itemCategoryName)
                 .build();
         itemMajorCategory.getItemMiddelCategoryList().add(itemMiddleCategory);
@@ -59,7 +65,7 @@ public class CategoryService {
             throw new IllegalArgumentException("해당하는 상위 카테고리가 없습니다");
         }
         ItemSubCategory itemSubCategory = ItemSubCategory.builder()
-                .ItemMiddleCategorySb(itemMiddleCategory)
+                .itemMiddleCategorySb(itemMiddleCategory)
                 .itemCategoryName(itemCategoryName)
                 .build();
         itemMiddleCategory.getItemSubCategoryList().add(itemSubCategory);
@@ -120,7 +126,36 @@ public class CategoryService {
 
     }
 
-
+    
+    //전체 카테고리 리스트가져오기  (대,중,소분류 카테고리 사이드바 출력용 )
+    public List<ItemMajorCategoryForm> getAllCategoriesForItem () {
+    	List<ItemMajorCategoryForm> result = new ArrayList<>();
+    	
+    	List<ItemMajorCategory> majors = itemMajorCategoryRepository.findAll();
+    	
+   	 
+    	for(ItemMajorCategory major : majors) {
+    		ItemMajorCategoryForm majorDto =  new ItemMajorCategoryForm();
+    		majorDto.setItemCategoryNum(major.getItemCategoryNum());
+    		majorDto.setItemCategoryName(major.getItemCategoryName());
+    	
+    		
+    		List<ItemMiddleCategory> middles = itemMiddleCategoryRepository.findByItemMajorCategoryMd_ItemCategoryNum(major.getItemCategoryNum());
+    		majorDto.setMidCategories(middles.stream().map(ItemMiddleCategory::toDto).collect(Collectors.toList()));
+    		
+    		for(ItemMiddleCategory middle : middles) {
+    			ItemMiddleCategoryForm middleDto =  new ItemMiddleCategoryForm();
+    			middleDto.setItemCategoryNum(middle.getItemCategoryNum());
+    			middleDto.setItemCategoryName(middle.getItemCategoryName());
+    			middleDto.setItemCategoryMajorNum(middle.getItemMajorCategoryMd().getItemCategoryNum());
+    			middleDto.setSubCategories(itemSubCategoryRepository.findByItemMiddleCategorySb_ItemCategoryNum(middle.getItemCategoryNum())
+    					.stream().map(ItemSubCategory::toDto).collect(Collectors.toList()));			
+    	}
+    	result.add(majorDto);
+    
+    	}
+		return result;
+    }
 
 
 
