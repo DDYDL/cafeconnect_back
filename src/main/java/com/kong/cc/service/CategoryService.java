@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import com.kong.cc.entity.ItemSubCategory;
 import com.kong.cc.repository.ItemMajorCategoryRepository;
 import com.kong.cc.repository.ItemMiddleCategoryRepository;
 import com.kong.cc.repository.ItemSubCategoryRepository;
+import com.kong.cc.repository.ShopDSLRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +29,10 @@ public class CategoryService {
     private final ItemMajorCategoryRepository itemMajorCategoryRepository;
     private final ItemMiddleCategoryRepository itemMiddleCategoryRepository;
     private final ItemSubCategoryRepository itemSubCategoryRepository;
-
+    
+    //소연 
+    private final ShopDSLRepository shopDslRepo;
+    
     public ItemMajorCategory saveMajorCategory(ItemMajorCategoryForm itemMajorCategoryForm){
 
         ItemMajorCategory itemMajorCategory = ItemMajorCategory.builder()
@@ -129,35 +134,42 @@ public class CategoryService {
     
     //전체 카테고리 리스트가져오기  (대,중,소분류 카테고리 사이드바 출력용 )
     public List<ItemMajorCategoryForm> getAllCategoriesForItem () {
-    	List<ItemMajorCategoryForm> result = new ArrayList<>();
-    	
-    	List<ItemMajorCategory> majors = itemMajorCategoryRepository.findAll();
-    	
-   	 
-    	for(ItemMajorCategory major : majors) {
-    		ItemMajorCategoryForm majorDto =  new ItemMajorCategoryForm();
-    		majorDto.setItemCategoryNum(major.getItemCategoryNum());
-    		majorDto.setItemCategoryName(major.getItemCategoryName());
-    	
-    		
-    		List<ItemMiddleCategory> middles = itemMiddleCategoryRepository.findByItemMajorCategoryMd_ItemCategoryNum(major.getItemCategoryNum());
-    		majorDto.setMidCategories(middles.stream().map(ItemMiddleCategory::toDto).collect(Collectors.toList()));
-    		
-    		for(ItemMiddleCategory middle : middles) {
-    			ItemMiddleCategoryForm middleDto =  new ItemMiddleCategoryForm();
-    			middleDto.setItemCategoryNum(middle.getItemCategoryNum());
-    			middleDto.setItemCategoryName(middle.getItemCategoryName());
-    			middleDto.setItemCategoryMajorNum(middle.getItemMajorCategoryMd().getItemCategoryNum());
-    			middleDto.setSubCategories(itemSubCategoryRepository.findByItemMiddleCategorySb_ItemCategoryNum(middle.getItemCategoryNum())
-    					.stream().map(ItemSubCategory::toDto).collect(Collectors.toList()));			
-    	}
-    	result.add(majorDto);
-    
-    	}
-		return result;
+     
+    	//쿼리 리팩토링N+1 문제 해결 
+    	//entity안에 만들어둔 toDto 활용해서 major로 한번에 처리
+    	return shopDslRepo.selectAllCategoriesList()
+                .stream()
+                .map(ItemMajorCategory::toDto)
+                .collect(Collectors.toList());
     }
-
-
-
+    
+//    	List<ItemMajorCategoryForm> result = new ArrayList<>();
+//    	
+//    	List<ItemMajorCategory> majors = itemMajorCategoryRepository.findAll();
+//    	
+//   	
+//    	for(ItemMajorCategory major : majors) {
+//    		ItemMajorCategoryForm majorDto =  new ItemMajorCategoryForm();
+//    		majorDto.setItemCategoryNum(major.getItemCategoryNum());
+//    		majorDto.setItemCategoryName(major.getItemCategoryName());
+//    	
+//    		
+//    		List<ItemMiddleCategory> middles = itemMiddleCategoryRepository.findByItemMajorCategoryMd_ItemCategoryNum(major.getItemCategoryNum());
+//    		majorDto.setMidCategories(middles.stream().map(ItemMiddleCategory::toDto).collect(Collectors.toList()));
+//    			
+//    		for(ItemMiddleCategory middle : middles) {
+//    			ItemMiddleCategoryForm middleDto =  new ItemMiddleCategoryForm();
+//    			middleDto.setItemCategoryNum(middle.getItemCategoryNum());
+//    			middleDto.setItemCategoryName(middle.getItemCategoryName());
+//    			middleDto.setItemCategoryMajorNum(middle.getItemMajorCategoryMd().getItemCategoryNum());
+//    			middleDto.setSubCategories(itemSubCategoryRepository.findByItemMiddleCategorySb_ItemCategoryNum(middle.getItemCategoryNum())
+//    					.stream().map(ItemSubCategory::toDto).collect(Collectors.toList()));			
+//    	}
+//    	result.add(majorDto);
+//    
+//    	}
+//		return result;
+//      	
+//    }
 
 }

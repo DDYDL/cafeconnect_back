@@ -9,7 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.entity.Item;
+import com.kong.cc.entity.ItemMajorCategory;
 import com.kong.cc.entity.QItem;
+import com.kong.cc.entity.QItemMajorCategory;
+import com.kong.cc.entity.QItemMiddleCategory;
+import com.kong.cc.entity.QItemSubCategory;
 import com.kong.cc.entity.QWishItem;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,6 +23,29 @@ public class ShopDSLRepository {
 	
 	@Autowired
 	private JPAQueryFactory jpaQueryFactory;
+	
+	
+	//카테고리 전체 조회 -사이드바 목록
+	public List<ItemMajorCategory>selectAllCategoriesList() {
+		QItemMajorCategory major = QItemMajorCategory.itemMajorCategory;
+		QItemMiddleCategory middle = QItemMiddleCategory.itemMiddleCategory;
+		QItemSubCategory sub = QItemSubCategory.itemSubCategory;
+		
+		 //fetchJoin하면 단 한번의 쿼리로 데이터를 가져올 수 있음, 아니면 분류 마다 중,소분류 조회 하는 쿼리문이 실행되게 됨 (distinct필수) 
+		return jpaQueryFactory
+		        .selectFrom(major)
+		        .distinct()
+		        .leftJoin(middle)
+		        .on(middle.itemMajorCategoryMd.eq(major))  
+		        .fetchJoin()
+		        .leftJoin(sub)
+		        .on(sub.itemMiddleCategorySb.eq(middle))
+		        .fetchJoin()
+		        .orderBy(major.itemCategoryNum.asc())
+		        .fetch();
+	}
+	
+	
 	
 	//카테고리 선택 별 상품조회
 	public List<Item> selectItemsByCategories(Integer majorNum,Integer middleNum,Integer subNum) {
