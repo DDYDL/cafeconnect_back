@@ -25,8 +25,8 @@ public class SalesManagementMainController {
     // 가맹점별 상세 주문내역
     @GetMapping("/itemRevenue/{storeCode}")
     public ResponseEntity<List<ItemDto>> itemRevenue(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
             @PathVariable Integer storeCode) throws Exception {
 
 
@@ -35,14 +35,9 @@ public class SalesManagementMainController {
 //        Date end = sdf.parse(String.valueOf(endDate));
 
 
-
-        // 로그 출력
-        System.out.println("startDate: " + startDate + ", endDate: " + endDate + ", storeCode: " + storeCode);
-//        System.out.println("start: " + start + ", end: " + end + ", storeCode: " + storeCode);
-
         // 서비스에서 결과 가져오기
-        List<ItemDto> result = salesManagementMainService.itemRevenue(startDate, endDate, storeCode);
-
+        List<ItemDto> result = salesManagementMainService.itemRevenue(storeCode);
+//        startDate, endDate,
         return ResponseEntity.ok(result);
     }};
 
