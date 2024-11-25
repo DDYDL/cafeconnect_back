@@ -35,11 +35,11 @@ public class SalesManagementServiceImpl implements SalesManagementService {
         // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         //menuName 가져오기
-        List<String> menuNameList = body.getSalesData().stream().map(SalesItemForm::getMenuName).collect(Collectors.toList());
+        List<String> menuNameList = body.getSalesData().stream().map(SalesItem::getMenuName).collect(Collectors.toList());
         System.out.println("menuNameList = " + menuNameList);
 
         //salesCount 가져오기
-        List<Integer> salesCountList = body.getSalesData().stream().map(SalesItemForm::getSalesCount).collect(Collectors.toList());
+        List<Integer> salesCountList = body.getSalesData().stream().map(SalesItem::getSalesCount).collect(Collectors.toList());
         System.out.println("salesCountList = " + salesCountList);
 
         for (int i = 0; i < menuNameList.size(); i++) {
