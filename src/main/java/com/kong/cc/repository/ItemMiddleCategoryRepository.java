@@ -1,6 +1,7 @@
 package com.kong.cc.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,7 @@ public interface ItemMiddleCategoryRepository extends JpaRepository<ItemMiddleCa
     ItemMiddleCategory findByItemCategoryName(String itemCategoryName);
 
     List<ItemMiddleCategory> findByItemMajorCategoryMd_ItemCategoryNum(Integer itemCategoryMajorNum);
+
+    //상민
+    Optional<ItemMiddleCategory> findByItemCategoryNum(Integer middleCategoryNum);
 }

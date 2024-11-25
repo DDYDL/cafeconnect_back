@@ -1,19 +1,13 @@
 package com.kong.cc.service;
 
-import com.kong.cc.dto.ItemDto;
-import com.kong.cc.dto.ShopOrderDto;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.kong.cc.dto.ItemMajorCategoryForm;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 public interface SalesManagementMainService {
 
-    List<ItemDto> itemRevenue(
-//            Date startDate, Date endDate,
-            Integer storeCode);
+    List<ItemMajorCategoryForm> itemRevenue(Integer storeCode, Date startDate, Date endDate) throws Exception;
 
 
 
