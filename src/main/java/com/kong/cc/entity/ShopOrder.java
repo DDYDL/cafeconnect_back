@@ -23,7 +23,7 @@ import lombok.Setter;
 public class ShopOrder {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer orderNum;
-	private String orderCode;
+	private String orderCode; // 아임포트 merchant_uid
 	private Integer orderCount;
 	
 	@Temporal(TemporalType.TIMESTAMP)
