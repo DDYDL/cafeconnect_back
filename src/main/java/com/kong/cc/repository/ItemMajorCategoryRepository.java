@@ -9,4 +9,8 @@ import java.util.Optional;
 public interface ItemMajorCategoryRepository extends JpaRepository<ItemMajorCategory, Integer> {
 
     ItemMajorCategory findByItemCategoryName(String itemCategoryName);
+
+    //상민
+    Optional<ItemMajorCategory> findByItemCategoryNum(Integer subCategoryNum);
+
 }
