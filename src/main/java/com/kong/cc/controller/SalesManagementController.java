@@ -1,5 +1,6 @@
 package com.kong.cc.controller;
 
+import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.SalesDto;
 import com.kong.cc.service.SalesManagementService;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,17 @@ public class SalesManagementController {
             return ResponseEntity.status(500).body("(controller) 매출 정보 저장 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
-}
 
-//매출 분석
-//    @GetMapping("/salesAnalysis") // SalesAnalysis.js
-//    public ResponseEntity<SalesDto> salesAnalysis(@RequestParam("period") String period){
-//        return "";
-//    }
+    //매출 분석
+    @GetMapping("/salesAnalysis/{period}") // SalesAnalysis.js
+    public ResponseEntity<List<ItemDto>> salesAnalysis(@PathVariable String period, @RequestParam("categoryId")Integer categoryId ) {
+            List<ItemDto> result = salesManagementService.salesAnalysis(period, categoryId);
+
+        return ResponseEntity.ok(result);
+    }
+
+
+}
 //
 //    @GetMapping("/anualSales") // SalesAnalysis.js
 //    @GetMapping("/quarterlySales") // SalesAnalysis.js
