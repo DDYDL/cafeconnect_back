@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.kong.cc.dto.CartDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,4 +32,15 @@ public class Cart {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="itemCode")
 	private Item itemCa;
+	
+	
+	
+	public CartDto toDto() {
+		return CartDto.builder()
+				.cartNum(cartNum)
+				.cartItemCount(cartItemCount)
+				.storeCode(storeCa.getStoreCode())
+				.itemCode(itemCa.getItemCode())
+				.build();
+	}
 }

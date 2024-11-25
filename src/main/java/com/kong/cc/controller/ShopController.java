@@ -11,11 +11,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.ItemMajorCategoryForm;
+import com.kong.cc.dto.ShopOrderDto;
 import com.kong.cc.service.CategoryService;
 import com.kong.cc.service.ShopService;
 
@@ -146,15 +149,86 @@ public class ShopController {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	//장바구니 추가 및 수량 변경 
+	@GetMapping("/addCart") // ShopMain.js CategoryItemList.js WishItem.js ShopItemDetail.js CartList.js	
+	public ResponseEntity<CartDto>addItemtoCart (@RequestBody CartDto cartDto){
+		try {
+			CartDto result = shopService.addItemToCart(cartDto);
+			return new ResponseEntity<CartDto>(result, HttpStatus.OK);
 
-//  @PostMapping("/addCart") // ShopMain.js CategoryItemList.js WishItem.js ShopItemDetail.js CartList.js	
-// 	@GetMapping("/cartList") //CartList.js
-//  @PostMapping("deleteCartItem") //CartList.js
-//  @PostMapping("/updateCartItemQuantity") //CartList.js
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<CartDto>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping("/cartList") //CartList.js
+	public ResponseEntity<List<CartDto>>selectAllCartItemList (@RequestParam Integer storeCode) {
+		try {
+			List<CartDto> result = shopService.selectAllCartItems(storeCode);
+			return new ResponseEntity<List<CartDto>>(result, HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<CartDto>>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	@PostMapping("/updateCartItemQuantity") //CartList.js
+	public ResponseEntity<CartDto> updateCartItemQuantity(@RequestParam Integer cartNum,@RequestParam Integer count) {
+		try {
+			CartDto result = shopService.updateCartItemCount(cartNum,count);
+			return new ResponseEntity<CartDto>(result, HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<CartDto>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("deleteCartItem") //CartList.js
+	public ResponseEntity<String> deleteCartListItem (@RequestParam Integer storeCode,@RequestParam Integer cartNum) {
+		try {
+			Boolean result = shopService.deleteCartItem(storeCode,cartNum);
+			return new ResponseEntity<String>(String.valueOf(result), HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 //  @PostMapping("/selectPreviouOrder") //CartList.js
 //	@GetMapping("/selectPreviouOrderDate") // CartList.js
-//	@PostMapping("/order") // CartList.js
-//  @PostMapping("/payment") // OrderForm.js	
+	
+	//장바구니에서 주문 선택주문, 전체주문 모두 가능 
+	@PostMapping("/order") // CartList.js
+	public ResponseEntity<List<CartDto>> selectOrderItemAndInfo(@RequestParam Integer storeCode, @RequestParam("check") Integer[] cartNum){
+		try {
+			List<CartDto> result = shopService.selectAllOrderItemAndInfo(storeCode, Arrays.asList(cartNum));
+			return new ResponseEntity<List<CartDto>>(result, HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<CartDto>>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	//@PostMapping("/paymentRequest") 프론트에서 아임포트로 결제 요청하기 전
+	//@PostMapping("/paymentVerify")  아임포트 결제 완료 후 
+	
+	//아임포트 검증 및 결제 완료 후 주문 생성 
+	@PostMapping("/paymentComplete") // OrderForm.js
+	public ResponseEntity<List<ShopOrderDto>>orderComplete(@RequestParam String merchantUid,@RequestParam Integer storeCode, @RequestParam("check") Integer[] cartNum) {
+		try {
+			List<ShopOrderDto> result = shopService.createOrder(merchantUid,storeCode,Arrays.asList(cartNum));
+			return new ResponseEntity<List<ShopOrderDto>>(result, HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST);
+		}
+	}
 //  @GetMapping("/orderList")  // OrderListForStore.js
 //  @PostMapping("/orderListByDate) // OrderListForStore.js	
 //  @GetMapping("/orderListByOrderState") // OrderListForStore.js	

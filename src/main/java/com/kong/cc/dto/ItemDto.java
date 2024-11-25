@@ -28,8 +28,13 @@ public class ItemDto {
 	private String itemCountryOrigin;
 
 	private Integer itemMajorCategoryNum;
+	private String  itemMajorCategoryName;
+	
 	private Integer itemMiddleCategoryNum;
+	private String  itemMiddleCategoryName;
+	
 	private Integer itemSubCategoryNum;
+	private String itemSubCategoryName;
 	private Integer itemFileNum;
 
 
