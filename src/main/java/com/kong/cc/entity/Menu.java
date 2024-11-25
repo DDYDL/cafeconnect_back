@@ -67,6 +67,7 @@ public class Menu {
 			   .fat(fat)
 			   .protein(protein)
 			   .menuStatus(menuStatus)
+			   .menuCategoryNum(menuCategory.getMenuCategoryNum())
 			   .build();
    }
 }

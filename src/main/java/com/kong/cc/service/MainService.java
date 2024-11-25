@@ -9,7 +9,7 @@ import com.kong.cc.dto.StoreDto;
 
 public interface MainService {
 	public List<MenuDto> selectMenu() throws Exception;
-	public List<StoreDto> selectStoreByStoreAddress(String storeAddress) throws Exception;
+	public List<StoreDto> selectStoreByStoreAddress(String address) throws Exception;
 	public List<StoreDto> selectStoreByName(String storeName) throws Exception;
 	public List<MenuCategoryDto> selectMenuCategory() throws Exception;
 	public List<MenuDto> selectMenuByCategory(Integer categoryNum) throws Exception;
