@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 
 import static com.kong.cc.entity.QMenu.*;
@@ -62,7 +63,7 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
                                 .protein(m.getProtein())
                                 .menuStatus(m.getMenuStatus())
                                 .menuCategoryName(m.getMenuCategory().getMenuCategoryName())
-                                .imageUrl(imageUrl(m.getMenuImageFile().getFileDirectory(),m.getMenuImageFile().getFileName()))
+                                .imageUrl(imageUrl(m.getMenuImageFile().getFileDirectory(),m.getMenuImageFile().getFileName(),m.getMenuImageFile().getFileContentType()))
                                 .build();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -107,7 +108,7 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
                                 .protein(m.getProtein())
                                 .menuStatus(m.getMenuStatus())
                                 .menuCategoryName(m.getMenuCategory().getMenuCategoryName())
-                                .imageUrl(imageUrl(m.getMenuImageFile().getFileDirectory(),m.getMenuImageFile().getFileName()))
+                                .imageUrl(imageUrl(m.getMenuImageFile().getFileDirectory(),m.getMenuImageFile().getFileName(),m.getMenuImageFile().getFileContentType()))
                                 .build();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -118,12 +119,13 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
 
     }
 
-    private String imageUrl(String fileDirectory,String fileName) throws IOException {
+    private String imageUrl(String fileDirectory,String fileName,String contentType) throws IOException {
 
         Path imagePath = Paths.get(fileDirectory+fileName);
         byte[] imageBytes = Files.readAllBytes(imagePath);
-        String base64Image = Base64Utils.encodeToString(imageBytes);
+        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+        String imageUrl = "data:"+contentType+";base64,"+base64Image;
 
-        return base64Image;
+        return imageUrl;
     }
 }

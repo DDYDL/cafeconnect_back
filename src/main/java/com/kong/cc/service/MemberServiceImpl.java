@@ -24,6 +24,7 @@ public class MemberServiceImpl implements MemberService {
                 .username(memberDto.getUsername())
                 .password(encoder.encode(memberDto.getPassword()))
                 .deptName(memberDto.getDeptName())
+                .roles("ROLE_STORE")
                 .build();
 
         return memberRepository.save(member);
