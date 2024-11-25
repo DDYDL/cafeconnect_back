@@ -1,11 +1,15 @@
 package com.kong.cc.repository;
 
+import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.RepairResponseDto;
 import com.kong.cc.dto.RepairSearchCondition;
+import com.kong.cc.entity.QItem;
+import com.kong.cc.entity.QItemMajorCategory;
 import com.kong.cc.entity.QRepair;
 import com.kong.cc.entity.Repair;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.kong.cc.entity.QRepair.*;
 
@@ -25,7 +30,7 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
 
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
-
+     
     public RepairQuerydslRepositoryImpl(EntityManager em) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
@@ -112,5 +117,39 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
         return itemCategoryMiddleName != null ? repair.itemR.itemMiddleCategory.itemCategoryName.eq(itemCategoryMiddleName) : null;
     }
 
-
+    // 가맹점 시작
+    // 가맹점 수리 요청 리스트 
+    public List<RepairResponseDto> selectRepairRequestOfStore(Integer storeCode) {
+    	QRepair repair = QRepair.repair;
+    	QItem item = QItem.item;
+    	
+    	return queryFactory.select(Projections.bean(RepairResponseDto.class,
+    			                   repair.repairNum,
+    			                   repair.repairStatus,
+    			                   repair.repairType,
+    			                   repair.repairTitle,
+    							   Projections.bean(ItemDto.class,
+    										item.itemName,
+    										item.itemCode,
+    	    								item.itemMajorCategory.itemCategoryName,
+    	    								item.itemMiddleCategory.itemCategoryName,
+    	    								item.itemSubCategory.itemCategoryName)))
+    			.from(repair)
+    			.join(item).on(item.itemCode.eq(repair.itemR.itemCode))
+    			.where(repair.storeR.storeCode.eq(storeCode))
+    			.fetch();
+    }
+    //수리 신청 기기 조회에 사용될 전체 머신 리스트 - 대분류가 머신인!
+    public List<ItemDto> selectAllMachineInfoList() {   	
+    	QItem item = QItem.item;
+    	QItemMajorCategory major = QItemMajorCategory.itemMajorCategory;
+    		return queryFactory.select(Projections.bean(ItemDto.class,item.itemCode,item.itemName))
+    							.from(item)
+    							.join(major)
+    							.on(item.itemMajorCategory.itemCategoryName.eq(major.itemCategoryName))
+    							.where(major.itemCategoryName.eq("머신"))
+    							.fetch();
+    	
+    }
+    
 }

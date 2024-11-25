@@ -1,6 +1,8 @@
 package com.kong.cc.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.ItemMajorCategoryForm;
+import com.kong.cc.dto.PaymentRequestDto;
+import com.kong.cc.dto.PaymentResponseDto;
 import com.kong.cc.dto.ShopOrderDto;
 import com.kong.cc.service.CategoryService;
 import com.kong.cc.service.ShopService;
@@ -214,13 +218,37 @@ public class ShopController {
 	}
 	
 	
-	//@PostMapping("/paymentRequest") 프론트에서 아임포트로 결제 요청하기 전
-	//@PostMapping("/paymentVerify")  아임포트 결제 완료 후 
-	
+	//결제 요청 전 검증
+	@PostMapping("/paymentRequest") //프론트에서 아임포트로 결제 요청 완성 전 검증
+	public ResponseEntity<PaymentRequestDto>requestPayment(@RequestBody PaymentRequestDto paymentRequest) {
+		try {
+			
+			shopService.validatePaymentRequest(paymentRequest);
+		return new ResponseEntity<PaymentRequestDto>(paymentRequest,HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<PaymentRequestDto>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	// 결제 완료 후 검증
+	@PostMapping("/paymentVerify")
+	public ResponseEntity<PaymentResponseDto>responsePayment(@RequestBody PaymentResponseDto paymentResponse) {
+		try {
+			shopService.verifyPayment(paymentResponse.getImpUid(),paymentResponse.getMerchantUid(), paymentResponse.getAmount());
+			return new ResponseEntity<PaymentResponseDto>(paymentResponse,HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<PaymentResponseDto>(HttpStatus.BAD_REQUEST);
+			
+		}
+	}
+ 	
 	//아임포트 검증 및 결제 완료 후 주문 생성 
 	@PostMapping("/paymentComplete") // OrderForm.js
-	public ResponseEntity<List<ShopOrderDto>>orderComplete(@RequestParam String merchantUid,@RequestParam Integer storeCode, @RequestParam("check") Integer[] cartNum) {
+	public ResponseEntity<List<ShopOrderDto>>orderComplete(@RequestParam Integer storeCode, @RequestParam("check") Integer[] cartNum) {
 		try {
+			ShopOrderDto dto = new ShopOrderDto();
+			String merchantUid = dto.makeOrderCode();
 			List<ShopOrderDto> result = shopService.createOrder(merchantUid,storeCode,Arrays.asList(cartNum));
 			return new ResponseEntity<List<ShopOrderDto>>(result, HttpStatus.OK);
 
@@ -229,12 +257,67 @@ public class ShopController {
 			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST);
 		}
 	}
-//  @GetMapping("/orderList")  // OrderListForStore.js
-//  @PostMapping("/orderListByDate) // OrderListForStore.js	
-//  @GetMapping("/orderListByOrderState") // OrderListForStore.js	
-//  @GetMapping("/deleteOrder") // OrderListForStore.js
-//	@GetMapping("/orderDetail") // OrderDetailForStore.js
+	
+	//최신순 주문 내역 조회
+	@GetMapping("/orderList")  // OrderListForStore.js
+	public ResponseEntity<List<ShopOrderDto>>selectAllItemOrderList(@RequestParam Integer storeCode) {
+		try {
+			 //List 내보내고 프론트에서 리스트 형식 처리하기 
+			List<ShopOrderDto>result = shopService.selectAllOrderList(storeCode);
+			return new ResponseEntity<List<ShopOrderDto>>(result,HttpStatus.OK); 
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST); 
+		}
+	
+	}
+	//기간 설정 내 주문 내역 조회
+	@PostMapping("/orderListByDate") // OrderListForStore.js	
+    public ResponseEntity<List<ShopOrderDto>>selectAllItemOrderByPeriod(@RequestParam Integer storeCode,
+    																	@RequestParam(name="startDate",required = false)String startDate,
+    																	@RequestParam(name="endDate",required = false)String endDate) {
+    
+    	try {
+    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    		Date strStartDateToDate = format.parse(startDate);    		
+    		Date strEndDateToDate = format.parse(endDate); 
+    		List<ShopOrderDto>result = shopService.selectAllOrderListByPeriod(storeCode,strStartDateToDate,strEndDateToDate);
+    		
+    		return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.OK); 
+    		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST);
+		}
+    }
+	
+	//주문상태 옵션 선택 주문 내역 조회  		
+	@PostMapping("/orderListByOrderState") // OrderListForStore.js	
+	public ResponseEntity<List<ShopOrderDto>>selectAllItemOrderByOrderState(@RequestParam Integer storeCode,@RequestParam String orderState){
+		try {
+			
+			List<ShopOrderDto>result = shopService.selectAllOrderListByOrderState(storeCode,orderState);
+			return new ResponseEntity<List<ShopOrderDto>>(result,HttpStatus.OK); 
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST); 
+		}
+	}	
+	//주문 상태가 오직 주문 접수중에만 가능 결제 취소는...? 테이블 없는데.... 
+//	@GetMapping("/deleteOrder") // OrderListForStore.js
 
+	//주문 상세 내역 
+    @GetMapping("/orderDetail") // OrderDetailForStore.js
+    public ResponseEntity<List<ShopOrderDto>>selectOrderByOrderCode(@RequestParam Integer storeCode,@RequestParam String orderCode) {
+    	try {
+    		List<ShopOrderDto> result = shopService.selectOrderByOrderCode(storeCode,orderCode);
+			return new ResponseEntity<List<ShopOrderDto>>(result,HttpStatus.OK); 
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST);
+		}
+    }
+    
 //가맹점 상품구매에 따른 지출내역
 //  @PostMapping("/expenseList") // ExpenseListByItems.js	
 

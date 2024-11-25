@@ -1,6 +1,15 @@
 package com.kong.cc.service;
 
-import com.kong.cc.dto.RepairDto;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.RepairResponseDto;
 import com.kong.cc.dto.RepairSearchCondition;
 import com.kong.cc.dto.RepairUpdateForm;
@@ -8,15 +17,8 @@ import com.kong.cc.entity.Item;
 import com.kong.cc.entity.Repair;
 import com.kong.cc.repository.RepairQuerydslRepositoryImpl;
 import com.kong.cc.repository.RepairRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Transactional
@@ -25,7 +27,8 @@ public class RepairService {
 
     private final RepairRepository repairRepository;
     private final RepairQuerydslRepositoryImpl repairQuerydslRepository;
-
+    
+    
 
     public RepairResponseDto selectRepairByRepairNum(Integer repairNum) {
         Repair repair = repairRepository.findByRepairNum(repairNum);
@@ -76,4 +79,17 @@ public class RepairService {
         PageRequest pageRequest = PageRequest.of(pageNum , pageSize, Sort.by(Sort.Direction.ASC, "repairNum"));
         return repairQuerydslRepository.findRepairResponseDtoListByCategory(condition,pageRequest);
     }
+    
+    //가맹점 시작
+    //수리 요청 리스트 출력
+    public List<RepairResponseDto> selectAllRepairRequestList(Integer storeCode) {	
+    	return repairQuerydslRepository.selectRepairRequestOfStore(storeCode); 
+    }
+    //수리 요청 상세 보기 - selectRepairByRepairNum 사용
+    
+    public List<ItemDto>selectAllMachineList() {
+    	return repairQuerydslRepository.selectAllMachineInfoList();
+    }
+    
+    
 }

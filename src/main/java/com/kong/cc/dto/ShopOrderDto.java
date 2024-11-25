@@ -33,6 +33,7 @@ public class ShopOrderDto {
 	private String itemCode;
 	
 	
+	//주문번호 생성 
 	public String makeOrderCode () {
 		String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 		String uuid = UUID.randomUUID().toString().substring(0,8); //36자 문자열에서 앞 8자만 가져옴
