@@ -31,4 +31,17 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
+    @Override
+    public String checkId(MemberDto memberDto) {
+        Boolean result = memberRepository.existsByUsername(memberDto.getUsername());
+        if(result == true){
+            return "success";
+        }else{
+            return "fail";
+        }
+
+
+
+    }
+
 }

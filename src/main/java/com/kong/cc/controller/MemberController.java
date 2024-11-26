@@ -16,6 +16,9 @@ import com.kong.cc.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RequiredArgsConstructor
 @RestController
 @Slf4j
@@ -48,5 +51,27 @@ public class MemberController {
             log.error("Exception",e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/main/checkId")
+    public ResponseEntity<Object> checkId(@RequestBody MemberDto memberDto){
+        try {
+
+            String state = memberService.checkId(memberDto);
+
+            Map<String,String> body = new HashMap<>();
+            body.put("state",state);
+            return new ResponseEntity<>(body,HttpStatus.OK);
+
+
+
+
+        } catch (Exception e) {
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+
+
     }
 }
