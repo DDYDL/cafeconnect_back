@@ -1,11 +1,13 @@
 package com.kong.cc.service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kong.cc.dto.CartDto;
@@ -24,6 +26,7 @@ import com.kong.cc.repository.ShopDSLRepository;
 import com.kong.cc.repository.ShopOrderRepository;
 import com.kong.cc.repository.StoreRepository;
 import com.kong.cc.repository.WishItemRepository;
+import com.siot.IamportRestClient.IamportClient;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +41,8 @@ public class ShopServiceImpl implements ShopService {
 	private final CartRepository cartRepo;
 	private final ShopOrderRepository shopOrderRepo;
 	
+	
+
 	// 카테고리 별 아이템 리스트 (검색X)
 	@Override
 	public List<ItemDto> selectItemsByCategroy(Integer majorNum,Integer middleNum,Integer subNum) throws Exception {
@@ -184,7 +189,7 @@ public class ShopServiceImpl implements ShopService {
 		return shopDslRepo.deleteCartItem(storeCode,cartNum)>0; //제대로 수행 시 결과는 1 따라서 true반환 
 	}
 
-	//Map<String,Object>로 리팩토링 예정, 주문정보와 주문아이템 분리시켜 조회 할 예정
+	//Map<String,Object>로 리팩토링 예정, 주문정보와 주문아이템, 총 주문 분리시켜 조회 할 예정(주문자 반복 조회 이슈)
 	@Override
 	public List<CartDto> selectAllOrderItemAndInfo(Integer storeCode, List<Integer> cartItemNumList) throws Exception {
 		
@@ -195,6 +200,8 @@ public class ShopServiceImpl implements ShopService {
 		return shopDslRepo.selectAllCartItemForOrder(storeCode, cartItemNumList);
 	}
 
+	
+	
 	//결제 요청 정보 검증
 	@Override
 	public void validatePaymentRequest(PaymentRequestDto paymentRequest) throws Exception {
@@ -236,7 +243,7 @@ public class ShopServiceImpl implements ShopService {
 			// 주문 생성
 			List<ShopOrder> orders = carts.stream()
 					.map(cart -> ShopOrder.builder()
-							.orderCode(merchantUid)
+							.orderCode(merchantUid) //생성한 주문번호  
 							.orderCount(cart.getCartItemCount())
 							.orderDate(new Date())
 							.orderState("주문접수")
@@ -256,6 +263,35 @@ public class ShopServiceImpl implements ShopService {
 		} catch (Exception e) {
 			throw new Exception("주문 생성 중 오류가 발생했습니다: " + e.getMessage());
 		}
+	}
+
+	
+	//전체 주문 내역 조회 (최신일 기준,기본)
+	@Override
+	public List<ShopOrderDto> selectAllOrderList(Integer storeCode) throws Exception {
+
+		return shopDslRepo.selectAllShopOrderList(storeCode);
+	}
+
+	//기간 설정 주문 내역 조회
+	@Override
+	public List<ShopOrderDto> selectAllOrderListByPeriod(Integer storeCode, Date startDate, Date endDate)
+			throws Exception {
+		
+		return shopDslRepo.selectAllShopOrderListByPeriod(storeCode,startDate,endDate);
+	}
+	//주문 상태 주문 내역 조회
+	@Override
+	public List<ShopOrderDto> selectAllOrderListByOrderState(Integer storeCode, String orderState) throws Exception {
+		
+		return shopDslRepo.selectAllShopOrderListByOrderState(storeCode,orderState);
+	}
+
+	// 주문 상세 내역 - 같은 주문번호 인 주문 출력
+	@Override
+	public List<ShopOrderDto> selectOrderByOrderCode(Integer storeCode, String orderCode) throws Exception {
+		
+		return shopDslRepo.selectOneShopOrderByOrderCode(storeCode,orderCode);
 	}
 }
 

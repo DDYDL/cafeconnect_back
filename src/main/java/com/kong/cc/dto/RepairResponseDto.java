@@ -1,12 +1,16 @@
 package com.kong.cc.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RepairResponseDto {
 
     private Integer repairNum;
@@ -23,4 +27,6 @@ public class RepairResponseDto {
     private String itemName;
     private String itemCategoryMajorName;
     private String itemCategoryMiddleName;
+    
+   
 }

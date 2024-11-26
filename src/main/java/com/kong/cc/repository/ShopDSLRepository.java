@@ -1,7 +1,10 @@
 package com.kong.cc.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.persistence.OrderBy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -290,7 +293,19 @@ public class ShopDSLRepository {
 	        .fetch();
 	}
 
-	public List<ShopOrderDto> findOrdersByStore(Integer storeCode) {
+	//결제 성공시 주문에 해당되는 모든 장바구니 상품 삭제 
+	public long deleteCartItems(Integer storeCode, List<Integer> cartNums) {
+	    QCart cart = QCart.cart;
+	    
+	    return jpaQueryFactory
+	        .delete(cart)
+	        .where(cart.storeCa.storeCode.eq(storeCode)
+	              .and(cart.cartNum.in(cartNums)))
+	        .execute();  
+	}
+	
+	// 최신순 정렬 주문내역 조회
+	public List<ShopOrderDto> selectAllShopOrderList(Integer storeCode) {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
 	    QStore store = QStore.store;
@@ -313,14 +328,83 @@ public class ShopDSLRepository {
 	        .orderBy(order.orderDate.desc())
 	        .fetch();
 	}
-	//결제 성공시 주문에 해당되는 모든 장바구니 상품 삭제 
-	public long deleteCartItems(Integer storeCode, List<Integer> cartNums) {
-	    QCart cart = QCart.cart;
+
+	public List<ShopOrderDto> selectAllShopOrderListByPeriod(Integer storeCode,Date startDate,Date endDate){
+	    QShopOrder order = QShopOrder.shopOrder;
+	    QItem item = QItem.item;
+	    QStore store = QStore.store;
+
 	    
-	    return jpaQueryFactory
-	        .delete(cart)
-	        .where(cart.storeCa.storeCode.eq(storeCode)
-	              .and(cart.cartNum.in(cartNums)))
-	        .execute();  
+	    if(startDate !=null ||endDate !=null) {
+	    	return	jpaQueryFactory
+	    	        .select(Projections.fields(ShopOrderDto.class,
+	    		            order.orderNum,
+	    		            order.orderCode,
+	    		            order.orderCount,
+	    		            order.orderDate,
+	    		            order.orderState,
+	    		            order.orderDelivery,
+	    		            order.orderPayment,
+	    		            store.storeCode,
+	    		            item.itemCode))
+	    		        .from(order)
+	    		        .join(order.itemO, item)
+	    		        .join(order.storeO, store)
+	    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
+	    		        .orderBy(order.orderDate.desc())
+	    		        .fetch();
+	    }
+		return null;
+		 
+	}
+	public List<ShopOrderDto> selectAllShopOrderListByOrderState(Integer storeCode,String orderState) {
+	    QShopOrder order = QShopOrder.shopOrder;
+	    QItem item = QItem.item;
+	    QStore store = QStore.store;
+	    
+	    return	jpaQueryFactory
+    	        .select(Projections.fields(ShopOrderDto.class,
+    		            order.orderNum,
+    		            order.orderCode,
+    		            order.orderCount,
+    		            order.orderDate,
+    		            order.orderState,
+    		            order.orderDelivery,
+    		            order.orderPayment,
+    		            store.storeCode,
+    		            item.itemCode))
+    		        .from(order)
+    		        .join(order.itemO, item)
+    		        .join(order.storeO, store)
+    		        .where(order.storeO.storeCode.eq(storeCode).and(order.orderState.eq(orderState)))
+    		        .orderBy(order.orderDate.desc())
+    		        .fetch();
+	    
+	}
+	public List<ShopOrderDto> selectOneShopOrderByOrderCode(Integer storeCode, String orderCode) {
+	    QShopOrder order = QShopOrder.shopOrder;
+	    QItem item = QItem.item;
+	    QStore store = QStore.store;
+	    
+
+	    return	jpaQueryFactory
+    	        .select(Projections.fields(ShopOrderDto.class,
+    		            order.orderNum,
+    		            order.orderCode,
+    		            order.orderCount,
+    		            order.orderDate,
+    		            order.orderState,
+    		            order.orderDelivery,
+    		            order.orderPayment,
+    		            store.storeCode,
+    		            item.itemCode))
+    		        .from(order)
+    		        .join(order.itemO, item)
+    		        .join(order.storeO, store)
+    		        .where(order.storeO.storeCode.eq(storeCode).and(order.orderCode.eq(orderCode)))
+    		        .orderBy(order.orderDate.desc())
+    		        .fetch();
+	    
+	
 	}
 }
