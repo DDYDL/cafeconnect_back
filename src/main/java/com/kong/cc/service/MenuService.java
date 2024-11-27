@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 
@@ -180,11 +181,13 @@ public class MenuService {
         ImageFile imageFile = menu.getMenuImageFile();
         String fileDirectory = imageFile.getFileDirectory();
         String fileName = imageFile.getFileName();
+        String fileContentType = imageFile.getFileContentType();
         Path imagePath = Paths.get(fileDirectory+fileName);
         byte[] imageBytes = Files.readAllBytes(imagePath);
-        String base64Image = Base64Utils.encodeToString(imageBytes);
+        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
         String menuCategoryName = menu.getMenuCategory().getMenuCategoryName();
-        String imageUrl = base64Image;
+        String imageUrl = "data:"+fileContentType+";base64,"+base64Image;
+
 
 
         return MenuResponseDto.builder()

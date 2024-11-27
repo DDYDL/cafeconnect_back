@@ -2,6 +2,7 @@ package com.kong.cc.repository;
 
 import java.util.Optional;
 import com.kong.cc.entity.Menu;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.kong.cc.entity.Member;
@@ -13,4 +14,5 @@ import java.util.List;
 public interface MemberRepository extends JpaRepository<Member, Integer> {
 	public Optional<Member> findByUsername(String username);
 	public Member findByProviderAndProviderId(String provider, String providerId);
+	public Boolean existsByUsername(String username);
 }

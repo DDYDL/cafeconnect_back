@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 
@@ -197,15 +198,16 @@ public class ItemService {
             throw new IllegalArgumentException("해당하는 아이템이 없습니다");
         }
         ImageFile imageFile = item.getItemImageFile();
+        String fileContentType = imageFile.getFileContentType();
         String fileDirectory = imageFile.getFileDirectory();
         String fileName = imageFile.getFileName();
         Path imagePath = Paths.get(fileDirectory+fileName);
         byte[] imageBytes = Files.readAllBytes(imagePath);
-        String base64Image = Base64Utils.encodeToString(imageBytes);
+        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
         String itemMajorCategoryName = item.getItemMajorCategory().getItemCategoryName();
         String itemMiddleCategoryName = item.getItemMiddleCategory().getItemCategoryName();
         String itemSubCategoryName = item.getItemSubCategory().getItemCategoryName();
-        String imageUrl = base64Image;
+        String imageUrl = "data:"+fileContentType+";base64,"+base64Image;
         return  ItemResponseDto.builder()
                 .itemCode(item.getItemCode())
                 .itemName(item.getItemName())

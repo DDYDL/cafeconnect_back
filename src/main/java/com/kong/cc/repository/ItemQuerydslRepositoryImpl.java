@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 
 import static com.kong.cc.entity.QItem.*;
@@ -61,7 +62,7 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
                                 .itemMajorCategoryName(i.getItemMajorCategory().getItemCategoryName())
                                 .itemMiddleCategoryName(i.getItemMiddleCategory().getItemCategoryName())
                                 .itemSubCategoryName(i.getItemSubCategory().getItemCategoryName())
-                                .imageUrl(imageUrl(i.getItemImageFile().getFileDirectory(),i.getItemImageFile().getFileName()))
+                                .imageUrl(imageUrl(i.getItemImageFile().getFileDirectory(),i.getItemImageFile().getFileName(),i.getItemImageFile().getFileContentType()))
                                 .build();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -90,7 +91,7 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
                         .itemMajorCategoryName(i.getItemMajorCategory().getItemCategoryName())
                         .itemMiddleCategoryName(i.getItemMiddleCategory().getItemCategoryName())
                         .itemSubCategoryName(i.getItemSubCategory().getItemCategoryName())
-                        .imageUrl(i.getItemImageFile().getFileDirectory()+i.getItemImageFile().getFileName())
+                        .imageUrl(imageUrl(i.getItemImageFile().getFileDirectory(),i.getItemImageFile().getFileName(),i.getItemImageFile().getFileContentType()))
                         .build();
             }catch (Exception e){
                 throw new RuntimeException(e);
@@ -140,11 +141,11 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
         return itemCategorySubName != null ? itemSubCategory.itemCategoryName.eq(itemCategorySubName) : null;
     }
 
-    private String imageUrl(String fileDirectory,String fileName) throws IOException {
+    private String imageUrl(String fileDirectory,String fileName,String contentType) throws IOException {
         Path imagePath = Paths.get(fileDirectory+fileName);
         byte[] imageBytes = Files.readAllBytes(imagePath);
-        String base64Image = Base64Utils.encodeToString(imageBytes);
-
+        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+        base64Image = "data:"+contentType+";base64,"+base64Image;
         return base64Image;
     }
 }
