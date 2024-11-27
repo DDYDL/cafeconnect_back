@@ -1,6 +1,6 @@
 package com.kong.cc.repository;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -17,7 +17,7 @@ import com.kong.cc.entity.QNotice;
 import com.kong.cc.entity.QStore;
 import com.kong.cc.entity.Store;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.DateTimePath;
+import com.querydsl.core.types.dsl.DatePath;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -80,7 +80,7 @@ public class AlarmDslRepository {
 				.fetch();
 	}
 	
-	private BooleanExpression expirationDateSelect(String noticeDateBool, DateTimePath<Date> noticeDate) {
+	private BooleanExpression expirationDateSelect(String noticeDateBool, DatePath<Date> noticeDate) {
 		// 현재 날짜 기준 expirationDate와 마이너스 연산을 한다.(하루 전 올라온 공지사항만 확인)
 		NumberTemplate dateFormat = Expressions.numberTemplate(Integer.class, "DATEDIFF(curdate(), {0})", noticeDate);
 		return StringUtils.hasText(noticeDateBool) ? dateFormat.loe(1) : null;
