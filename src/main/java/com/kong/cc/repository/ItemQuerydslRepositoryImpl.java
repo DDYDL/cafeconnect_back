@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Base64Utils;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
@@ -37,9 +38,14 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
 
     @Override
     public Page<ItemResponseDto> findItemResponseDtoListByKeyword(String keyword, Pageable pageable) {
+
+
+
         QueryResults<Item> itemQueryResults = queryFactory
                 .selectFrom(item)
                 .where(item.itemName.like("%"+keyword+"%"))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetchResults();
 
         List<Item> content = itemQueryResults.getResults();
@@ -119,6 +125,8 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
                 .where(majorCategoryEq(condition.getItemCategoryMajorName()),
                         middleCategoryEq(condition.getItemCategoryMiddleName()),
                         subCategoryEq(condition.getItemCategorySubName()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetchResults();
 
         List<Item> content = itemQueryResults.getResults();
@@ -129,16 +137,16 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
     }
 
     private BooleanExpression majorCategoryEq(String itemCategoryMajorName) {
-        return itemCategoryMajorName != null ? itemMajorCategory.itemCategoryName.eq(itemCategoryMajorName) : null;
+        return (itemCategoryMajorName != null && StringUtils.hasText(itemCategoryMajorName)) ? itemMajorCategory.itemCategoryName.eq(itemCategoryMajorName) : null;
     }
 
     private BooleanExpression middleCategoryEq(String itemCategoryMiddleName) {
 
-        return itemCategoryMiddleName != null ? itemMiddleCategory.itemCategoryName.eq(itemCategoryMiddleName) : null;
+        return (itemCategoryMiddleName != null && StringUtils.hasText(itemCategoryMiddleName)) ? itemMiddleCategory.itemCategoryName.eq(itemCategoryMiddleName) : null;
     }
 
     private BooleanExpression subCategoryEq(String itemCategorySubName) {
-        return itemCategorySubName != null ? itemSubCategory.itemCategoryName.eq(itemCategorySubName) : null;
+        return (itemCategorySubName != null && StringUtils.hasText(itemCategorySubName)) ? itemSubCategory.itemCategoryName.eq(itemCategorySubName) : null;
     }
 
     private String imageUrl(String fileDirectory,String fileName,String contentType) throws IOException {

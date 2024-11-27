@@ -3,6 +3,8 @@ package com.kong.cc.repository;
 import com.kong.cc.dto.MenuResponseDto;
 import com.kong.cc.entity.Menu;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Base64Utils;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
@@ -41,6 +44,8 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
 
         QueryResults<Menu> menuQueryResults = queryFactory.selectFrom(menu)
                 .where(menu.menuName.like("%"+keyword+"%"))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetchResults();
 
         List<Menu> content = menuQueryResults.getResults();
@@ -85,7 +90,9 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
                 .select(menu)
                 .from(menu)
                 .join(menu.menuCategory, menuCategory)
-                .where(menuCategory.menuCategoryName.eq(categoryName))
+                .where(menuCategoryeq(categoryName))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetchResults();
 
         List<Menu> content = menuQueryResults.getResults();
@@ -117,6 +124,10 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
         );
         return menuResponseDtoPage;
 
+    }
+
+    private BooleanExpression menuCategoryeq(String categoryName) {
+        return (categoryName != null && StringUtils.hasText(categoryName)) ? menuCategory.menuCategoryName.eq(categoryName) : null;
     }
 
     private String imageUrl(String fileDirectory,String fileName,String contentType) throws IOException {
