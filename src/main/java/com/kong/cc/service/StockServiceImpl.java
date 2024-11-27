@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -93,8 +94,8 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public List<StockDto> selectStockByCategory(Integer storeCode, Integer category, String expirationDate) throws Exception {
-		return stockDslRepository.selectStockByCategory(storeCode, category, expirationDate).stream().map(s->s.toDto()).collect(Collectors.toList());
+	public List<StockDto> selectStockByCategory(Integer storeCode, Map<String, String> param, String expirationDate) throws Exception {
+		return stockDslRepository.selectStockByCategory(storeCode, param, expirationDate).stream().map(s->s.toDto()).collect(Collectors.toList());
 	}
 
 	@Override

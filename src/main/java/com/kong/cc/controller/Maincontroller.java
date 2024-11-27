@@ -36,10 +36,10 @@ public class Maincontroller {
 	}
 	
 	// 테스트 필요
-	@GetMapping("/selectStoreByStoreAddress/{storeAddress}") // Store.js
-	public ResponseEntity<List<StoreDto>> selectStoreByStoreAddress(@PathVariable String storeAddress) {
+	@GetMapping("/selectStoreByStoreAddress/{address}") // Store.js
+	public ResponseEntity<List<StoreDto>> selectStoreByStoreAddress(@PathVariable String address) {
 		try {
-			List<StoreDto> storeDtoList = mainService.selectStoreByStoreAddress(storeAddress);
+			List<StoreDto> storeDtoList = mainService.selectStoreByStoreAddress(address);
 			return new ResponseEntity<List<StoreDto>>(storeDtoList, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -69,7 +69,6 @@ public class Maincontroller {
 		}
 	}
 	
-	// 테스트 필요
 	@GetMapping("/selectMenuByCategory/{categoryNum}") // MenuList.js
 	public ResponseEntity<List<MenuDto>> selectMenuByCategory(@PathVariable Integer categoryNum) {
 		try {

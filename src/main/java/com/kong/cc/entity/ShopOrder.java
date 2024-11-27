@@ -23,7 +23,7 @@ import lombok.Setter;
 public class ShopOrder {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer orderNum;
-	private String orderCode;
+	private String orderCode; // 아임포트 merchant_uid
 	private Integer orderCount;
 	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -41,6 +41,7 @@ public class ShopOrder {
 	private Item itemO;
 	
 	public ShopOrderDto toDto() {
+		
 		return ShopOrderDto.builder()
 				.orderNum(orderNum)
 				.orderCode(orderCode)
@@ -51,6 +52,8 @@ public class ShopOrder {
 				.orderPayment(orderPayment)
 				.storeCode(storeO.getStoreCode())
 				.itemCode(itemO.getItemCode())
+				.itemPrice(itemO.getItemPrice())
+				.itemName(itemO.getItemName())
 				.build();
 	}
 }
