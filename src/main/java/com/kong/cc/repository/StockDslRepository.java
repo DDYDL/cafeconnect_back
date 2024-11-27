@@ -123,4 +123,26 @@ public class StockDslRepository {
 				.where(stock.itemS.itemCode.eq(itemCode))
 				.fetch();
 	}
+	
+	public List<Stock> selectStockByExpirationDate(String expirationDate) throws Exception {
+		QStock stock = QStock.stock;
+		QItem item = QItem.item;
+		
+		return jpaQueryFactory.selectFrom(stock)
+					.leftJoin(item)
+					.on(item.itemCode.eq(stock.itemS.itemCode))
+					.where(expirationDateSelect(expirationDate, stock.stockExpirationDate))
+					.fetch();
+	}
+	
+	public List<Stock> selectStockByStockCount(Integer count) throws Exception {
+		QStock stock = QStock.stock;
+		QItem item = QItem.item;
+		
+		return jpaQueryFactory.selectFrom(stock)
+					.leftJoin(item)
+					.on(item.itemCode.eq(stock.itemS.itemCode))
+					.where(stock.stockCount.loe(count))
+					.fetch();
+	}
 }
