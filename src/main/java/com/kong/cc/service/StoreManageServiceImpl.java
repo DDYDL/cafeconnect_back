@@ -32,12 +32,12 @@ public class StoreManageServiceImpl implements StoreManageService {
 
 		if (isWordEmpty) {
 		    switch (status) {
-		        case "Req":
+		        case "req":
 		            storeDtoList = storeDslRepository.findDeleteReqStoreListByPaging(pageRequest)
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.findDeleteReqStoreCount();
 		            break;
-		        case "Delete":
+		        case "inactive":
 		            storeDtoList = storeDslRepository.findDeleteStoreListByPaging(pageRequest)
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.findDeleteStoreCount();
@@ -50,12 +50,12 @@ public class StoreManageServiceImpl implements StoreManageService {
 		    }
 		} else {
 		    switch (status) {
-		        case "Req":
+		        case "req":
 		            storeDtoList = storeDslRepository.searchDeleteReqStoreListByPaging(pageRequest, type, word)
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.searchDeleteReqStoreCount(type, word);
 		            break;
-		        case "Delete":
+		        case "inactive":
 		            storeDtoList = storeDslRepository.searchDeleteStoreListByPaging(pageRequest, type, word)
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.searchDeleteStoreCount(type, word);
@@ -143,7 +143,7 @@ public class StoreManageServiceImpl implements StoreManageService {
 	public Integer deleteStore(Integer storeCode) throws Exception {
 		Store store = storeRepository.findById(storeCode).orElseThrow(()->new Exception("가맹점 코드 오류"));
 		if(store!=null) {
-			store.setStoreStatus("Delete");
+			store.setStoreStatus("inactive");
 		}
 		storeRepository.save(store);		
 		return store.getStoreCode();
@@ -153,7 +153,7 @@ public class StoreManageServiceImpl implements StoreManageService {
 	public Integer restoreStore(Integer storeCode) throws Exception {
 		Store store = storeRepository.findById(storeCode).orElseThrow(()->new Exception("가맹점 코드 오류"));
 		if(store!=null) {
-			store.setStoreStatus("");
+			store.setStoreStatus("active");
 		}
 		storeRepository.save(store);		
 		return store.getStoreCode();

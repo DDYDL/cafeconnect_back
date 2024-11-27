@@ -1,8 +1,8 @@
 package com.kong.cc.entity;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.ColumnDefault;
 
 import com.kong.cc.dto.StoreDto;
 
@@ -50,7 +52,8 @@ public class Store {
 	 private Date contractPeriodEnd;
 	 private Date contractDate;
 	 private Date openingDate;
-	   
+	  
+	 @ColumnDefault("'active'")
 	 private String storeStatus;
 	 
 	 @ManyToOne(fetch=FetchType.LAZY)
