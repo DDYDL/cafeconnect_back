@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.kong.cc.dto.ItemDto;
+import com.kong.cc.dto.ItemExpenseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -81,9 +82,13 @@ public class Item {
 	            .itemStorage(itemStorage)
 	            .itemCountryOrigin(itemCountryOrigin)
 	            .itemMajorCategoryNum(itemMajorCategory != null ? itemMajorCategory.getItemCategoryNum() : null)
+	            .itemMajorCategoryName(itemMajorCategory != null ? itemMajorCategory.getItemCategoryName() : null)
 	            .itemMiddleCategoryNum(itemMiddleCategory != null ? itemMiddleCategory.getItemCategoryNum() : null)
+	            .itemMiddleCategoryName(itemMiddleCategory != null ? itemMiddleCategory.getItemCategoryName() : null)
 	            .itemSubCategoryNum(itemSubCategory != null ? itemSubCategory.getItemCategoryNum() : null)
+	            .itemSubCategoryName(itemSubCategory != null ? itemSubCategory.getItemCategoryName() : null)
 	            .itemFileNum(itemImageFile != null ? itemImageFile.getFileNum() : null)
 	            .build();
 	}
+
 }
