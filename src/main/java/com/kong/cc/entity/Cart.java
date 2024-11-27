@@ -1,5 +1,7 @@
 package com.kong.cc.entity;
 
+import java.sql.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,9 +15,12 @@ import com.kong.cc.dto.CartDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,8 +37,6 @@ public class Cart {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="itemCode")
 	private Item itemCa;
-	
-	
 	
 	public CartDto toDto() {
 		return CartDto.builder()

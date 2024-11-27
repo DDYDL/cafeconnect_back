@@ -1,6 +1,6 @@
 package com.kong.cc.dto;
 
-import java.util.Date;
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,5 +19,5 @@ public class NoticeDto {
 	private String noticeContent;
 	private Date noticeDate;
 	
-	private String mainStoreId;
+	private Integer mainStoreId;
 }

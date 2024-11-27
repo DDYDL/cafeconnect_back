@@ -1,6 +1,6 @@
 package com.kong.cc.entity;
 
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,10 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
-import com.kong.cc.dto.RepairDto;
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.kong.cc.dto.RepairResponseDto;
 
 import lombok.AllArgsConstructor;
@@ -34,11 +33,11 @@ public class Repair {
 	private String repairTitle;
 	private String repairContent;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	@CreationTimestamp
 	private Date repairDate;
 	private String repairStatus;
 	private String repairAnswer;
-	@Temporal(TemporalType.TIMESTAMP)
+	@CreationTimestamp
 	private Date repairAnswerDate;
 	
 	@ManyToOne(fetch=FetchType.LAZY)

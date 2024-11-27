@@ -17,7 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Setter
 @Getter
@@ -38,6 +37,9 @@ public class Member {
 	private String provider;
 	private String providerId;
 	
+	private String fcmToken;
+	private Integer storeCode;
+	
 	@OneToMany(mappedBy="member", fetch=FetchType.LAZY)
 	private List<Store> storeList = new ArrayList<>();
 	
@@ -53,6 +55,8 @@ public class Member {
 				.roles(roles)
 				.provider(provider)
 				.providerId(providerId)
+				.fcmToken(fcmToken)
+				.storeCode(storeCode)
 				.build();
 	}
 }

@@ -2,7 +2,7 @@ package com.kong.cc.entity;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -34,15 +34,9 @@ public class Store {
 	 private String storeAddress;
 	 private String storeAddressNum;
 	 private String storePhone;
-	   
-//	 @JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
-//	 @JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
-//	 @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd kk:mm:ss") // 원하는 형태의 LocalDateTime 설정
+
 	 @Column(columnDefinition = "TIMESTAMP")
 	 private Timestamp storeOpenTime;
-//	 @JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
-//	 @JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
-//	 @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd kk:mm:ss") // 원하는 형태의 LocalDateTime 설정
 	 @Column(columnDefinition = "TIMESTAMP")
 	 private Timestamp storeCloseTime;
 	 private String storeCloseDate;

@@ -1,6 +1,6 @@
 package com.kong.cc.entity;
 
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.kong.cc.dto.ComplainDto;
 
@@ -34,11 +36,11 @@ public class Complain {
     private String complainTitle;
     private String complainContent;
     
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date complainDate;
     private Boolean complainStatus;
     private String complainAnswer;
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date complainAnswerDate;
     
     @ManyToOne(fetch=FetchType.LAZY)

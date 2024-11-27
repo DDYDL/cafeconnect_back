@@ -1,10 +1,10 @@
 package com.kong.cc.entity;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.kong.cc.dto.ShopOrderDto;
 
@@ -26,7 +26,7 @@ public class ShopOrder {
 	private String orderCode; // 아임포트 merchant_uid
 	private Integer orderCount;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	@CreationTimestamp
 	private Date orderDate;
 	private String orderState;
 	private String orderDelivery;

@@ -1,6 +1,6 @@
 package com.kong.cc.entity;
 
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,8 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.kong.cc.dto.NoticeDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,10 +33,21 @@ public class Notice {
     private String noticeTitle;
     private String noticeContent;
     
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date noticeDate;
     
     @ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="mainStoreId")
 	private Member memberMain;
+    
+    public NoticeDto toDto() {
+    	return NoticeDto.builder()
+    			.noticeNum(noticeNum)
+    			.noticeType(noticeType)
+    			.noticeTitle(noticeTitle)
+    			.noticeContent(noticeContent)
+    			.noticeDate(noticeDate)
+    			.mainStoreId(memberMain.getMemberNum())
+    			.build();
+    }
 }

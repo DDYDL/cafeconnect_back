@@ -1,7 +1,7 @@
 package com.kong.cc.dto;
 
 import java.sql.Timestamp;
-import java.util.Date;
+import java.sql.Date;
 
 import com.kong.cc.entity.Member;
 import com.kong.cc.entity.Store;

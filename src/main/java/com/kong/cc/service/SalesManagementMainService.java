@@ -3,7 +3,7 @@ package com.kong.cc.service;
 
 import com.kong.cc.dto.ItemMajorCategoryForm;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import com.kong.cc.dto.ItemDto;

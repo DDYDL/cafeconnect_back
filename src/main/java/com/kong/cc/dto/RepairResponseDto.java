@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.sql.Date;
 
 import com.kong.cc.entity.Item;
 import com.kong.cc.entity.Repair;
@@ -33,9 +33,7 @@ public class RepairResponseDto {
     private String itemCategoryMajorName;
     private String itemCategoryMiddleName;
     
-    
     public Repair toEntity() {
-    
     	return Repair.builder()
     			.repairType(repairType)
     			.repairContent(repairContent)

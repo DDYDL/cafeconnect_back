@@ -1,6 +1,6 @@
 package com.kong.cc.dto;
 
-import java.util.Date;
+import java.sql.Date;
 
 import com.kong.cc.entity.Item;
 import com.kong.cc.entity.Stock;

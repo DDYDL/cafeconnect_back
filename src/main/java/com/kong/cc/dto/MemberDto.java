@@ -23,6 +23,9 @@ public class MemberDto {
 	private String provider;
 	private String providerId;
 	
+	private String fcmToken;
+	private Integer storeCode;
+	
 	public Member toEntity() {
 		return Member.builder()
 				.memberNum(memberNum)
@@ -31,6 +34,8 @@ public class MemberDto {
 				.roles(roles)
 				.provider(provider)
 				.providerId(providerId)
+				.fcmToken(fcmToken)
+				.storeCode(storeCode)
 				.build();
 	}
 }
