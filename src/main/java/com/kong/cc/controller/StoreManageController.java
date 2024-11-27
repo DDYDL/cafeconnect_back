@@ -9,7 +9,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,9 +48,9 @@ public class StoreManageController {
 		}	
 	  
   	@PostMapping("/addStoreMain")  	 // AddStoreMain.js
-	public ResponseEntity<String> addStore(StoreDto storeDto) {
-		System.out.println(storeDto);
+	public ResponseEntity<String> addStore(@RequestBody StoreDto storeDto) {
 		try {
+			System.out.println(storeDto.getStoreName());
 			Integer storeCode = storeManageService.createStoreCode();
 			storeDto.setStoreCode(storeCode);
 			storeDto.setStoreStatus("");
@@ -60,8 +62,8 @@ public class StoreManageController {
 		}
 	}
   	
-  	@PostMapping("/modifyStoreMain") // StoreDetailMain.js
-	public ResponseEntity<String> modifyStore(StoreDto storeDto) {
+  	@PostMapping("/modifyStoreMain") // ModifyStoreMain.js
+	public ResponseEntity<String> modifyStore(@RequestBody StoreDto storeDto) {
 		System.out.println(storeDto);
 		try {
 			Integer storeCode = storeManageService.modifyStore(storeDto);
@@ -80,10 +82,10 @@ public class StoreManageController {
 		try {
 			PageInfo pageInfo = new PageInfo();
 			pageInfo.setCurPage(page);
-			List<StoreDto> deleteReqList = storeManageService.storeList(pageInfo, type, keyword, "Req");
-			System.out.println(deleteReqList);
+			List<StoreDto> storeList = storeManageService.storeList(pageInfo, type, keyword, "Req");
+			System.out.println(storeList);
 			Map<String,Object> listInfo = new HashMap<>();
-			listInfo.put("deleteReqList", deleteReqList);
+			listInfo.put("storeList", storeList);
 			listInfo.put("pageInfo", pageInfo);
 			return new ResponseEntity<Map<String,Object>>(listInfo, HttpStatus.OK);
 		} catch(Exception e) {
@@ -92,8 +94,8 @@ public class StoreManageController {
 		}
 	}
 
-  	@PostMapping("/deleteStore") 	 // DeleteReqStoreMain.js StoreDetailMain.js
-	public ResponseEntity<String> deleteStore(Integer storeCode) {
+  	@PostMapping("/deleteStoreMain/{storeCode}") 	 // DeleteReqStoreMain.js StoreDetailMain.js
+	public ResponseEntity<String> deleteStore(@PathVariable Integer storeCode) {
 		System.out.println(storeCode);
 		try {
 			storeManageService.deleteStore(storeCode);
@@ -104,8 +106,8 @@ public class StoreManageController {
 		}
 	}
   
-  	@PostMapping("/restoreStore")    // RestoreStoreMain.js
-	public ResponseEntity<String> restoreStore(Integer storeCode) {
+  	@PostMapping("/restoreStoreMain/{storeCode}")    // RestoreStoreMain.js
+	public ResponseEntity<String> restoreStore(@PathVariable Integer storeCode) {
 		System.out.println(storeCode);
 		try {
 			storeManageService.restoreStore(storeCode);
@@ -124,10 +126,10 @@ public class StoreManageController {
 		try {
 			PageInfo pageInfo = new PageInfo();
 			pageInfo.setCurPage(page);
-			List<StoreDto> selectDeleteList = storeManageService.storeList(pageInfo, type, keyword, "Delete");
-			System.out.println(selectDeleteList);
+			List<StoreDto> storeList = storeManageService.storeList(pageInfo, type, keyword, "Delete");
+			System.out.println(storeList);
 			Map<String,Object> listInfo = new HashMap<>();
-			listInfo.put("selectDeleteList", selectDeleteList);
+			listInfo.put("storeList", storeList);
 			listInfo.put("pageInfo", pageInfo);
 			return new ResponseEntity<Map<String,Object>>(listInfo, HttpStatus.OK);
 		} catch(Exception e) {
@@ -136,8 +138,8 @@ public class StoreManageController {
 		}
 	}
   	
-  	@GetMapping("/storeDetailMain")  // StoreDetailMain.js
-  	public ResponseEntity<Map<String,Object>> storeDetail(@RequestParam(value="storeCode") Integer storeCode) {
+  	@GetMapping("/storeDetailMain/{storeCode}")  // StoreDetailMain.js
+  	public ResponseEntity<Map<String,Object>> storeDetail(@PathVariable(value="storeCode") Integer storeCode) {
 		try {
 			System.out.println("storeDetail");
 			System.out.println(storeCode);
