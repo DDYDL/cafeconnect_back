@@ -155,7 +155,7 @@ public class ShopController {
 	}
 	//장바구니 추가 및 수량 변경 
 	@GetMapping("/addCart") // ShopMain.js CategoryItemList.js WishItem.js ShopItemDetail.js CartList.js	
-	public ResponseEntity<CartDto>addItemtoCart (@RequestBody CartDto cartDto){
+	public ResponseEntity<CartDto>addItemtoCart (CartDto cartDto){
 		try {
 			CartDto result = shopService.addItemToCart(cartDto);
 			return new ResponseEntity<CartDto>(result, HttpStatus.OK);
@@ -281,9 +281,10 @@ public class ShopController {
     		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
     		Date strStartDateToDate = format.parse(startDate);    		
     		Date strEndDateToDate = format.parse(endDate); 
+    		
     		List<ShopOrderDto>result = shopService.selectAllOrderListByPeriod(storeCode,strStartDateToDate,strEndDateToDate);
     		
-    		return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.OK); 
+    		return new ResponseEntity<List<ShopOrderDto>>(result,HttpStatus.OK); 
     		
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -318,8 +319,25 @@ public class ShopController {
 		}
     }
     
-//가맹점 상품구매에 따른 지출내역
-//  @PostMapping("/expenseList") // ExpenseListByItems.js	
+    //가맹점 상품구매에 따른 지출내역
+    @PostMapping("/expenseList") // ExpenseListByItems.js	
+    public ResponseEntity <Map<String,Object>> selectExpenseItemList(@RequestParam Integer storeCode,
+			@RequestParam(name="startDate",required = false)String startDate,
+			@RequestParam(name="endDate",required = false)String endDate){
+    	try {
+    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    		Date strStartDateToDate = format.parse(startDate);    		
+    		Date strEndDateToDate = format.parse(endDate); 
+    		
+    		Map<String,Object> result = shopService.selectExpenseItemList(storeCode,strStartDateToDate,strEndDateToDate);
+    		
+			return new ResponseEntity <Map<String,Object>>(result,HttpStatus.OK);
+    		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
+		}
+    }
 
 //본사
 //  @PostMapping("/mainStoreOrderList) // OrderListForMainStore.js	

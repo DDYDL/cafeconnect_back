@@ -28,9 +28,13 @@ public class ShopOrderDto {
 	private String orderState;
 	private String orderDelivery;
 	private String orderPayment;
+
 	
 	private Integer storeCode;
-	private String itemCode;
+	private String itemCode;	
+	private String itemName;
+	private Integer itemPrice;
+	private Integer orderPrice;
 	
 	
 	//주문번호 생성 

@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ItemDto {
 	private String itemCode;
-
 	private String itemName;
 	private Integer itemPrice;
 	private String itemCapacity;
@@ -36,7 +35,6 @@ public class ItemDto {
 	private Integer itemSubCategoryNum;
 	private String itemSubCategoryName;
 	private Integer itemFileNum;
-
 
 	private Integer wishItemNum;
 	

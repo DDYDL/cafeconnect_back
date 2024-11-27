@@ -60,6 +60,7 @@ public class Repair {
 				.repairStatus(repairStatus)
 				.repairAnswer(repairAnswer)
 				.repairAnswerDate(repairAnswerDate)
+				.storeCode(storeR !=null?storeR.getStoreCode():null)
 				.storeName(storeR !=null?storeR.getStoreName():null)
 				.itemCode(itemR !=null?itemR.getItemCode():null)
 				.build();
