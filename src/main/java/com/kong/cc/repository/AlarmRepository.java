@@ -8,4 +8,5 @@ import com.kong.cc.entity.Alarm;
 
 public interface AlarmRepository extends JpaRepository<Alarm, Integer> {
 	public List<Alarm> findByAlarmType(String alarmType) throws Exception;
+	public List<Alarm> findByStoreAr_StoreCodeAndAlarmStatusFalse(Integer storeCode) throws Exception;
 }

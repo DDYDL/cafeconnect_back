@@ -37,7 +37,7 @@ public class AlarmServiceImpl implements AlarmService {
 	@Override
 	public List<AlarmDto> getAlarmList(Integer storeCode) throws Exception {
 		// alarmStatus가 false인 알람만 가져오기
-		List<Alarm> alarmList = alarmDslRepository.selectAlarmListStatusFalse(storeCode);
+		List<Alarm> alarmList = alarmRepository.findByStoreAr_StoreCodeAndAlarmStatusFalse(storeCode);
 		System.out.println("alarmContent "+alarmList.get(0).getAlarmContent());
 		
 		return alarmList.stream().map(alarm->AlarmDto.builder()
