@@ -1,6 +1,6 @@
 package com.kong.cc.repository;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

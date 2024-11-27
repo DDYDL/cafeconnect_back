@@ -1,7 +1,7 @@
 package com.kong.cc.repository;
 
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import com.kong.cc.entity.ShopOrder;
 import com.kong.cc.entity.Stock;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.DateTimePath;
+import com.querydsl.core.types.dsl.DatePath;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -94,7 +94,7 @@ public class StockDslRepository {
 	}
 	
 	// 유통기한이 뭐라도 넘어오면 유통기한이 3일 이하로 남은 stock만 가져옴
-	private BooleanExpression expirationDateSelect(String expirationDate, DateTimePath<Date> stockExpirationDate) {
+	private BooleanExpression expirationDateSelect(String expirationDate, DatePath<Date> stockExpirationDate) {
 		// 현재 날짜 기준 expirationDate와 마이너스 연산을 한다.(유통기한이 3일 이하인 stock만 선택)
 		NumberTemplate dateFormat = Expressions.numberTemplate(Integer.class, "DATEDIFF({0}, curdate())", stockExpirationDate);
 		return StringUtils.hasText(expirationDate) ? dateFormat.loe(3) : null;
