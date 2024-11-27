@@ -20,13 +20,13 @@ public class StoreDslRepository {
 	public Long findStoreCount() throws Exception {
 		QStore store = QStore.store;
 		return jpaQueryFactory.select(store.count())
-				.from(store).where(store.storeStatus.ne("delete")).fetchOne();
+				.from(store).where(store.storeStatus.ne("Delete")).fetchOne();
 	}
 	
 	public List<Store> findStoreListByPaging(PageRequest pageRequest) throws Exception {
 		QStore store = QStore.store;
 		return jpaQueryFactory.selectFrom(store)
-				.where(store.storeStatus.ne("delete"))
+				.where(store.storeStatus.ne("Delete"))
 				.orderBy(store.storeCode.desc())
 				.offset(pageRequest.getOffset())
 				.limit(pageRequest.getPageSize())
@@ -40,13 +40,13 @@ public class StoreDslRepository {
 			cnt = jpaQueryFactory.select(store.count())
 				.from(store)
 				.where(store.storeName.contains(word)
-					  ,store.storeStatus.ne("delete"))
+					  ,store.storeStatus.ne("Delete"))
 				.fetchOne();
 		} else if(type.equals("storeAddress")) {
 			cnt= jpaQueryFactory.select(store.count())
 					.from(store)
 					.where(store.storeAddress.contains(word)
-						  ,store.storeStatus.ne("delete"))
+						  ,store.storeStatus.ne("Delete"))
 					.fetchOne();
 		}
 		return cnt;
@@ -57,7 +57,7 @@ public class StoreDslRepository {
 		if(type.equals("storeName")) {
 			storeList = jpaQueryFactory.selectFrom(store)
 					.where(store.storeName.contains(word)
-						  ,store.storeStatus.ne("delete"))
+						  ,store.storeStatus.ne("Delete"))
 					.orderBy(store.storeCode.desc())
 					.offset(pageRequest.getOffset())
 					.limit(pageRequest.getPageSize())
@@ -65,7 +65,7 @@ public class StoreDslRepository {
 		} else if(type.equals("storeAddress")) {
 			storeList = jpaQueryFactory.selectFrom(store)
 					.where(store.storeAddress.contains(word)
-						  ,store.storeStatus.ne("delete"))
+						  ,store.storeStatus.ne("Delete"))
 					.orderBy(store.storeCode.desc())
 					.offset(pageRequest.getOffset())
 					.limit(pageRequest.getPageSize())
