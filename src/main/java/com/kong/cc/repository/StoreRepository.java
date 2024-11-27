@@ -8,4 +8,5 @@ import com.kong.cc.entity.Store;
 
 public interface StoreRepository extends JpaRepository<Store, Integer> {
 	public List<Store> findByStoreNameContaining(String storeName) throws Exception;
+	public List<Store> findByStoreStatus(String storeStatus) throws Exception;
 }

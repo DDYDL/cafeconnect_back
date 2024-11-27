@@ -19,5 +19,5 @@ public class NoticeDto {
 	private String noticeContent;
 	private Date noticeDate;
 	
-	private String mainStoreId;
+	private Integer mainStoreId;
 }
