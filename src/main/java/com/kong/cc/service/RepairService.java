@@ -1,6 +1,6 @@
 package com.kong.cc.service;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +70,7 @@ public class RepairService {
             throw new IllegalArgumentException("해당하는 수리내역이 없습니다");
         }
         repair.setRepairAnswer(repairUpdateForm.getRepairAnswer());
-        repair.setRepairAnswerDate(new Date());
+        repair.setRepairAnswerDate(new Date(System.currentTimeMillis()));
         repair.setRepairStatus(repairUpdateForm.getRepairStatus());
 
     }

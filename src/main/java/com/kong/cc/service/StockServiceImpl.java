@@ -1,5 +1,6 @@
 package com.kong.cc.service;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -51,7 +52,7 @@ public class StockServiceImpl implements StockService {
 			StockDto stockDto = new StockDto();
 			stockDto.setStoreCode(shopOrderDto.getStoreCode());
 			stockDto.setItemCode(shopOrderDto.getItemCode());
-			stockDto.setStockReceiptDate(Timestamp.valueOf(LocalDate.now().atTime(LocalTime.now()))); // 입고 날짜는 행이 들어가는 날짜로
+			stockDto.setStockReceiptDate(new Date(System.currentTimeMillis())); // 입고 날짜는 행이 들어가는 날짜로
 			stockDto.setStockCount(shopOrderDto.getOrderCount());
 			stockRepository.save(stockDto.toEntity());
 			

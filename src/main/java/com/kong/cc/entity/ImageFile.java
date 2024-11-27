@@ -1,6 +1,6 @@
 package com.kong.cc.entity;
 
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

@@ -1,6 +1,6 @@
 package com.kong.cc.service;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -242,7 +242,7 @@ public class ShopServiceImpl implements ShopService {
 					.map(cart -> ShopOrder.builder()
 							.orderCode(merchantUid) //생성한 주문번호  
 							.orderCount(cart.getCartItemCount())
-							.orderDate(new Date())
+							.orderDate(new Date(System.currentTimeMillis()))
 							.orderState("주문접수")
 							.orderPayment("카드결제")
 							.orderDelivery(cart.getItemCa().getItemStorage()) // 상품 보관 타입에 따른 배송

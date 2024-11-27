@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -19,7 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
-import java.util.Date;
+import java.sql.Date;
 import java.util.UUID;
 
 @Service
@@ -57,7 +56,7 @@ public class ItemService {
 
             imageFile = ImageFile.builder()
                     .fileContentType(file.getContentType())
-                    .fileUploadDate(new Date())
+                    .fileUploadDate(new Date(System.currentTimeMillis()))
                     .fileName(originalName)
                     .fileSize(file.getSize())
                     .fileDirectory(uploadDir)
@@ -115,7 +114,7 @@ public class ItemService {
 
             imageFile = ImageFile.builder()
                     .fileContentType(file.getContentType())
-                    .fileUploadDate(new Date())
+                    .fileUploadDate(new Date(System.currentTimeMillis()))
                     .fileName(originalName)
                     .fileSize(file.getSize())
                     .fileDirectory(uploadDir)
