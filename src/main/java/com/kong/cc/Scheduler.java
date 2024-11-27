@@ -1,6 +1,6 @@
 package com.kong.cc;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +50,7 @@ public class Scheduler {
 					AlarmDto alarmDto = AlarmDto.builder()
 							.storeCode(stock.getStoreCode())
 							.alarmType("유통기한")
-							.alarmDate(new Date()) // 현재 시간
+							.alarmDate(new Date(System.currentTimeMillis())) // 현재 시간
 							.alarmContent(stock.getStockReceiptDate() + "에 들어온 [ " + item.getItemName()+ " ] 이(가) 유통기한이 3일 이하로 남았습니다.")
 							.alarmStatus(false)
 							.build();
@@ -77,7 +77,7 @@ public class Scheduler {
 					AlarmDto alarmDto = AlarmDto.builder()
 							.storeCode(stock.getStoreCode())
 							.alarmType("재고")
-							.alarmDate(new Date()) // 현재 시간
+							.alarmDate(new Date(System.currentTimeMillis())) // 현재 시간
 							.alarmContent(stock.getStockReceiptDate() + "에 들어온 [ " + item.getItemName()+ " ] 이(가) 재고가 3개 이하로 남았습니다.")
 							.alarmStatus(false)
 							.build();
@@ -109,7 +109,7 @@ public class Scheduler {
 						AlarmDto alarmDto = AlarmDto.builder()
 								.storeCode(store.getStoreCode())
 								.alarmType("주요공지사항")
-								.alarmDate(new Date()) // 현재 시간
+								.alarmDate(new Date(System.currentTimeMillis())) // 현재 시간
 								.alarmContent("[ " + notice.getNoticeTitle() + " ] 주요 공지사항이 등록되었습니다.")
 								.alarmStatus(false)
 								.build();

@@ -2,7 +2,7 @@ package com.kong.cc.dto;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.sql.Date;
 import java.util.UUID;
 
 import com.kong.cc.entity.Item;

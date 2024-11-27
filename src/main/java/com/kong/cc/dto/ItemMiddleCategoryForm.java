@@ -1,6 +1,5 @@
 package com.kong.cc.dto;
 
-
 import java.util.List;
 
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package com.kong.cc.entity;
 
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,7 +16,6 @@ import com.kong.cc.dto.AlarmDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

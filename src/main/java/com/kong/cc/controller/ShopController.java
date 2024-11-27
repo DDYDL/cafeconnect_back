@@ -2,7 +2,7 @@ package com.kong.cc.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -279,8 +279,8 @@ public class ShopController {
     
     	try {
     		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-    		Date strStartDateToDate = format.parse(startDate);    		
-    		Date strEndDateToDate = format.parse(endDate); 
+    		Date strStartDateToDate = (Date)format.parse(startDate);
+    		Date strEndDateToDate = (Date)format.parse(endDate);
     		
     		List<ShopOrderDto>result = shopService.selectAllOrderListByPeriod(storeCode,strStartDateToDate,strEndDateToDate);
     		
@@ -326,8 +326,8 @@ public class ShopController {
 			@RequestParam(name="endDate",required = false)String endDate){
     	try {
     		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-    		Date strStartDateToDate = format.parse(startDate);    		
-    		Date strEndDateToDate = format.parse(endDate); 
+    		Date strStartDateToDate = (Date)format.parse(startDate);	
+    		Date strEndDateToDate = (Date)format.parse(endDate);
     		
     		Map<String,Object> result = shopService.selectExpenseItemList(storeCode,strStartDateToDate,strEndDateToDate);
     		
