@@ -24,6 +24,16 @@ public class StockDto {
 	
 	private Integer storeCode;
 	private String itemCode;
+
+	private String itemMajorCategoryName;
+	private String itemMiddleCategoryName;
+	private String itemSubCategoryName;
+	private String itemName;
+	private String itemCapacity;
+	private Integer itemUnitQuantity;
+	private String itemUnit;
+	private String itemStorage;
+	private Integer itemAllCount;
 	
 	public Stock toEntity() {
 		return Stock.builder()

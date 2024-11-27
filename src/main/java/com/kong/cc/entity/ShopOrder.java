@@ -54,6 +54,13 @@ public class ShopOrder {
 				.itemCode(itemO.getItemCode())
 				.itemPrice(itemO.getItemPrice())
 				.itemName(itemO.getItemName())
+				.itemMajorCategoryName(itemO.getItemMajorCategory().getItemCategoryName())
+				.itemMiddleCategoryName(itemO.getItemMiddleCategory().getItemCategoryName())
+				.itemSubCategoryName(itemO.getItemSubCategory().getItemCategoryName())
+				.itemCapacity(itemO.getItemCapacity())
+				.itemUnitQuantity(itemO.getItemUnitQuantity())
+				.itemUnit(itemO.getItemUnit())
+				.itemStorage(itemO.getItemStorage())
 				.build();
 	}
 }

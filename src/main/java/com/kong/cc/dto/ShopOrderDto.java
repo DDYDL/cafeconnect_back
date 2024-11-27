@@ -31,10 +31,18 @@ public class ShopOrderDto {
 
 	
 	private Integer storeCode;
-	private String itemCode;	
+	private String itemCode;
 	private String itemName;
 	private Integer itemPrice;
 	private Integer orderPrice;
+	
+	private String itemMajorCategoryName;
+	private String itemMiddleCategoryName;
+	private String itemSubCategoryName;
+	private String itemCapacity;
+	private Integer itemUnitQuantity;
+	private String itemUnit;
+	private String itemStorage;
 	
 	
 	//주문번호 생성 
