@@ -1,5 +1,16 @@
 package com.kong.cc.repository;
 
+import static com.kong.cc.entity.QRepair.repair;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.RepairResponseDto;
 import com.kong.cc.dto.RepairSearchCondition;
@@ -8,21 +19,10 @@ import com.kong.cc.entity.QItemMajorCategory;
 import com.kong.cc.entity.QRepair;
 import com.kong.cc.entity.Repair;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-
-import javax.persistence.EntityManager;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.kong.cc.entity.QRepair.*;
 
 @Repository
 public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
@@ -140,16 +140,16 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
     			.fetch();
     }
     //수리 신청 기기 조회에 사용될 전체 머신 리스트 - 대분류가 머신인!
-    public List<ItemDto> selectAllMachineInfoList() {   	
+    public List<Tuple> selectAllMachineInfoList() {   	
     	QItem item = QItem.item;
     	QItemMajorCategory major = QItemMajorCategory.itemMajorCategory;
-    		return queryFactory.select(Projections.bean(ItemDto.class,item.itemCode,item.itemName))
-    							.from(item)
-    							.join(major)
-    							.on(item.itemMajorCategory.itemCategoryName.eq(major.itemCategoryName))
-    							.where(major.itemCategoryName.eq("머신"))
-    							.fetch();
-    	
-    }
+    	return queryFactory.select(item.itemCode,item.itemName)
+    						.from(item)
+    						.join(major)
+    						.on(item.itemMajorCategory.itemCategoryNum.eq(major.itemCategoryNum))
+    						.where(major.itemCategoryName.eq("머신")).fetch();
+
+    }   
+    
     
 }

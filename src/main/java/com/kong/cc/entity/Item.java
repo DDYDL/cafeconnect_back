@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.kong.cc.dto.ItemDto;
+import com.kong.cc.dto.ItemExpenseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -89,4 +90,5 @@ public class Item {
 	            .itemFileNum(itemImageFile != null ? itemImageFile.getFileNum() : null)
 	            .build();
 	}
+
 }

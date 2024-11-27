@@ -3,14 +3,14 @@ package com.kong.cc.repository;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.persistence.OrderBy;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
+import com.kong.cc.dto.ItemExpenseDto;
 import com.kong.cc.dto.ShopOrderDto;
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.entity.Cart;
@@ -24,7 +24,9 @@ import com.kong.cc.entity.QItemSubCategory;
 import com.kong.cc.entity.QShopOrder;
 import com.kong.cc.entity.QStore;
 import com.kong.cc.entity.QWishItem;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Repository
@@ -320,7 +322,12 @@ public class ShopDSLRepository {
 	            order.orderDelivery,
 	            order.orderPayment,
 	            store.storeCode,
-	            item.itemCode))
+	            item.itemCode,
+	            item.itemPrice,
+	            Expressions.asNumber(item.itemPrice)
+	            .multiply(order.orderCount)
+	            .as("orderPrice")        	
+	            ))
 	        .from(order)
 	        .join(order.itemO, item)
 	        .join(order.storeO, store)
@@ -328,7 +335,7 @@ public class ShopDSLRepository {
 	        .orderBy(order.orderDate.desc())
 	        .fetch();
 	}
-
+	// 기간 선택 주문 리스트  
 	public List<ShopOrderDto> selectAllShopOrderListByPeriod(Integer storeCode,Date startDate,Date endDate){
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
@@ -346,7 +353,10 @@ public class ShopDSLRepository {
 	    		            order.orderDelivery,
 	    		            order.orderPayment,
 	    		            store.storeCode,
-	    		            item.itemCode))
+	    		            item.itemCode,
+	    		            item.itemPrice,
+	    		            item.itemPrice.multiply(order.orderCount).as("orderPrice"))
+	    	        	)
 	    		        .from(order)
 	    		        .join(order.itemO, item)
 	    		        .join(order.storeO, store)
@@ -354,9 +364,20 @@ public class ShopDSLRepository {
 	    		        .orderBy(order.orderDate.desc())
 	    		        .fetch();
 	    }
-		return null;
-		 
+		return null; 
 	}
+	//기간 선택 주문 총 수 
+	public Long countOrders(Integer storeCode, Date startDate, Date endDate) {
+	    QShopOrder order = QShopOrder.shopOrder;
+	    
+	    return jpaQueryFactory
+	        .select(order.orderNum.countDistinct())
+	        .from(order)
+	        .where(order.storeO.storeCode.eq(storeCode)
+	            .and(order.orderDate.between(startDate, endDate)))
+	        .fetchOne();
+	}
+	
 	public List<ShopOrderDto> selectAllShopOrderListByOrderState(Integer storeCode,String orderState) {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
@@ -372,8 +393,12 @@ public class ShopDSLRepository {
     		            order.orderDelivery,
     		            order.orderPayment,
     		            store.storeCode,
-    		            item.itemCode))
-    		        .from(order)
+    		            item.itemCode,
+    		            item.itemPrice,
+    		            item.itemPrice.multiply(order.orderCount)
+    		            .as("orderPrice")
+    	        		))	
+    	        .from(order)
     		        .join(order.itemO, item)
     		        .join(order.storeO, store)
     		        .where(order.storeO.storeCode.eq(storeCode).and(order.orderState.eq(orderState)))
@@ -381,6 +406,7 @@ public class ShopDSLRepository {
     		        .fetch();
 	    
 	}
+	//상세 보기 
 	public List<ShopOrderDto> selectOneShopOrderByOrderCode(Integer storeCode, String orderCode) {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
@@ -397,14 +423,124 @@ public class ShopDSLRepository {
     		            order.orderDelivery,
     		            order.orderPayment,
     		            store.storeCode,
-    		            item.itemCode))
+    		            item.itemCode,
+    		            item.itemPrice,
+    		            item.itemPrice.multiply(order.orderCount)
+    		            .as("orderPrice")
+    	        		))
     		        .from(order)
     		        .join(order.itemO, item)
     		        .join(order.storeO, store)
     		        .where(order.storeO.storeCode.eq(storeCode).and(order.orderCode.eq(orderCode)))
     		        .orderBy(order.orderDate.desc())
     		        .fetch();
-	    
+
+	}
 	
+	// 기간 내 총 상품 주문 상품 통계 -단가,총 주문 개수 및 금액
+	public List<ItemExpenseDto> selectExpnseItemList(Integer storeCode,Date startDate,Date endDate){
+	    QShopOrder order = QShopOrder.shopOrder;
+	    QItem item = QItem.item;
+	    QStore store = QStore.store;
+
+	 
+	    if(startDate !=null ||endDate !=null) {
+
+	    	return 	jpaQueryFactory.select(Projections.bean(ItemExpenseDto.class,
+			    			item.itemCode,
+				            item.itemName, // 상품명
+				            item.itemMajorCategory.itemCategoryName.as("majorCategoryName"),
+				            item.itemMajorCategory.itemCategoryNum.as("majorCategoryNum"),
+				            item.itemMiddleCategory.itemCategoryName.as("middleCategoryName"),
+				            item.itemMiddleCategory.itemCategoryNum.as("middleCategoryNum"),
+				            item.itemSubCategory.itemCategoryName.as("subCategoryName"),
+				            item.itemSubCategory.itemCategoryNum.as("subCategoryNum"),
+				            item.itemPrice, //단가
+				            order.orderCount.sum().as("totalOrderCount"), // 총 주문 개수
+				            item.itemPrice.multiply(order.orderCount).sum().as("totalOrderPrice") // 구매 상품 총 금액(개수*단가)
+				            )).from(order)
+		    		        .join(order.itemO, item)
+		    		        .join(order.storeO,store)
+		    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
+		    		        .groupBy(item.itemCode)
+		    		        .fetch();
+	   
+	    }
+	    	return null;
+	}
+	//대분류 주문 통계 
+	public List<ItemExpenseDto> getExpenseItemSummeryByMajorCategroy(Integer storeCode,Date startDate,Date endDate) {
+	    QShopOrder order = QShopOrder.shopOrder;
+	    QItem item = QItem.item;
+	    QStore store = QStore.store;
+
+	    if(startDate !=null ||endDate !=null) {
+
+	   return 	jpaQueryFactory.select(Projections.bean(ItemExpenseDto.class,
+			   		item.itemMajorCategory.itemCategoryName.as("majorCategoryName"),
+			   		item.itemMajorCategory.itemCategoryNum.as("majorCategoryNum"),
+			   		order.orderCount.sum().as("totalOrderCount"), // 총 주문 개수
+    		        item.itemPrice.multiply(order.orderCount).sum().as("totalOrderPrice"),
+    		        item.itemCode.count().as("rowspanCount")))  //rowspan counts
+    		        .from(order)
+    		        .join(order.itemO, item)
+    		        .join(order.storeO, store)
+    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
+    		        .groupBy(item.itemMajorCategory.itemCategoryNum)
+    		        .fetch();   
+	    }
+	    return null;
+	}
+	//중분류 주문 통계 
+	public List<ItemExpenseDto> getExpenseItemSummeryByMiddleCategroy(Integer storeCode,Date startDate,Date endDate) {
+	    QShopOrder order = QShopOrder.shopOrder;
+	    QItem item = QItem.item;
+	    QStore store = QStore.store;
+
+	    if(startDate !=null ||endDate !=null) {
+
+	   return 	jpaQueryFactory.select(Projections.bean(ItemExpenseDto.class,
+			   		item.itemMajorCategory.itemCategoryName.as("majorCategoryName"),
+			   		item.itemMajorCategory.itemCategoryNum.as("majorCategoryNum"),
+			   		item.itemMiddleCategory.itemCategoryName.as("middleCategoryName"),
+			   		item.itemMiddleCategory.itemCategoryNum.as("middleCategoryNum"),
+			   		order.orderCount.sum().as("totalOrderCount"), // 총 주문 개수
+    		        item.itemPrice.multiply(order.orderCount).sum().as("totalOrderPrice"),
+    		        item.itemCode.count().as("rowspanCount")))  //rowspan counts
+    		        .from(order)
+    		        .join(order.itemO, item)
+    		        .join(order.storeO, store)
+    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
+    		        .groupBy(item.itemMiddleCategory.itemCategoryNum)
+    		        .fetch();   
+	    }
+	    return null;
+	}
+	//소분류 주문 통계 
+	public List<ItemExpenseDto> getExpenseItemSummeryBySubCategroy(Integer storeCode,Date startDate,Date endDate) {
+	    QShopOrder order = QShopOrder.shopOrder;
+	    QItem item = QItem.item;
+	    QStore store = QStore.store;
+
+	    if(startDate !=null ||endDate !=null) {
+
+	   return 	jpaQueryFactory.select(Projections.bean(ItemExpenseDto.class,
+					item.itemMajorCategory.itemCategoryName.as("majorCategoryName"),
+			   		item.itemMajorCategory.itemCategoryNum.as("majorCategoryNum"),
+			   		item.itemMiddleCategory.itemCategoryName.as("middleCategoryName"),
+			   		item.itemMiddleCategory.itemCategoryNum.as("middleCategoryNum"),
+			   		item.itemSubCategory.itemCategoryName.as("subCategoryName"),
+			   		item.itemSubCategory.itemCategoryNum.as("subCategoryNum"),
+				   	order.orderCount.sum().as("totalOrderCount"), // 총 주문 개수
+    		        item.itemPrice.multiply(order.orderCount).sum().as("totalOrderPrice"),
+    		        item.itemCode.count().as("rowspanCount")))  //rowspan counts
+    		        .from(order)
+    		        .join(order.itemO, item)
+    		        .join(order.storeO, store)
+    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
+    		        .groupBy(item.itemSubCategory.itemCategoryNum)
+    		        .fetch();   
+	    }
+	    return null;
 	}
 }

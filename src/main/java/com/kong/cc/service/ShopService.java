@@ -2,6 +2,7 @@ package com.kong.cc.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
@@ -31,7 +32,7 @@ public interface ShopService {
 	Boolean deleteCartItem(Integer storeCode,Integer cartNum) throws Exception;
 	
 	//장바구니 끝
-	
+		
 	//주문 및 결제 시작
 	List<CartDto>selectAllOrderItemAndInfo(Integer storeCode,List<Integer>cartItemNumList) throws Exception;
 	void validatePaymentRequest(PaymentRequestDto paymentRequest)throws Exception;
@@ -44,4 +45,6 @@ public interface ShopService {
 	List<ShopOrderDto> selectAllOrderListByPeriod(Integer storeCode,Date startDate,Date endDate) throws Exception;
 	List<ShopOrderDto> selectAllOrderListByOrderState(Integer storeCode,String orderState) throws Exception;
 	List<ShopOrderDto> selectOrderByOrderCode(Integer storeCode,String orderCode) throws Exception;
+	
+	Map<String,Object> selectExpenseItemList(Integer storeCode,Date startDate,Date endDate) throws Exception; 
 }

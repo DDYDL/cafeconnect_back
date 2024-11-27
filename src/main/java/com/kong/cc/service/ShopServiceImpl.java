@@ -1,17 +1,18 @@
 package com.kong.cc.service;
 
-import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
+import com.kong.cc.dto.ItemExpenseDto;
 import com.kong.cc.dto.PaymentRequestDto;
 import com.kong.cc.dto.PaymentResponseDto;
 import com.kong.cc.dto.ShopOrderDto;
@@ -26,7 +27,6 @@ import com.kong.cc.repository.ShopDSLRepository;
 import com.kong.cc.repository.ShopOrderRepository;
 import com.kong.cc.repository.StoreRepository;
 import com.kong.cc.repository.WishItemRepository;
-import com.siot.IamportRestClient.IamportClient;
 
 import lombok.RequiredArgsConstructor;
 
@@ -196,11 +196,8 @@ public class ShopServiceImpl implements ShopService {
 		//예외처리 
 		storeRepo.findById(storeCode).orElseThrow(()->new Exception("해당 가맹점을 찾을 수 없습니다.")); 
 		
-		
 		return shopDslRepo.selectAllCartItemForOrder(storeCode, cartItemNumList);
 	}
-
-	
 	
 	//결제 요청 정보 검증
 	@Override
@@ -293,5 +290,43 @@ public class ShopServiceImpl implements ShopService {
 		
 		return shopDslRepo.selectOneShopOrderByOrderCode(storeCode,orderCode);
 	}
+
+	// 기간 설정 주문 상품 별 통계 -상품 별, 대분류,중분류,소분류 통합 별
+	@Transactional
+	@Override
+	public Map<String,Object> selectExpenseItemList(Integer storeCode, Date startDate, Date endDate) throws Exception {
+		 
+		// 가맹점 확인
+		storeRepo.findById(storeCode).orElseThrow(()->new Exception("가맹점 조회 실패!"));
+		
+		Map<String,Object> result = new HashMap<>();
+		
+		// 기간 내 총 상품 주문 상품 단가,총 주문 개수 및 금액
+		List<ItemExpenseDto> items = shopDslRepo.selectExpnseItemList( storeCode,  startDate,  endDate);
+		List<ItemExpenseDto> majors = shopDslRepo.getExpenseItemSummeryByMajorCategroy(storeCode,startDate,endDate);
+		List<ItemExpenseDto> middle = shopDslRepo.getExpenseItemSummeryByMiddleCategroy(storeCode,startDate,endDate);
+		List<ItemExpenseDto> sub = shopDslRepo.getExpenseItemSummeryBySubCategroy(storeCode,startDate,endDate);
+		
+		Integer cnt = 0;
+		Integer price = 0;
+		for(ItemExpenseDto i :items) {
+			cnt +=i.getTotalOrderCount();
+			price+=i.getTotalOrderPrice();
+		}
+		Integer orderCnt = shopDslRepo.countOrders(storeCode, startDate, endDate).intValue();
+		
+		result.put("itemOrderTotalCnt", cnt); //기간내 주문한 총 제품개수
+		result.put("itemOrderTotalPirce", price); // 기간내 주문 총 금액
+		result.put("orderTotalCount",orderCnt); // 기간 내 총 주문건수 
+		result.put("itemOrderExpsenSummary", items); //기간내 상품별 지출 summary
+		result.put("itemOrderExpsenSummaryByMajor", majors); 
+		result.put("itemOrderExpsenSummaryByMiddle", middle);
+		result.put("itemOrderExpsenSummaryBySub", sub);
+	
+		return result;
+
+	
+	}
+
 }
 

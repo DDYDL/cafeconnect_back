@@ -1,6 +1,7 @@
 package com.kong.cc.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.RepairResponseDto;
 import com.kong.cc.dto.RepairSearchCondition;
 import com.kong.cc.dto.RepairUpdateForm;
@@ -107,31 +107,33 @@ public class RepairController {
 			
 		}
     }
-    //수리 신청 폼에서 기기 조회(자동완성)- 대분류가 "머신"인 상품 가져오기  
+    
+    //수리 신청 폼에서 기기 조회(자동완성) - 대분류가 "머신"인 상품 가져오기(코드,이름을 가지고 내려보냄) 
     @GetMapping("/machineFormList") //RepairRequestForm.js
-    public ResponseEntity<List<ItemDto>>selectAllMachineList(){
+    public ResponseEntity<List<Map<String, Object>>>selectAllMachineList(){
         try {
-			List<ItemDto> result = repairService.selectAllMachineList();
+			List<Map<String, Object>> result = repairService.selectAllMachineList();
         	System.out.println(result.toString());
-			return new ResponseEntity<List<ItemDto>>(result,HttpStatus.OK);	
+			return new ResponseEntity<List<Map<String, Object>>>(result,HttpStatus.OK);	
 			
         } catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<ItemDto>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<List<Map<String, Object>>>(HttpStatus.BAD_REQUEST);
 		}
     }
     
-    
     //가맹점 수리 신청
 	@PostMapping("/writeRepairRequest") //RepairRequestForm.js
-	public ResponseEntity<String> writeRepairRequestFormByStore(@RequestBody RepairResponseDto repairForm) {
-
+	public ResponseEntity<String> writeRepairRequestFormByStore(RepairResponseDto repairForm) {
+			Boolean result= false;
     	try {
-			return new ResponseEntity<String>(HttpStatus.OK);
+    		if(repairService.insertWriteNewRepairForm(repairForm)!=null) {
+    			result = true;
+    		}
+			return new ResponseEntity<String>(String.valueOf(result),HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-			
 		}
 
 	}

@@ -41,6 +41,7 @@ public class ShopOrder {
 	private Item itemO;
 	
 	public ShopOrderDto toDto() {
+		
 		return ShopOrderDto.builder()
 				.orderNum(orderNum)
 				.orderCode(orderCode)
@@ -51,6 +52,8 @@ public class ShopOrder {
 				.orderPayment(orderPayment)
 				.storeCode(storeO.getStoreCode())
 				.itemCode(itemO.getItemCode())
+				.itemPrice(itemO.getItemPrice())
+				.itemName(itemO.getItemName())
 				.build();
 	}
 }

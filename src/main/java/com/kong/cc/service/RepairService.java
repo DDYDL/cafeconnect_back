@@ -1,7 +1,10 @@
 package com.kong.cc.service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,14 +12,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.RepairResponseDto;
 import com.kong.cc.dto.RepairSearchCondition;
 import com.kong.cc.dto.RepairUpdateForm;
 import com.kong.cc.entity.Item;
 import com.kong.cc.entity.Repair;
+import com.kong.cc.entity.Store;
 import com.kong.cc.repository.RepairQuerydslRepositoryImpl;
 import com.kong.cc.repository.RepairRepository;
+import com.kong.cc.repository.StoreRepository;
+import com.querydsl.core.Tuple;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class RepairService {
 
     private final RepairRepository repairRepository;
+    private final StoreRepository storeRepository;
     private final RepairQuerydslRepositoryImpl repairQuerydslRepository;
     
     
@@ -85,11 +91,28 @@ public class RepairService {
     public List<RepairResponseDto> selectAllRepairRequestList(Integer storeCode) {	
     	return repairQuerydslRepository.selectRepairRequestOfStore(storeCode); 
     }
-    //수리 요청 상세 보기 - selectRepairByRepairNum 사용
+    //수리 요청 상세 보기 - selectRepairByRepairNum 사용   
+    public List<Map<String,Object>>selectAllMachineList() {
+    	List<Tuple> tuple = repairQuerydslRepository.selectAllMachineInfoList();
     
-    public List<ItemDto>selectAllMachineList() {
-    	return repairQuerydslRepository.selectAllMachineInfoList();
+    	return tuple.stream().map(t->
+    	{
+    		Map<String,Object>result = new HashMap<>();
+    		result.put("itemCode", t.get(0, String.class));
+    		result.put("itemName", t.get(1, String.class));
+    		return result;
+    	}).collect(Collectors.toList());
+    			
     }
+    //수리 신청서 작성
+    public Repair insertWriteNewRepairForm(RepairResponseDto repairForm) throws Exception  {
+    	
+    	//가맹점 조회
+    	storeRepository.findById(repairForm.getStoreCode()).orElseThrow(()->new Exception("가맹점 조회 실패"));
+
+    	return repairRepository.save(repairForm.toEntity());
     
-    
+    	
+    }
+   
 }
