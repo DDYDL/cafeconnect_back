@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.kong.cc.dto.RepairDto;
 import com.kong.cc.dto.RepairResponseDto;
 
@@ -34,11 +36,11 @@ public class Repair {
 	private String repairTitle;
 	private String repairContent;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	@CreationTimestamp
 	private Date repairDate;
 	private String repairStatus;
 	private String repairAnswer;
-	@Temporal(TemporalType.TIMESTAMP)
+	@CreationTimestamp
 	private Date repairAnswerDate;
 	
 	@ManyToOne(fetch=FetchType.LAZY)

@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,7 +33,7 @@ public class Notice {
     private String noticeTitle;
     private String noticeContent;
     
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date noticeDate;
     
     @ManyToOne(fetch=FetchType.LAZY)

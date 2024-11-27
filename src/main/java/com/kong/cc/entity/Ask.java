@@ -9,8 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,11 +31,11 @@ public class Ask {
     private String askTitle;
     private String askContent;
     
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date askDate;
     private String askStatus;
     private String askAnswer;
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date askAnswerDate;
     
     @ManyToOne(fetch=FetchType.LAZY)

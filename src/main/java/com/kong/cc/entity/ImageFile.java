@@ -11,12 +11,17 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +34,7 @@ public class ImageFile {
 	private String fileDirectory;
 	private String fileName;
 	private Long fileSize;
-	@Temporal(TemporalType.TIMESTAMP)
+	@CreationTimestamp
 	private Date fileUploadDate;
 	
 	@OneToOne(mappedBy="menuImageFile", fetch=FetchType.LAZY)

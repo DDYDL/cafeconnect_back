@@ -21,6 +21,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kong.cc.config.auth.PrincipalDetails;
 import com.kong.cc.entity.Member;
+import com.kong.cc.repository.AlarmDslRepository;
 import com.kong.cc.repository.MemberRepository;
 
 // 인가: 로그인 처리가 되어야만 하는 처리가 들어왔을 때 실행
@@ -28,6 +29,8 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 
 	@Autowired
 	private MemberRepository memberRepository;
+	@Autowired
+	private AlarmDslRepository alarmDslRepository;
 
 	private JwtToken jwtToken = new JwtToken();
 
@@ -77,7 +80,7 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 				.verify(accessToken) // 만료시간 지났는지 체크
 				.getClaim("sub")
 				.asString();
-			System.out.println("------------");
+			System.out.println("3. token ------------");
 			System.out.println(username);
 
 			// 1-2. username check
@@ -95,8 +98,9 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 					null, principalDetails.getAuthorities()); // user를 principalDetails로 싸아놓고, 권한도 줘서
 			SecurityContextHolder.getContext().setAuthentication(auth); // Authentication으로 만듬
 
-			System.out.println("============");
-			System.out.println(member);
+			System.out.println("4. token ============");
+			System.out.println(member.get().getStoreCode());
+			
 			chain.doFilter(request, response);
 			return;
 		} catch(Exception e) {
