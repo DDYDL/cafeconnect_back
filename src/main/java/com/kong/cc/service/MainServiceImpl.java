@@ -34,7 +34,8 @@ public class MainServiceImpl implements MainService {
 	}
 
 	@Override
-	public List<StoreDto> selectStoreByStoreAddress(String storeAddress) throws Exception {
+	public List<StoreDto> selectStoreByStoreAddress(String address) throws Exception {
+		// 해당 위치 근처의 가맹점을 가져온다.
 		return null;
 	}
 

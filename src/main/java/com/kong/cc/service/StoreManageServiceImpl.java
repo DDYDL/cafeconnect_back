@@ -27,47 +27,45 @@ public class StoreManageServiceImpl implements StoreManageService {
 		PageRequest pageRequest = PageRequest.of(page.getCurPage()-1, 10);
 		List<StoreDto> storeDtoList = null;
 		Long allCnt = 0L;
-		Integer statusNum;
 		
-		if (status.equals("Req")) statusNum=1;  
-		else if (status.equals("Delete")) statusNum=2;  
-		else statusNum=0;  
-		
-		switch(statusNum) {
-			case 1: 
-				if(word==null || word.trim().equals("")) {
-					storeDtoList = storeDslRepository.findDeleteReqStoreListByPaging(pageRequest).stream()
-							.map(s->s.toDto()).collect(Collectors.toList());
-					allCnt = storeDslRepository.findDeleteReqStoreCount();
-				} else {
-					storeDtoList = storeDslRepository.searchDeleteReqStoreListByPaging(pageRequest, type, word)
-							.stream().map(s->s.toDto()).collect(Collectors.toList());
-					allCnt = storeDslRepository.searchDeleteReqStoreCount(type, word);
-				}
-				break;
-			case 2: 
-				if(word==null || word.trim().equals("")) {
-					storeDtoList = storeDslRepository.findDeleteStoreListByPaging(pageRequest).stream()
-							.map(s->s.toDto()).collect(Collectors.toList());
-					allCnt = storeDslRepository.findDeleteStoreCount();
-				} else {
-					storeDtoList = storeDslRepository.searchDeleteStoreListByPaging(pageRequest, type, word)
-							.stream().map(s->s.toDto()).collect(Collectors.toList());
-					allCnt = storeDslRepository.searchDeleteStoreCount(type, word);
-				}
-				break;
-				
-			default:
-				if(word==null || word.trim().equals("")) {
-					storeDtoList = storeDslRepository.findStoreListByPaging(pageRequest).stream()
-							.map(s->s.toDto()).collect(Collectors.toList());
-					allCnt = storeDslRepository.findStoreCount();
-				} else {
-					storeDtoList = storeDslRepository.searchStoreListByPaging(pageRequest, type, word)
-							.stream().map(s->s.toDto()).collect(Collectors.toList());
-					allCnt = storeDslRepository.searchStoreCount(type, word);
-				}
-				break;
+		boolean isWordEmpty = (word == null || word.trim().equals(""));
+
+		if (isWordEmpty) {
+		    switch (status) {
+		        case "Req":
+		            storeDtoList = storeDslRepository.findDeleteReqStoreListByPaging(pageRequest)
+		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
+		            allCnt = storeDslRepository.findDeleteReqStoreCount();
+		            break;
+		        case "Delete":
+		            storeDtoList = storeDslRepository.findDeleteStoreListByPaging(pageRequest)
+		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
+		            allCnt = storeDslRepository.findDeleteStoreCount();
+		            break;
+		        default:
+		            storeDtoList = storeDslRepository.findStoreListByPaging(pageRequest)
+		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
+		            allCnt = storeDslRepository.findStoreCount();
+		            break;
+		    }
+		} else {
+		    switch (status) {
+		        case "Req":
+		            storeDtoList = storeDslRepository.searchDeleteReqStoreListByPaging(pageRequest, type, word)
+		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
+		            allCnt = storeDslRepository.searchDeleteReqStoreCount(type, word);
+		            break;
+		        case "Delete":
+		            storeDtoList = storeDslRepository.searchDeleteStoreListByPaging(pageRequest, type, word)
+		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
+		            allCnt = storeDslRepository.searchDeleteStoreCount(type, word);
+		            break;
+		        default:
+		            storeDtoList = storeDslRepository.searchStoreListByPaging(pageRequest, type, word)
+		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
+		            allCnt = storeDslRepository.searchStoreCount(type, word);
+		            break;
+		    }
 		}
 		Integer allPage = (int)(Math.ceil(allCnt.doubleValue()/pageRequest.getPageSize()));
 		Integer startPage = (page.getCurPage()-1)/10*10+1;
@@ -91,49 +89,49 @@ public class StoreManageServiceImpl implements StoreManageService {
 		Store oStore = storeRepository.findById(storeDto.getStoreCode()).get();
 		Store mStore = storeDto.toEntity();
 		
-		if(!(mStore.getStoreName()==null)&&!(mStore.getStoreName().equals(oStore))) {
+		if(!(mStore.getStoreName()==null)&&!(mStore.getStoreName().equals(oStore.getStoreName()))) {
 			oStore.setStoreName(mStore.getStoreName());
 		}
-		if(!(mStore.getStoreAddress()==null)&&!(mStore.getStoreAddress().equals(oStore))) {
+		if(!(mStore.getStoreAddress()==null)&&!(mStore.getStoreAddress().equals(oStore.getStoreAddress()))) {
 			oStore.setStoreAddress(mStore.getStoreAddress());
 		}
-		if(!(mStore.getStoreAddressNum()==null)&&!(mStore.getStoreAddressNum().equals(oStore))) {
+		if(!(mStore.getStoreAddressNum()==null)&&!(mStore.getStoreAddressNum().equals(oStore.getStoreAddressNum()))) {
 			oStore.setStoreAddressNum(mStore.getStoreAddressNum());
 		}
-		if(!(mStore.getStorePhone()==null)&&!(mStore.getStorePhone().equals(oStore))) {
+		if(!(mStore.getStorePhone()==null)&&!(mStore.getStorePhone().equals(oStore.getStorePhone()))) {
 			oStore.setStorePhone(mStore.getStorePhone());
 		}
-		if(!(mStore.getStoreOpenTime()==null) && !(mStore.getStoreOpenTime().equals(oStore))) {
+		if(!(mStore.getStoreOpenTime()==null) && !(mStore.getStoreOpenTime().equals(oStore.getStoreOpenTime()))) {
 			oStore.setStoreOpenTime(mStore.getStoreOpenTime());
 		}
-		if(!(mStore.getStoreCloseTime()==null)&&!(mStore.getStoreCloseTime().equals(oStore))) {
+		if(!(mStore.getStoreCloseTime()==null)&&!(mStore.getStoreCloseTime().equals(oStore.getStoreCloseTime()))) {
 			oStore.setStoreCloseTime(mStore.getStoreCloseTime());
 		}
-		if(!(mStore.getStoreCloseDate()==null)&&!(mStore.getStoreCloseDate().equals(oStore))) {
+		if(!(mStore.getStoreCloseDate()==null)&&!(mStore.getStoreCloseDate().equals(oStore.getStoreCloseDate()))) {
 			oStore.setStoreCloseDate(mStore.getStoreCloseDate());
 		}
-		if(!(mStore.getOwnerName()==null)&&!(mStore.getOwnerName().equals(oStore))) {
+		if(!(mStore.getOwnerName()==null)&&!(mStore.getOwnerName().equals(oStore.getOwnerName()))) {
 			oStore.setOwnerName(mStore.getOwnerName());
 		}
-		if(!(mStore.getOwnerPhone()==null)&&!(mStore.getOwnerPhone().equals(oStore))) {
+		if(!(mStore.getOwnerPhone()==null)&&!(mStore.getOwnerPhone().equals(oStore.getOwnerPhone()))) {
 			oStore.setOwnerPhone(mStore.getOwnerPhone());
 		}
-		if(!(mStore.getManagerName()==null)&&!(mStore.getManagerName().equals(oStore))) {
+		if(!(mStore.getManagerName()==null)&&!(mStore.getManagerName().equals(oStore.getManagerName()))) {
 			oStore.setManagerName(mStore.getManagerName());
 		}
-		if(!(!(mStore.getManagerPhone()==null)&&mStore.getManagerPhone().equals(oStore))) {
+		if(!(!(mStore.getManagerPhone()==null)&&mStore.getManagerPhone().equals(oStore.getManagerPhone()))) {
 			oStore.setManagerPhone(mStore.getManagerPhone());
 		}
-		if(!(mStore.getContractPeriodStart()==null)&&!(mStore.getContractPeriodStart().equals(oStore))) {
+		if(!(mStore.getContractPeriodStart()==null)&&!(mStore.getContractPeriodStart().equals(oStore.getContractPeriodStart()))) {
 			oStore.setContractPeriodStart(mStore.getContractPeriodStart());
 		}
-		if(!(mStore.getContractPeriodEnd()==null)&&!(mStore.getContractPeriodEnd().equals(oStore))) {
+		if(!(mStore.getContractPeriodEnd()==null)&&!(mStore.getContractPeriodEnd().equals(oStore.getContractPeriodEnd()))) {
 			oStore.setContractPeriodEnd(mStore.getContractPeriodEnd());
 		}
-		if(!(mStore.getContractDate()==null)&&!(mStore.getContractDate().equals(oStore))) {
+		if(!(mStore.getContractDate()==null)&&!(mStore.getContractDate().equals(oStore.getContractDate()))) {
 			oStore.setContractDate(mStore.getContractDate());
 		}
-		if(!(mStore.getOpeningDate()==null)&&!(mStore.getOpeningDate().equals(oStore))) {
+		if(!(mStore.getOpeningDate()==null)&&!(mStore.getOpeningDate().equals(oStore.getOpeningDate()))) {
 			oStore.setOpeningDate(mStore.getOpeningDate());
 		}
 

@@ -1,6 +1,9 @@
 package com.kong.cc.dto;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.UUID;
 
 import com.kong.cc.entity.Item;
 import com.kong.cc.entity.ShopOrder;
@@ -25,9 +28,23 @@ public class ShopOrderDto {
 	private String orderState;
 	private String orderDelivery;
 	private String orderPayment;
+
 	
 	private Integer storeCode;
-	private String itemCode;
+	private String itemCode;	
+	private String itemName;
+	private Integer itemPrice;
+	private Integer orderPrice;
+	
+	
+	//주문번호 생성 
+	public String makeOrderCode () {
+		String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		String uuid = UUID.randomUUID().toString().substring(0,8); //36자 문자열에서 앞 8자만 가져옴
+		
+		return date+"-"+uuid;
+	}
+	
 	
 	public ShopOrder toEntity() {
 		return ShopOrder.builder()
