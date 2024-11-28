@@ -37,7 +37,7 @@ public class Cart {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="itemCode")
 	private Item itemCa;
-	
+
 	public CartDto toDto() {
 		return CartDto.builder()
 				.cartNum(cartNum)

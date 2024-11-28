@@ -53,10 +53,10 @@ public class StockDslRepository {
 		
 		// 받아온 expirationDate를 날짜 양식으로 	바꿈
 		// StringTemplate expirationDateFormat = Expressions.stringTemplate("DATE_FORMAT( {0}, {1} )", expirationDate, ConstantImpl.create("%Y-%m-%d"));
-		
+
 		if(param.get("category").equals("major")) {
 			Integer categoryNum = Integer.parseInt(param.get("categoryNum"));
-			
+
 			stockList = jpaQueryFactory.selectFrom(stock)
 					.leftJoin(item)
 					.on(item.itemCode.eq(stock.itemS.itemCode))
@@ -65,7 +65,7 @@ public class StockDslRepository {
 					.fetch();
 		} else if(param.get("category").equals("middle")) {
 			Integer categoryNum = Integer.parseInt(param.get("categoryNum"));
-			
+
 			stockList = jpaQueryFactory.selectFrom(stock)
 					.leftJoin(item)
 					.on(item.itemCode.eq(stock.itemS.itemCode))
@@ -74,7 +74,7 @@ public class StockDslRepository {
 					.fetch();
 		} else if(param.get("category").equals("sub")) {
 			Integer categoryNum = Integer.parseInt(param.get("categoryNum"));
-			
+
 			stockList = jpaQueryFactory.selectFrom(stock)
 					.leftJoin(item)
 					.on(item.itemCode.eq(stock.itemS.itemCode))
@@ -89,7 +89,7 @@ public class StockDslRepository {
 					.where(expirationDateSelect(expirationDate, stock.stockExpirationDate))
 					.fetch();
 		}
-		
+
 		return stockList;
 	}
 	
@@ -99,7 +99,7 @@ public class StockDslRepository {
 		NumberTemplate dateFormat = Expressions.numberTemplate(Integer.class, "DATEDIFF({0}, curdate())", stockExpirationDate);
 		return StringUtils.hasText(expirationDate) ? dateFormat.loe(3) : null;
 	}
-	
+
 	public List<Stock> selectStockByKeyword(Integer storeCode, String keyword) throws Exception {
 		QStock stock = QStock.stock;
 		QItem item = QItem.item;
@@ -123,22 +123,22 @@ public class StockDslRepository {
 				.where(stock.itemS.itemCode.eq(itemCode))
 				.fetch();
 	}
-	
+
 	public List<Stock> selectStockByExpirationDate(String expirationDate) throws Exception {
 		QStock stock = QStock.stock;
 		QItem item = QItem.item;
-		
+
 		return jpaQueryFactory.selectFrom(stock)
 					.leftJoin(item)
 					.on(item.itemCode.eq(stock.itemS.itemCode))
 					.where(expirationDateSelect(expirationDate, stock.stockExpirationDate))
 					.fetch();
 	}
-	
+
 	public List<Stock> selectStockByStockCount(Integer count) throws Exception {
 		QStock stock = QStock.stock;
 		QItem item = QItem.item;
-		
+
 		return jpaQueryFactory.selectFrom(stock)
 					.leftJoin(item)
 					.on(item.itemCode.eq(stock.itemS.itemCode))

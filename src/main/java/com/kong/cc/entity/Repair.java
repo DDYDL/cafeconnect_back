@@ -47,9 +47,9 @@ public class Repair {
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="itemCode")
     private Item itemR;
-	
+
 	public RepairResponseDto toDto() {
-	
+
 		return  RepairResponseDto.builder()
 				.repairNum(repairNum)
 				.repairType(repairType)

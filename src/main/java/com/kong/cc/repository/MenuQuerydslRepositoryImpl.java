@@ -4,8 +4,6 @@ import com.kong.cc.dto.MenuResponseDto;
 import com.kong.cc.entity.Menu;
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +18,8 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
 
-import static com.kong.cc.entity.QMenu.*;
-import static com.kong.cc.entity.QMenuCategory.*;
+import static com.kong.cc.entity.QMenu.menu;
+import static com.kong.cc.entity.QMenuCategory.menuCategory;
 
 @Repository
 public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
