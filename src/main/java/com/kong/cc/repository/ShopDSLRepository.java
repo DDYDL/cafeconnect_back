@@ -1,9 +1,9 @@
 package com.kong.cc.repository;
 
-import java.util.Date;
+import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -24,7 +24,7 @@ import com.kong.cc.entity.QItemSubCategory;
 import com.kong.cc.entity.QShopOrder;
 import com.kong.cc.entity.QStore;
 import com.kong.cc.entity.QWishItem;
-import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -305,7 +305,24 @@ public class ShopDSLRepository {
 	              .and(cart.cartNum.in(cartNums)))
 	        .execute();  
 	}
+
+	//최근 주문 날짜 10개 받아오기 
+	public List<String> selectPreOrderedDate(Integer storeCode) {
+		 QShopOrder order = QShopOrder.shopOrder;
+		 QStore store = QStore.store;
 	
+		 // 쿼리문  DATE_FORMAT(shopOrder.orderDate,"%Y-%m-%d") -> QueryDsl 표현법   
+		 return jpaQueryFactory.select(Expressions.stringTemplate("DATE_FORMAT({0}, {1})",order.orderDate,ConstantImpl.create("%Y-%m-%d")))
+				 		.from(order)
+				 		.join(order.storeO,store)
+				 		.where(store.storeCode.eq(storeCode))
+				 		.groupBy(order.orderDate)
+				 		.limit(10)
+				 		.offset(0)
+				 		.orderBy(order.orderDate.desc())
+				 		.fetch();
+	}
+
 	// 최신순 정렬 주문내역 조회
 	public List<ShopOrderDto> selectAllShopOrderList(Integer storeCode) {
 	    QShopOrder order = QShopOrder.shopOrder;
@@ -313,7 +330,7 @@ public class ShopDSLRepository {
 	    QStore store = QStore.store;
 
 	    return jpaQueryFactory
-	        .select(Projections.fields(ShopOrderDto.class,
+	        .select(Projections.bean(ShopOrderDto.class,
 	            order.orderNum,
 	            order.orderCode,
 	            order.orderCount,
@@ -324,9 +341,7 @@ public class ShopDSLRepository {
 	            store.storeCode,
 	            item.itemCode,
 	            item.itemPrice,
-	            Expressions.asNumber(item.itemPrice)
-	            .multiply(order.orderCount)
-	            .as("orderPrice")        	
+	            item.itemPrice.multiply(order.orderCount).as("orderPrice")        	
 	            ))
 	        .from(order)
 	        .join(order.itemO, item)
@@ -371,7 +386,7 @@ public class ShopDSLRepository {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    
 	    return jpaQueryFactory
-	        .select(order.orderNum.countDistinct())
+	        .select(order.orderCode.countDistinct())
 	        .from(order)
 	        .where(order.storeO.storeCode.eq(storeCode)
 	            .and(order.orderDate.between(startDate, endDate)))
@@ -436,7 +451,7 @@ public class ShopDSLRepository {
     		        .fetch();
 
 	}
-	
+	//지출내역 시작 
 	// 기간 내 총 상품 주문 상품 통계 -단가,총 주문 개수 및 금액
 	public List<ItemExpenseDto> selectExpnseItemList(Integer storeCode,Date startDate,Date endDate){
 	    QShopOrder order = QShopOrder.shopOrder;
@@ -468,7 +483,7 @@ public class ShopDSLRepository {
 	    }
 	    	return null;
 	}
-	//대분류 주문 통계 
+	//대분류 주문 상품 통계 
 	public List<ItemExpenseDto> getExpenseItemSummeryByMajorCategroy(Integer storeCode,Date startDate,Date endDate) {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
@@ -491,7 +506,7 @@ public class ShopDSLRepository {
 	    }
 	    return null;
 	}
-	//중분류 주문 통계 
+	//중분류 주문 상품 통계 
 	public List<ItemExpenseDto> getExpenseItemSummeryByMiddleCategroy(Integer storeCode,Date startDate,Date endDate) {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
@@ -516,7 +531,7 @@ public class ShopDSLRepository {
 	    }
 	    return null;
 	}
-	//소분류 주문 통계 
+	//소분류 주문 상품 통계 
 	public List<ItemExpenseDto> getExpenseItemSummeryBySubCategroy(Integer storeCode,Date startDate,Date endDate) {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;

@@ -142,7 +142,7 @@ public class CategoryService {
                 .map(ItemMajorCategory::toDto)
                 .collect(Collectors.toList());
     }
-    
+//     
 //    	List<ItemMajorCategoryForm> result = new ArrayList<>();
 //    	
 //    	List<ItemMajorCategory> majors = itemMajorCategoryRepository.findAll();
