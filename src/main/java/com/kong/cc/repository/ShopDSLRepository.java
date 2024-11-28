@@ -306,12 +306,12 @@ public class ShopDSLRepository {
 	        .execute();  
 	}
 
-	//최근 주문 날짜 10개 받아오기 
+	//최근 주문 날짜 10개 받아오기
 	public List<String> selectPreOrderedDate(Integer storeCode) {
 		 QShopOrder order = QShopOrder.shopOrder;
 		 QStore store = QStore.store;
-	
-		 // 쿼리문  DATE_FORMAT(shopOrder.orderDate,"%Y-%m-%d") -> QueryDsl 표현법   
+
+		 // 쿼리문  DATE_FORMAT(shopOrder.orderDate,"%Y-%m-%d") -> QueryDsl 표현법
 		 return jpaQueryFactory.select(Expressions.stringTemplate("DATE_FORMAT({0}, {1})",order.orderDate,ConstantImpl.create("%Y-%m-%d")))
 				 		.from(order)
 				 		.join(order.storeO,store)
@@ -341,7 +341,7 @@ public class ShopDSLRepository {
 	            store.storeCode,
 	            item.itemCode,
 	            item.itemPrice,
-	            item.itemPrice.multiply(order.orderCount).as("orderPrice")        	
+	            item.itemPrice.multiply(order.orderCount).as("orderPrice")
 	            ))
 	        .from(order)
 	        .join(order.itemO, item)
@@ -451,7 +451,7 @@ public class ShopDSLRepository {
     		        .fetch();
 
 	}
-	//지출내역 시작 
+	//지출내역 시작
 	// 기간 내 총 상품 주문 상품 통계 -단가,총 주문 개수 및 금액
 	public List<ItemExpenseDto> selectExpnseItemList(Integer storeCode,Date startDate,Date endDate){
 	    QShopOrder order = QShopOrder.shopOrder;
@@ -483,7 +483,7 @@ public class ShopDSLRepository {
 	    }
 	    	return null;
 	}
-	//대분류 주문 상품 통계 
+	//대분류 주문 상품 통계
 	public List<ItemExpenseDto> getExpenseItemSummeryByMajorCategroy(Integer storeCode,Date startDate,Date endDate) {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
@@ -506,7 +506,7 @@ public class ShopDSLRepository {
 	    }
 	    return null;
 	}
-	//중분류 주문 상품 통계 
+	//중분류 주문 상품 통계
 	public List<ItemExpenseDto> getExpenseItemSummeryByMiddleCategroy(Integer storeCode,Date startDate,Date endDate) {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
@@ -531,7 +531,7 @@ public class ShopDSLRepository {
 	    }
 	    return null;
 	}
-	//소분류 주문 상품 통계 
+	//소분류 주문 상품 통계
 	public List<ItemExpenseDto> getExpenseItemSummeryBySubCategroy(Integer storeCode,Date startDate,Date endDate) {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;

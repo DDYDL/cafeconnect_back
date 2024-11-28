@@ -39,7 +39,7 @@ public class Notice {
     @ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="mainStoreId")
 	private Member memberMain;
-    
+
     public NoticeDto toDto() {
     	return NoticeDto.builder()
     			.noticeNum(noticeNum)
@@ -47,7 +47,7 @@ public class Notice {
     			.noticeTitle(noticeTitle)
     			.noticeContent(noticeContent)
     			.noticeDate(noticeDate)
-    			.mainStoreId(memberMain.getMemberNum())
+//    			.mainStoreId(memberMain.getMemberNum())
     			.build();
     }
 }

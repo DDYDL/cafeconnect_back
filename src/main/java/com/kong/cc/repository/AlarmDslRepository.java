@@ -53,33 +53,33 @@ public class AlarmDslRepository {
 				.where(menu.menuCategory.menuCategoryNum.eq(menuCategoryNum))
 				.fetch();
 	}
-	
+
 	// 로그인 시 member의 store List 가져오기
 	public List<Store> selectStoreByMemberNum(Integer memberNum) throws Exception {
 		QStore store = QStore.store;
-			
+
 		return jpaQueryFactory.selectFrom(store)
 				.where(store.member.memberNum.eq(memberNum))
 				.fetch();
 	}
-		
+
 	public Item selectItemByItemCode(String itemCode) throws Exception {
 		QItem item = QItem.item;
-		
+
 		return jpaQueryFactory.selectFrom(item)
 				.where(item.itemCode.eq(itemCode))
 				.fetchOne();
 	}
-	
+
 	public List<Notice> selectNoticeByNoticeTypeAndNoticeDate(String noticeType) throws Exception {
 		QNotice notice = QNotice.notice;
-		
+
 		return jpaQueryFactory.selectFrom(notice)
 				.where(notice.noticeType.eq(noticeType))
 				.where(expirationDateSelect("true", notice.noticeDate))
 				.fetch();
 	}
-	
+
 	private BooleanExpression expirationDateSelect(String noticeDateBool, DatePath<Date> noticeDate) {
 		// 현재 날짜 기준 expirationDate와 마이너스 연산을 한다.(하루 전 올라온 공지사항만 확인)
 		NumberTemplate dateFormat = Expressions.numberTemplate(Integer.class, "DATEDIFF(curdate(), {0})", noticeDate);

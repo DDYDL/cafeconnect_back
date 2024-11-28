@@ -43,8 +43,8 @@ public interface ShopService {
 	PaymentResponseDto verifyPayment(String imUid,String merchanUid,Integer amount) throws Exception; 
 	List<ShopOrderDto> createOrder(String merchantUid,Integer storeCode, List<Integer> cartNums) throws Exception;
 	//주문 끝
-	
-	
+
+
 	List<ShopOrderDto> selectAllOrderList(Integer storeCode) throws Exception;
 	List<ShopOrderDto> selectAllOrderListByPeriod(Integer storeCode,Date startDate,Date endDate) throws Exception;
 	List<ShopOrderDto> selectAllOrderListByOrderState(Integer storeCode,String orderState) throws Exception;

@@ -1,8 +1,7 @@
 package com.kong.cc.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.kong.cc.entity.ItemMajorCategory;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 

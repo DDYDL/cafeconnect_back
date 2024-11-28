@@ -1,17 +1,8 @@
 package com.kong.cc.repository;
 
-import com.kong.cc.entity.Store;
-import org.springframework.data.jdbc.repository.query.Query;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.kong.cc.entity.ShopOrder;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
-import java.util.List;
 
 @Repository
 public interface ShopOrderRepository extends JpaRepository<ShopOrder, Integer> {
