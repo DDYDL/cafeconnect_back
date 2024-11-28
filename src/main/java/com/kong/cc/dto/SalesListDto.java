@@ -8,14 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemMajorCategoryForm {
-
-	private Integer itemCategoryNum;
-    private String itemCategoryName;
-    
-    
-    private List<ItemMiddleCategoryForm> midCategories;
+@Builder
+public class SalesListDto {
+    private List<SalesDto> salesList;
 }

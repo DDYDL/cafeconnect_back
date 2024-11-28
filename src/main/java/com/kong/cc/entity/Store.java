@@ -1,5 +1,11 @@
 package com.kong.cc.entity;
 
+import com.kong.cc.dto.StoreDto;
+import lombok.*;
+
+import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;

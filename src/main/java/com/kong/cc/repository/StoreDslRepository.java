@@ -1,14 +1,13 @@
 package com.kong.cc.repository;
 
-import java.util.List;
-
+import com.kong.cc.entity.QStore;
+import com.kong.cc.entity.Store;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
-import com.kong.cc.entity.QStore;
-import com.kong.cc.entity.Store;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 
 @Repository
 public class StoreDslRepository {

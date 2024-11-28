@@ -30,7 +30,7 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
 
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
-     
+
     public RepairQuerydslRepositoryImpl(EntityManager em) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
@@ -118,11 +118,11 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
     }
 
     // 가맹점 시작
-    // 가맹점 수리 요청 리스트 
+    // 가맹점 수리 요청 리스트
     public List<RepairResponseDto> selectRepairRequestOfStore(Integer storeCode) {
     	QRepair repair = QRepair.repair;
     	QItem item = QItem.item;
-    	
+
     	return queryFactory.select(Projections.bean(RepairResponseDto.class,
     			                   repair.repairNum,
     			                   repair.repairStatus,
@@ -140,7 +140,7 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
     			.fetch();
     }
     //수리 신청 기기 조회에 사용될 전체 머신 리스트 - 대분류가 머신인!
-    public List<Tuple> selectAllMachineInfoList() {   	
+    public List<Tuple> selectAllMachineInfoList() {
     	QItem item = QItem.item;
     	QItemMajorCategory major = QItemMajorCategory.itemMajorCategory;
     	return queryFactory.select(item.itemCode,item.itemName)
@@ -149,7 +149,7 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
     						.on(item.itemMajorCategory.itemCategoryNum.eq(major.itemCategoryNum))
     						.where(major.itemCategoryName.eq("머신")).fetch();
 
-    }   
-    
-    
+    }
+
+
 }

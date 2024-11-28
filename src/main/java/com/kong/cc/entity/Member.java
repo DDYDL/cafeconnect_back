@@ -39,7 +39,7 @@ public class Member {
 	
 	private String fcmToken;
 	private Integer storeCode;
-	
+
 	@OneToMany(mappedBy="member", fetch=FetchType.LAZY)
 	private List<Store> storeList = new ArrayList<>();
 	
