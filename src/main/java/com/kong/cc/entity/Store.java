@@ -2,6 +2,7 @@ package com.kong.cc.entity;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,6 +89,7 @@ public class Store {
 	 private List<Sales> salesList = new ArrayList<>();
 	 
 	 public StoreDto toDto() {
+		 	SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd"); 
 		 	StoreDto storeDto = StoreDto.builder()
 					.storeCode(storeCode)
 					.storeName(storeName)
@@ -101,10 +103,10 @@ public class Store {
 					.ownerPhone(ownerPhone)
 					.managerName(managerName)
 					.managerPhone(managerPhone)
-					.contractPeriodStart(contractPeriodStart)
-					.contractPeriodEnd(contractPeriodEnd)
-					.contractDate(contractDate)
-					.openingDate(openingDate)
+					.contractPeriodStart(fmt.format(contractPeriodStart))
+					.contractPeriodEnd(fmt.format(contractPeriodEnd))
+					.contractDate(fmt.format(contractDate))
+					.openingDate(fmt.format(openingDate))
 					.storeStatus(storeStatus)
 					.build();
 			
