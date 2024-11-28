@@ -165,7 +165,9 @@ public class StoreManageServiceImpl implements StoreManageService {
 	@Override
 	public Integer createStoreCode() throws Exception {
 		Integer storeCode = storeDslRepository.selectLastStoreCode();
-		return storeCode+1;
+		if(storeCode!=null || storeCode==0) storeCode+=1;
+		else storeCode=100000;
+		return storeCode;
 	}
 
 

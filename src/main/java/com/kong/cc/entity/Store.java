@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -109,13 +108,21 @@ public class Store {
 					.ownerPhone(ownerPhone)
 					.managerName(managerName)
 					.managerPhone(managerPhone)
-					.contractPeriodStart(fmt.format(contractPeriodStart))
-					.contractPeriodEnd(fmt.format(contractPeriodEnd))
-					.contractDate(fmt.format(contractDate))
-					.openingDate(fmt.format(openingDate))
 					.storeStatus(storeStatus)
 					.build();
 			
+		 	if(contractPeriodStart!=null) {
+		 		storeDto.setContractPeriodStart(fmt.format(contractPeriodStart));
+		 	}
+		 	if(contractPeriodEnd!=null) {
+		 		storeDto.setContractPeriodEnd(fmt.format(contractPeriodEnd));
+		 	}
+		 	if(contractDate!=null) {
+		 		storeDto.setContractDate(fmt.format(contractDate));
+		 	}
+		 	if(openingDate!=null) {
+		 		storeDto.setOpeningDate(fmt.format(openingDate));
+		 	}
 		 	if(member!=null) {
 				storeDto.setMemberNum(member.getMemberNum());
 			}
