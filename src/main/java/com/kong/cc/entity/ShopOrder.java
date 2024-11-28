@@ -41,7 +41,7 @@ public class ShopOrder {
 	private Item itemO;
 	
 	public ShopOrderDto toDto() {
-		
+
 		return ShopOrderDto.builder()
 				.orderNum(orderNum)
 				.orderCode(orderCode)

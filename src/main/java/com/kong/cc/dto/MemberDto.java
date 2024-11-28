@@ -1,7 +1,6 @@
 package com.kong.cc.dto;
 
 import com.kong.cc.entity.Member;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

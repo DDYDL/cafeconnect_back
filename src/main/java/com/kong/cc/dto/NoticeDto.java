@@ -2,6 +2,7 @@ package com.kong.cc.dto;
 
 import java.sql.Date;
 
+import com.kong.cc.entity.Notice;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,4 +21,16 @@ public class NoticeDto {
 	private Date noticeDate;
 	
 	private Integer mainStoreId;
+
+	public Notice toEntity() {
+		return Notice.builder()
+				.noticeNum(this.noticeNum)
+				.noticeType(this.noticeType)
+				.noticeTitle(this.noticeTitle)
+				.noticeContent(this.noticeContent)
+				.noticeDate(this.noticeDate)
+//				.mainStoreId(this.mainStoreId)
+				.build();
+	}
+
 }

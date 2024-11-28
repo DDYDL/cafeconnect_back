@@ -1,11 +1,6 @@
 package com.kong.cc.dto;
 
-import com.kong.cc.entity.ImageFile;
-import com.kong.cc.entity.Item;
-import com.kong.cc.entity.ItemMajorCategory;
-import com.kong.cc.entity.ItemMiddleCategory;
-import com.kong.cc.entity.ItemSubCategory;
-
+import com.kong.cc.entity.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

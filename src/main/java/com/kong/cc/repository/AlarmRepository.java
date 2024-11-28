@@ -1,10 +1,9 @@
 package com.kong.cc.repository;
 
-import java.util.List;
-
+import com.kong.cc.entity.Alarm;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.kong.cc.entity.Alarm;
+import java.util.List;
 
 public interface AlarmRepository extends JpaRepository<Alarm, Integer> {
 	public List<Alarm> findByAlarmType(String alarmType) throws Exception;

@@ -2,6 +2,8 @@ package com.kong.cc.dto;
 
 import java.sql.Date;
 
+import com.kong.cc.entity.Ask;
+import com.kong.cc.entity.Store;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +25,17 @@ public class AskDto {
     private Date askAnswerDate;
     
     private Integer storeCode;
+
+    public Ask toEntity() {
+        return Ask.builder()
+                .askNum(this.askNum)
+                .askType(this.askType)
+                .askTitle(this.askTitle)
+                .askContent(this.askContent)
+                .askDate(this.askDate)
+                .askStatus(this.askStatus)
+                .askAnswer(this.askAnswer)
+                .askAnswerDate(this.askAnswerDate)
+                .build();
+    }
 }

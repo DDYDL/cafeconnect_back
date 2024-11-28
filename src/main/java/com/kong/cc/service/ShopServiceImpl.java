@@ -1,6 +1,8 @@
 package com.kong.cc.service;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ import com.kong.cc.repository.ShopDSLRepository;
 import com.kong.cc.repository.ShopOrderRepository;
 import com.kong.cc.repository.StoreRepository;
 import com.kong.cc.repository.WishItemRepository;
+import com.kong.cc.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -118,7 +121,7 @@ public class ShopServiceImpl implements ShopService {
 		}
 	}
 
-	// cart에 아이템 추가 
+	// 장바구니에 아이템 추가
 	@Override
 	@Transactional
 	public CartDto addItemToCart(CartDto cartDto) throws Exception {
@@ -152,14 +155,14 @@ public class ShopServiceImpl implements ShopService {
 
 		return cartRepo.save(cart).toDto();
 	}
-
+	//장바구니 상품 목록 조회
 	@Override
-	public List<CartDto> selectAllCartItems(Integer sotreCode) throws Exception {
-		
-		//예외처리 
-		storeRepo.findById(sotreCode).orElseThrow(()->new Exception("해당 가맹점을 찾을 수 없습니다.")); 
-				
-		return shopDslRepo.selectAllCartItems(sotreCode);
+	public List<CartDto> selectAllCartItems(Integer storeCode) throws Exception {
+
+		//예외처리
+		storeRepo.findById(storeCode).orElseThrow(()->new Exception("해당 가맹점을 찾을 수 없습니다."));
+
+		return shopDslRepo.selectAllCartItems(storeCode);
 	}
 
 	//장바구니 목록에서 수량 변경 
@@ -188,6 +191,72 @@ public class ShopServiceImpl implements ShopService {
 		
 		return shopDslRepo.deleteCartItem(storeCode,cartNum)>0; //제대로 수행 시 결과는 1 따라서 true반환 
 	}
+	//이전 구매 날짜 리스트
+	@Override
+	public Map<String,Object> selectPreOrderedDate(Integer storeCode) throws Exception {
+		 Map<String,Object> result = new HashMap<>();
+		 List<String> dates = shopDslRepo.selectPreOrderedDate(storeCode);
+		 result.put("orderDates", dates);
+		return result;
+	}
+	//이전 구매 상품리스트
+	@Override
+	public Map<String, Object> selectOrderedItemLisByDate(Integer storeCode, Date selectedDate, PageInfo pageInfo)throws Exception {
+
+		 Map<String,Object> result = new HashMap<>();
+		 //기존에 작성한 쿼리 재활용 함 (기간내 주문 상품 통계)
+		 List<ItemExpenseDto>orderedItemSum = shopDslRepo.selectExpnseItemList(storeCode, selectedDate, selectedDate);
+		 //페이지 처리
+		 List<String> allDates = shopDslRepo.selectPreOrderedDate(storeCode);
+		 if(allDates.isEmpty()) {
+			 result.put("result", "주문 내역이 없습니다.");
+		 }
+		    pageInfo.setAllPage(allDates.size());
+		    pageInfo.setStartPage(1);
+		    pageInfo.setEndPage(allDates.size());
+
+		    result.put("dates", allDates);
+		    result.put("items", orderedItemSum);
+		    result.put("pageInfo", pageInfo);
+		    //버튼 활성화 true,fasle
+		    result.put("hasPrevious", pageInfo.getCurPage() > 1); //true,false 반환
+		    result.put("hasNext", pageInfo.getCurPage() < allDates.size()); //true,false 반환
+		    result.put("selectedDate", new SimpleDateFormat("yyyy-MM-dd").format(selectedDate)); // 다시 스트링으로 내보내기
+
+		return result;
+	}
+	//이전구매상품 목록에서 장바구니로 상품 추가(addcart,updateQuantity관련 메서드 활용)
+	@Override
+	public List<CartDto> addPreviousItemsToCart(Integer storeCode, List<String> itemCodesList) throws Exception {
+		// 여러 상품 한번에 처리해주기 위함
+		List<CartDto> updateCartList = new ArrayList<>();
+
+		Cart cart;
+		//카트에 있는 상품인지 조회- 카트번호 반환
+		for (String itemCode : itemCodesList) {
+			Integer isExistedNum = shopDslRepo.checkIsExistedCartItem(storeCode, itemCode);
+
+	        //이미 넣은 상품이면  수량+1만 해줌 수량 변경 메서드,저장메서드 호출
+	        if(isExistedNum !=null) {
+	        	cart = cartRepo.findById(isExistedNum).orElseThrow(()->new Exception("해당 장바구니를 찾을 수 없습니다."));
+	        	CartDto updateCartItem = updateCartItemCount(isExistedNum,cart.getCartItemCount()+1);
+
+	        	//addcart 메서드 반환데이터 (다시 재 조회되는 cartList)
+	        	updateCartList.add(updateCartItem);
+
+	        //새로 추가 되는 상품 dto로 만들어 addCart메서드로 보내기 수량=1
+	        }else {
+	        	CartDto newItemToCart = CartDto.builder()
+	        	.storeCode(storeCode)
+	        	.itemCode(itemCode)
+	        	.cartItemCount(1)
+	        	.build();
+	        	updateCartList.add(newItemToCart);
+	        }
+		}
+		return updateCartList;
+	}
+
 
 	//Map<String,Object>로 리팩토링 예정, 주문정보와 주문아이템, 총 주문 분리시켜 조회 할 예정(주문자 반복 조회 이슈)
 	@Override

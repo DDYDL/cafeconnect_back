@@ -1,42 +1,74 @@
 package com.kong.cc.controller;
 
-import com.kong.cc.dto.ItemDto;
-import com.kong.cc.dto.SalesDto;
+import com.kong.cc.dto.*;
 import com.kong.cc.service.SalesManagementService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 //재무 관리 - 매출 입력(가맹점)
-@RestController("/")
+@RestController
 @RequiredArgsConstructor
 public class SalesManagementController {
     private final SalesManagementService salesManagementService;
 
+    //매출 입력(상품명 리스트 전달)
+    @GetMapping("/menuList")
+    public ResponseEntity<List<MenuDto>> menuList() throws Exception {
+        try {
+            List<MenuDto> menuDtoList = this.salesManagementService.menuList();
+            return new ResponseEntity<>(menuDtoList, HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        }
+    }
+
     //매출 입력
     @PostMapping("/salesWrite")
-    public ResponseEntity<String> salesWrite(@RequestBody SalesDto body
-//            , @RequestParam("storeCode") Integer storeCode
-    ) throws Exception {
-//        List<Integer> storeCodeList = body.stream().map(SalesDto::getStoreCode).collect(Collectors.toList());
+    public ResponseEntity<String> salesWrite(@RequestBody SalesListDto salesList) {
+        System.out.println("salesList1 = " + salesList);
         try {
-            this.salesManagementService.salesWrite(body);
+            System.out.println("salesList2 = " + salesList);
+            salesManagementService.salesWrite(salesList.getSalesList());
             return ResponseEntity.ok("(controller)매출 정보가 정상적으로 저장되었습니다.");
         } catch (Exception e) {
+            System.out.println("salesList3 = " + salesList);
+            System.out.println("에러남");
+            e.printStackTrace();
             return ResponseEntity.status(500).body("(controller) 매출 정보 저장 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
-    //매출 분석
-    @GetMapping("/salesAnalysis/{period}") // SalesAnalysis.js
-    public ResponseEntity<List<ItemDto>> salesAnalysis(@PathVariable String period, @RequestParam("categoryId")Integer categoryId ) {
-            List<ItemDto> result = salesManagementService.salesAnalysis(period, categoryId);
+    @PostMapping("/salesTemp")
+    public ResponseEntity<List<SalesDto>> salesTemp(@RequestBody SalesDto salesDto) {
+        try {
+            List<SalesDto> salesTempList = salesManagementService.salesTemp(salesDto.getSalesDate(), salesDto.getStoreCode());
+            return new ResponseEntity<List<SalesDto>>(salesTempList, HttpStatus.OK);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<List<SalesDto>>(HttpStatus.BAD_REQUEST);
+        }
 
-        return ResponseEntity.ok(result);
     }
+
+    //매출 분석
+//    @GetMapping("/salesAnalysis/{storeCode}") // SalesAnalysis.js
+//    public ResponseEntity<List<SalesMenuDto>> salesAnalysis(@PathVariable Integer storeCode,
+////                                                            @PathVariable String periodType,
+//                                                            @RequestParam("categoryId") Integer categoryId) {
+//        List<SalesMenuDto> result = salesManagementService.salesAnalysis(storeCode
+////                    , periodType
+//                , categoryId);
+//
+//        return ResponseEntity.ok(result);
+//    }
 
 
 }

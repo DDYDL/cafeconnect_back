@@ -9,6 +9,7 @@ import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.PaymentRequestDto;
 import com.kong.cc.dto.PaymentResponseDto;
 import com.kong.cc.dto.ShopOrderDto;
+import com.kong.cc.util.PageInfo;
 
 public interface ShopService {
 
@@ -30,7 +31,9 @@ public interface ShopService {
 	List<CartDto>selectAllCartItems(Integer sotreCode) throws Exception;
 	CartDto updateCartItemCount(Integer cartNum,Integer count) throws Exception;
 	Boolean deleteCartItem(Integer storeCode,Integer cartNum) throws Exception;
-	
+	Map<String,Object>selectPreOrderedDate(Integer storeCode) throws Exception;
+	Map<String,Object>selectOrderedItemLisByDate(Integer storeCode,Date selectedDate,PageInfo pageInfo)throws Exception;
+	List<CartDto> addPreviousItemsToCart(Integer storeCode,List<String>itemCodesList) throws Exception;
 	//장바구니 끝
 		
 	//주문 및 결제 시작
@@ -40,11 +43,12 @@ public interface ShopService {
 	PaymentResponseDto verifyPayment(String imUid,String merchanUid,Integer amount) throws Exception; 
 	List<ShopOrderDto> createOrder(String merchantUid,Integer storeCode, List<Integer> cartNums) throws Exception;
 	//주문 끝
-	
+
+
 	List<ShopOrderDto> selectAllOrderList(Integer storeCode) throws Exception;
 	List<ShopOrderDto> selectAllOrderListByPeriod(Integer storeCode,Date startDate,Date endDate) throws Exception;
 	List<ShopOrderDto> selectAllOrderListByOrderState(Integer storeCode,String orderState) throws Exception;
 	List<ShopOrderDto> selectOrderByOrderCode(Integer storeCode,String orderCode) throws Exception;
-	
+	//지출 내역
 	Map<String,Object> selectExpenseItemList(Integer storeCode,Date startDate,Date endDate) throws Exception; 
 }

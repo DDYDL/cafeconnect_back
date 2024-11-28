@@ -29,7 +29,7 @@ public class ShopOrderDto {
 	private String orderDelivery;
 	private String orderPayment;
 
-	
+
 	private Integer storeCode;
 	private String itemCode;
 	private String itemName;
@@ -44,15 +44,14 @@ public class ShopOrderDto {
 	private String itemUnit;
 	private String itemStorage;
 	
-	
-	//주문번호 생성 
+	//주문번호 생성
 	public String makeOrderCode () {
 		String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 		String uuid = UUID.randomUUID().toString().substring(0,8); //36자 문자열에서 앞 8자만 가져옴
-		
+
 		return date+"-"+uuid;
 	}
-	
+
 	
 	public ShopOrder toEntity() {
 		return ShopOrder.builder()

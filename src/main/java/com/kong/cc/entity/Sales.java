@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.kong.cc.dto.SalesDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -34,7 +35,8 @@ public class Sales {
 	private Date salesDate;
 	private Integer salesCount;
 	private Integer salesStatus;
-	
+	private Integer salesAmount;
+
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="storeCode")
 	private Store storeSa;
@@ -42,4 +44,17 @@ public class Sales {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="menuCode")
 	private Menu menu;
+
+	public SalesDto toDto() {
+		return SalesDto.builder()
+				.salesNum(salesNum)
+				.salesDate(salesDate)
+				.salesCount(salesCount)
+				.salesAmount(salesAmount)
+				.salesStatus(salesStatus)
+				.storeCode(storeSa.getStoreCode())
+				.menuCode(menu.getMenuCode())
+				.menuName(menu.getMenuName())
+				.build();
+	}
 }

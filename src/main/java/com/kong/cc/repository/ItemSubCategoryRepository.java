@@ -1,11 +1,10 @@
 package com.kong.cc.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.kong.cc.entity.ItemSubCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.kong.cc.entity.ItemSubCategory;
+import java.util.List;
+import java.util.Optional;
 
 public interface ItemSubCategoryRepository extends JpaRepository<ItemSubCategory, Integer> {
 
