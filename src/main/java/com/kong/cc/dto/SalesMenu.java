@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SalesItem {
+public class SalesMenu {
     private String menuName;
     private Integer salesCount;
 }

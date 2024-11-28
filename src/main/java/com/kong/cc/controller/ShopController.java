@@ -1,8 +1,7 @@
 package com.kong.cc.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +24,7 @@ import com.kong.cc.dto.PaymentResponseDto;
 import com.kong.cc.dto.ShopOrderDto;
 import com.kong.cc.service.CategoryService;
 import com.kong.cc.service.ShopService;
+import com.kong.cc.util.PageInfo;
 
 @RestController
 public class ShopController {
@@ -153,6 +153,7 @@ public class ShopController {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
 	//장바구니 추가 및 수량 변경 
 	@GetMapping("/addCart") // ShopMain.js CategoryItemList.js WishItem.js ShopItemDetail.js CartList.js	
 	public ResponseEntity<CartDto>addItemtoCart (CartDto cartDto){
@@ -165,7 +166,7 @@ public class ShopController {
 			return new ResponseEntity<CartDto>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	//장바구니 리스트 출력
 	@GetMapping("/cartList") //CartList.js
 	public ResponseEntity<List<CartDto>>selectAllCartItemList (@RequestParam Integer storeCode) {
 		try {
@@ -177,6 +178,7 @@ public class ShopController {
 			return new ResponseEntity<List<CartDto>>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	//장바구니 상품 수량 변경
 	@PostMapping("/updateCartItemQuantity") //CartList.js
 	public ResponseEntity<CartDto> updateCartItemQuantity(@RequestParam Integer cartNum,@RequestParam Integer count) {
 		try {
@@ -188,7 +190,7 @@ public class ShopController {
 			return new ResponseEntity<CartDto>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	//장바구니 상품 삭제 
 	@PostMapping("deleteCartItem") //CartList.js
 	public ResponseEntity<String> deleteCartListItem (@RequestParam Integer storeCode,@RequestParam Integer cartNum) {
 		try {
@@ -200,9 +202,56 @@ public class ShopController {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 	}
+
+	//장바구니 이전 주문 날짜 리스트  조회(10개) 
+	@GetMapping("/selectPreviouOrderDate") // CartList.js
+	public ResponseEntity<Map<String,Object>> selectPreviousOrderDate(@RequestParam Integer storeCode){
+		
+		try {
+			Map<String,Object> result = shopService.selectPreOrderedDate(storeCode); 
+            return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK); 
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
+		}
+	}
 	
-//  @PostMapping("/selectPreviouOrder") //CartList.js
-//	@GetMapping("/selectPreviouOrderDate") // CartList.js
+	//장바구니에서 이전 주문 목록 선택 
+	@PostMapping("/selectPreviouOrder") //CartList.js
+	public ResponseEntity<Map<String,Object>>selectPreviousOrderList(@RequestParam Integer storeCode, 
+																	   @RequestParam(name="orderDate",required = false) String orderDate,
+																	   @RequestParam(name="page",required = false)Integer page) {
+		try {
+			 Map<String, Object> result = new HashMap<>();
+			 Date selectedDate = Date.valueOf(orderDate);// 선택 날짜
+			 page = 1;
+			 PageInfo pageInfo = new PageInfo();
+			 if(page!=null) {
+				 pageInfo.setCurPage(page);
+			 }
+			 pageInfo.setCurPage(page);
+			
+			 result = shopService.selectOrderedItemLisByDate(storeCode, selectedDate, pageInfo);
+			 
+			 return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK); 
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST); 
+		}
+	
+	}
+	//장바구니 이전 주문 목록에서 장바구니로 상품 추가 
+	public ResponseEntity<List<CartDto>> addPreviousOrderItemsToCart (@RequestParam Integer storeCode, @RequestParam("check") String[] checkedItemCodes) {
+		try {
+			 List<CartDto> result = shopService.addPreviousItemsToCart(storeCode,Arrays.asList(checkedItemCodes));
+			return new ResponseEntity<List<CartDto>>(result, HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<CartDto>>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 	//장바구니에서 주문 선택주문, 전체주문 모두 가능 
 	@PostMapping("/order") // CartList.js
@@ -278,11 +327,11 @@ public class ShopController {
     																	@RequestParam(name="endDate",required = false)String endDate) {
     
     	try {
-    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-    		Date strStartDateToDate = (Date)format.parse(startDate);
-    		Date strEndDateToDate = (Date)format.parse(endDate);
+     	
+    		Date sqlStartDate = Date.valueOf(startDate);	
+    		Date sqlEndDate = Date.valueOf(endDate);
     		
-    		List<ShopOrderDto>result = shopService.selectAllOrderListByPeriod(storeCode,strStartDateToDate,strEndDateToDate);
+    		List<ShopOrderDto>result = shopService.selectAllOrderListByPeriod(storeCode,sqlStartDate,sqlEndDate);
     		
     		return new ResponseEntity<List<ShopOrderDto>>(result,HttpStatus.OK); 
     		
@@ -305,7 +354,7 @@ public class ShopController {
 		}
 	}	
 	//주문 상태가 오직 주문 접수중에만 가능 결제 취소는...? 테이블 없는데.... 
-//	@GetMapping("/deleteOrder") // OrderListForStore.js
+	//@GetMapping("/deleteOrder") // OrderListForStore.js
 
 	//주문 상세 내역 
     @GetMapping("/orderDetail") // OrderDetailForStore.js
@@ -325,11 +374,12 @@ public class ShopController {
 			@RequestParam(name="startDate",required = false)String startDate,
 			@RequestParam(name="endDate",required = false)String endDate){
     	try {
-    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-    		Date strStartDateToDate = (Date)format.parse(startDate);	
-    		Date strEndDateToDate = (Date)format.parse(endDate);
+    	
+    		//String Date 형식 => 2024-11-27
+    		Date sqlStartDate = Date.valueOf(startDate);	
+    		Date sqlEndDate = Date.valueOf(endDate);
     		
-    		Map<String,Object> result = shopService.selectExpenseItemList(storeCode,strStartDateToDate,strEndDateToDate);
+    		Map<String,Object> result = shopService.selectExpenseItemList(storeCode,sqlStartDate,sqlEndDate);
     		
 			return new ResponseEntity <Map<String,Object>>(result,HttpStatus.OK);
     		

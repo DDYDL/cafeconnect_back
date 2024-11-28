@@ -103,8 +103,8 @@ public class SalesManagementMainServiceImpl implements SalesManagementMainServic
                     });
 
                     if (majorCategoryForm != null) {
-                        List<ItemMiddleCategoryForm> midCategories = majorCategoryForm.getMidCategories();
-                        ItemMiddleCategoryForm middleCategoryForm = midCategories.stream()
+                        List<ItemMiddleCategoryForm> midCategorieList = majorCategoryForm.getMidCategories();
+                        ItemMiddleCategoryForm middleCategoryForm = midCategorieList.stream()
                                 .filter(mid -> mid.getItemCategoryNum().equals(middleCategoryNum))
                                 .findFirst()
                                 .orElseGet(() -> {
@@ -114,7 +114,7 @@ public class SalesManagementMainServiceImpl implements SalesManagementMainServic
                                     newForm.setItemCategoryNum(middleCategoryNum);
                                     newForm.setItemCategoryName(middleCategory != null ? middleCategory.getItemCategoryName() : "");
                                     newForm.setSubCategories(new ArrayList<>());
-                                    midCategories.add(newForm);
+                                    midCategorieList.add(newForm);
                                     return newForm;
                                 });
 

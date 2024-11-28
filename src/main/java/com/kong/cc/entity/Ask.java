@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.kong.cc.dto.AskDto;
+import com.kong.cc.dto.NoticeDto;
 import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.AllArgsConstructor;
@@ -41,4 +43,20 @@ public class Ask {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="storeCode")
     private Store storeAs;
+
+    public AskDto toDto() {
+        return AskDto.builder()
+                .askNum(askNum)
+                .askType(askType)
+                .askTitle(askTitle)
+                .askContent(askContent)
+                .askDate(askDate)
+                .askStatus(askStatus)
+                .askAnswer(askAnswer)
+                .askAnswerDate(askAnswerDate)
+                .storeCode(storeAs != null ? storeAs.getStoreCode() : null)  // 연관된 storeAs의 storeCode를 추출
+                .build();
+    }
+
+
 }

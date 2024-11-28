@@ -2,7 +2,7 @@ package com.kong.cc.repository;
 
 import com.kong.cc.dto.ItemResponseDto;
 import com.kong.cc.dto.ItemSearchCondition;
-import com.kong.cc.entity.*;
+import com.kong.cc.entity.Item;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,10 +21,10 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
 
-import static com.kong.cc.entity.QItem.*;
-import static com.kong.cc.entity.QItemMajorCategory.*;
-import static com.kong.cc.entity.QItemMiddleCategory.*;
-import static com.kong.cc.entity.QItemSubCategory.*;
+import static com.kong.cc.entity.QItem.item;
+import static com.kong.cc.entity.QItemMajorCategory.itemMajorCategory;
+import static com.kong.cc.entity.QItemMiddleCategory.itemMiddleCategory;
+import static com.kong.cc.entity.QItemSubCategory.itemSubCategory;
 @Repository
 public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
 

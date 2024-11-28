@@ -1,66 +1,120 @@
 package com.kong.cc.controller;
 
 
-import org.springframework.web.bind.annotation.RestController;
+import com.kong.cc.dto.AskDto;
+import com.kong.cc.dto.ComplainDto;
+import com.kong.cc.dto.NoticeDto;
+import com.kong.cc.dto.SalesDto;
+import com.kong.cc.entity.Ask;
+import com.kong.cc.entity.Notice;
+import com.kong.cc.service.CommunityService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 // 커뮤니티(가맹점)
 @RestController
+@RequiredArgsConstructor
 public class CommunityController {
 
-//    //공지사항 리스트
-//    @GetMapping("/noticeList") // NoticeList.js
-//    public List<NoticeDto> noticeList(){
-//        return this.NoticeService.noticeList();
-//    }
-//
-//    // 공지사항 세부
-//    @GetMapping("/noticeDetail/{noticeNum}") // NoticeDetail.js
-//
-//    // 1:1 문의 작성
-//    @PostMapping("/askWrite") // AskWrite.js
-//    public ResponseEntity<Map<String, Object>> askWrite(@RequestBody AskDto body) throws Exception{
-//        Map<String, Object> response = new HashMap<>();
+    private final CommunityService communityService;
+
+
+    //공지사항 리스트
+    @GetMapping("/noticeList") // NoticeList.js
+    public ResponseEntity<List<NoticeDto>> noticeList() {
+        try {
+            List<NoticeDto> noticeDtoList = communityService.noticeList();
+            return new ResponseEntity<>(noticeDtoList, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 공지사항 상세
+    @GetMapping("/noticeList/{noticeNum}") // NoticeDetail.js
+    public ResponseEntity<NoticeDto> noticeDetail(@PathVariable Integer noticeNum) {
+        try {
+
+            NoticeDto noticeDto = communityService.noticeDetail(noticeNum);
+            return new ResponseEntity<>(noticeDto, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+     //1:1 문의 리스트
+    @GetMapping("/askList") // AskList.js
+    public ResponseEntity<List<AskDto>> askList() {
+        try {
+            List<AskDto> askList = this.communityService.askList();
+            return new ResponseEntity<>(askList, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 1:1 문의 답글 (수정)
+    @PostMapping("/askList/save/{askNum}")
+    public ResponseEntity<String> saveAnswer(@PathVariable Integer askNum, @RequestBody AskDto askDto) {
+        try {
+                this.communityService.saveAnswer(askNum, askDto);
+                return new ResponseEntity<>("답변이 저장되었습니다.", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("답변 저장에 실패했습니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 1:1 문의 답변 삭제
+    @PostMapping("/askList/delete/{askNum}")
+    public ResponseEntity<String> deleteAnswer(@PathVariable Integer askNum) {
+        try {
+            this.communityService.deleteAnswer(askNum);
+            return new ResponseEntity<>("답변이 삭제되었습니다.", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("답변 삭제에 실패했습니다.", HttpStatus.BAD_REQUEST);
+
+        }
+        }
+
+     // 1:1 문의 작성
+    // todo storeCode 넣는 부분 수정 필요
+    @PostMapping("/askWrite") // AskWrite.js
+    public ResponseEntity<String> askWrite(@RequestBody AskDto askDto) throws Exception{
+        try {
+            this.communityService.askWrite(askDto);
+            return new ResponseEntity<>("1:1 문의 작성 완료.", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("1:1 문의 작성 중 오류.", HttpStatus.BAD_REQUEST);
+
+        }
+    }
+
+
+    //컴플레인 공지 리스트
+//    @GetMapping("/complainList") // ComplainList.js
+//    public ResponseEntity<List<ComplainDto>> complainList(){
 //        try {
-//            // 서비스 호출
-//            this.askService.askWrite(body);
-//            // 성공 응답 생성
-//            response.put("success", true);
-//            response.put("message", "문의 작성이 성공적으로 완료되었습니다.");
-//            return new ResponseEntity<>(response, HttpStatus.OK);
-//
+//            List<ComplainDto> complainDtoList = this.communityService.complainList();
+//            return new ResponseEntity<>(complainDtoList, HttpStatus.OK);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//
-//            // 실패 응답 생성
-//            response.put("success", false);
-//            response.put("message", "문의 작성 중 오류가 발생했습니다.");
-//            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //        }
-//    }
-//
-//    //1:1 문의 리스트
-//    @GetMapping("/askList") // AskList.js
-//    public ResponseEntity<Map<String,Object>> askList(@RequestParam ){
-//        try {
-//            List<AskDto> askList = this.askService.askList();
-//            return new ResponseEntity<List<AskDto>>((),HttpStatus.OK);
-//        } catch (Exception e){
-//
-//        }
-//    }
-//
-//    //컴플레인 공지 리스트
-//    @GetMapping("/complainList") // ComplainList.js
-//    public ResponseEntity<Map<String,Object>> complainList(){
-//        try {
-//            List<ComplainDto> complainList = this.complainService.complainList();
-//            return new ResponseEntity<List<AskDto>>((),HttpStatus.OK);
-//        } catch (Exception e){
-//
-//            return new ResponseEntity<List<AskDto>>((),HttpStatus.BAD_REQUEST);
-//        }
-//    }
-//
+    }
+
 //    //컴플레인 상세
 //    @GetMapping("/complainDetail/{complainNum}") // ComplainDetail.js
 //    public ResponseEntity<Map<String,Object>> complainList(@RequestParam String storeNum){
@@ -83,6 +137,6 @@ public class CommunityController {
 
 
 
-}
+
 
 

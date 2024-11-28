@@ -1,9 +1,9 @@
 package com.kong.cc.service;
 
-import java.util.List;
-
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.util.PageInfo;
+
+import java.util.List;
 
 public interface StoreManageService {
 	List<StoreDto> storeList(PageInfo page, String type, String word, String status) throws Exception;
