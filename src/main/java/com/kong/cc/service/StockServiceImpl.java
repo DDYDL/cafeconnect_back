@@ -1,10 +1,8 @@
 package com.kong.cc.service;
 
 import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,9 +13,15 @@ import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.ShopOrderDto;
 import com.kong.cc.dto.StockDto;
 import com.kong.cc.dto.StoreDto;
+import com.kong.cc.entity.ItemMajorCategory;
+import com.kong.cc.entity.ItemMiddleCategory;
+import com.kong.cc.entity.ItemSubCategory;
 import com.kong.cc.entity.Stock;
 import com.kong.cc.entity.Store;
+import com.kong.cc.repository.ItemMajorCategoryRepository;
+import com.kong.cc.repository.ItemMiddleCategoryRepository;
 import com.kong.cc.repository.ItemRepository;
+import com.kong.cc.repository.ItemSubCategoryRepository;
 import com.kong.cc.repository.ShopOrderRepository;
 import com.kong.cc.repository.StockDslRepository;
 import com.kong.cc.repository.StockRepository;
@@ -35,6 +39,10 @@ public class StockServiceImpl implements StockService {
 	public final StoreRepository storeRepository;
 	public final StockRepository stockRepository;
 	public final StockDslRepository stockDslRepository; 
+	
+	public final ItemMajorCategoryRepository itemMajorCategoryRepository;
+	public final ItemMiddleCategoryRepository itemMiddleCategoryRepository;
+	public final ItemSubCategoryRepository itemSubCategoryRepository;
 	
 	@Override
 	public List<ShopOrderDto> selectOrderList(Integer storeCode) throws Exception {
@@ -128,5 +136,49 @@ public class StockServiceImpl implements StockService {
 			storeDtoList.add(storeDto);
 		}
 		return storeDtoList;
+	}
+
+	@Override
+	public Map<String, Object> selectCategory() throws Exception {
+		List<ItemMajorCategory> majorCategoryList = itemMajorCategoryRepository.findAll();
+		List<ItemMiddleCategory> middleCategoryList = itemMiddleCategoryRepository.findAll();
+		List<ItemSubCategory> subCategoryList = itemSubCategoryRepository.findAll();
+		
+		Map<String, Object> categoryList = new HashMap<>();
+		
+		
+		// 대분류 카테고리 원하는 정보만 가져오기
+		List<Map<String, Object>> categoryMajorList = new ArrayList<>();
+		for(ItemMajorCategory majorCategory : majorCategoryList) {
+			Map<String, Object> mCategory = new HashMap<>();
+			mCategory.put("itemCategoryNum", majorCategory.getItemCategoryNum());
+			mCategory.put("itemCategoryName", majorCategory.getItemCategoryName());
+			categoryMajorList.add(mCategory);
+		}
+		categoryList.put("major", categoryMajorList);
+		
+		
+		// 중분류 카테고리 원하는 정보만 가져오기
+		List<Map<String, Object>> categoryMiddleList = new ArrayList<>();
+		for(ItemMiddleCategory middleCategory : middleCategoryList) {
+			Map<String, Object> miCategory = new HashMap<>();
+			miCategory.put("itemCategoryNum", middleCategory.getItemCategoryNum());
+			miCategory.put("itemCategoryName", middleCategory.getItemCategoryName());
+			miCategory.put("itemCategoryMajorNum", middleCategory.getItemMajorCategoryMd().getItemCategoryNum());
+			categoryMiddleList.add(miCategory);
+		}
+		categoryList.put("middle", categoryMiddleList);
+		
+		// 소분류 카테고리 원하는 정보만 가져오기
+		List<Map<String, Object>> categorySubList = new ArrayList<>();
+		for(ItemSubCategory subCategory : subCategoryList) {
+			Map<String, Object> sCategory = new HashMap<>();
+			sCategory.put("itemCategoryNum", subCategory.getItemCategoryNum());
+			sCategory.put("itemCategoryName", subCategory.getItemCategoryName());
+			sCategory.put("itemCategoryMiddleNum", subCategory.getItemMiddleCategorySb().getItemCategoryNum());
+			categorySubList.add(sCategory);
+		}
+		categoryList.put("sub", categorySubList);
+		return categoryList;
 	}
 }

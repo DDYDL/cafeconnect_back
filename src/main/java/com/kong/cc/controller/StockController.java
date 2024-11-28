@@ -153,4 +153,16 @@ public class StockController {
 			return new ResponseEntity<List<StoreDto>>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@GetMapping("/selectCategory") // StockManage.js
+	public ResponseEntity<Map<String, Object>> selectCategory() {
+		try {
+			// {"major":{}, "middle":{}, "sub":{}}
+			Map<String, Object> categoryList = stockService.selectCategory();
+			return new ResponseEntity<Map<String, Object>>(categoryList, HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Map<String, Object>>(HttpStatus.BAD_REQUEST);
+		}
+	}
 }
