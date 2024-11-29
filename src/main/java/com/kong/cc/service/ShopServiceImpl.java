@@ -241,8 +241,11 @@ public class ShopServiceImpl implements ShopService {
 	        	cart = cartRepo.findById(isExistedNum).orElseThrow(()->new Exception("해당 장바구니를 찾을 수 없습니다."));
 	        	CartDto updateCartItem = updateCartItemCount(isExistedNum,cart.getCartItemCount()+1);
 
+	        	
 	        	//addcart 메서드 반환데이터 (다시 재 조회되는 cartList)
 	        	updateCartList.add(updateCartItem);
+	        	cartRepo.save(updateCartItem.toEntity());
+	        	
 
 	        //새로 추가 되는 상품 dto로 만들어 addCart메서드로 보내기 수량=1
 	        }else {
@@ -252,6 +255,7 @@ public class ShopServiceImpl implements ShopService {
 	        	.cartItemCount(1)
 	        	.build();
 	        	updateCartList.add(newItemToCart);
+	        	cartRepo.save(newItemToCart.toEntity());
 	        }
 		}
 		return updateCartList;
@@ -375,6 +379,8 @@ public class ShopServiceImpl implements ShopService {
 		List<ItemExpenseDto> majors = shopDslRepo.getExpenseItemSummeryByMajorCategroy(storeCode,startDate,endDate);
 		List<ItemExpenseDto> middle = shopDslRepo.getExpenseItemSummeryByMiddleCategroy(storeCode,startDate,endDate);
 		List<ItemExpenseDto> sub = shopDslRepo.getExpenseItemSummeryBySubCategroy(storeCode,startDate,endDate);
+
+		
 		
 		Integer cnt = 0;
 		Integer price = 0;
