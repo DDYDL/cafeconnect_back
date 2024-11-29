@@ -55,6 +55,7 @@ public class Ask {
                 .askAnswer(askAnswer)
                 .askAnswerDate(askAnswerDate)
                 .storeCode(storeAs != null ? storeAs.getStoreCode() : null)  // 연관된 storeAs의 storeCode를 추출
+                .storeName(storeAs != null ? storeAs.getStoreName() : null)
                 .build();
     }
 

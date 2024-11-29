@@ -66,7 +66,8 @@ public class StoreManageController {
   	
   	@PostMapping("/modifyStoreMain") // ModifyStoreMain.js
 	public ResponseEntity<String> modifyStore(@RequestBody StoreDto storeDto) {
-		System.out.println(storeDto);
+ 		System.out.println(storeDto.getContractDate().getClass().getSimpleName()); 
+  		System.out.println(storeDto);
 		try {
 			Integer storeCode = storeManageService.modifyStore(storeDto);
 			return new ResponseEntity<String>(String.valueOf(storeCode), HttpStatus.OK);
