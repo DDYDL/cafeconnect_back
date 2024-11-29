@@ -48,6 +48,14 @@ public class Stock {
 				.stockCount(stockCount)
 				.storeCode(storeSt.getStoreCode())
 				.itemCode(itemS.getItemCode())
+				.itemMajorCategoryName(itemS.getItemMajorCategory().getItemCategoryName())
+				.itemMiddleCategoryName(itemS.getItemMiddleCategory().getItemCategoryName())
+				.itemSubCategoryName(itemS.getItemSubCategory().getItemCategoryName())
+				.itemName(itemS.getItemName())
+				.itemCapacity(itemS.getItemCapacity())
+				.itemUnitQuantity(itemS.getItemUnitQuantity())
+				.itemUnit(itemS.getItemUnit())
+				.itemStorage(itemS.getItemStorage())
 				.build();
 	}
 }

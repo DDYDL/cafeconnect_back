@@ -7,7 +7,27 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.ColumnDefault;
+
+import com.kong.cc.dto.StoreDto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @AllArgsConstructor
@@ -38,7 +58,8 @@ public class Store {
 	 private Date contractPeriodEnd;
 	 private Date contractDate;
 	 private Date openingDate;
-	   
+	  
+	 @ColumnDefault("'active'")
 	 private String storeStatus;
 	 
 	 @ManyToOne(fetch=FetchType.LAZY)
@@ -73,6 +94,7 @@ public class Store {
 	 private List<Sales> salesList = new ArrayList<>();
 	 
 	 public StoreDto toDto() {
+		 	SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd"); 
 		 	StoreDto storeDto = StoreDto.builder()
 					.storeCode(storeCode)
 					.storeName(storeName)
@@ -86,13 +108,21 @@ public class Store {
 					.ownerPhone(ownerPhone)
 					.managerName(managerName)
 					.managerPhone(managerPhone)
-					.contractPeriodStart(contractPeriodStart)
-					.contractPeriodEnd(contractPeriodEnd)
-					.contractDate(contractDate)
-					.openingDate(openingDate)
 					.storeStatus(storeStatus)
 					.build();
 			
+		 	if(contractPeriodStart!=null) {
+		 		storeDto.setContractPeriodStart(fmt.format(contractPeriodStart));
+		 	}
+		 	if(contractPeriodEnd!=null) {
+		 		storeDto.setContractPeriodEnd(fmt.format(contractPeriodEnd));
+		 	}
+		 	if(contractDate!=null) {
+		 		storeDto.setContractDate(fmt.format(contractDate));
+		 	}
+		 	if(openingDate!=null) {
+		 		storeDto.setOpeningDate(fmt.format(openingDate));
+		 	}
 		 	if(member!=null) {
 				storeDto.setMemberNum(member.getMemberNum());
 			}

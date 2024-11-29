@@ -77,10 +77,10 @@ public class MypageController {
 		}
 	}
 	
-	@GetMapping("/selectStoreList/{memberNum}") // MyStoreManage.js
-	public ResponseEntity<List<StoreDto>> selectStoreList(@PathVariable Integer memberNum) {
+	@GetMapping("/selectStoreList/{username}") // MyStoreManage.js
+	public ResponseEntity<List<StoreDto>> selectStoreList(@PathVariable String username) {
 		try {
-			List<StoreDto> storeDtoList = mypageService.selectStoreList(memberNum);
+			List<StoreDto> storeDtoList = mypageService.selectStoreList(username);
 			return new ResponseEntity<List<StoreDto>>(storeDtoList, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();

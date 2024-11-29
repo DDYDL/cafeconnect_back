@@ -20,4 +20,5 @@ public interface StockService {
 	public List<ItemDto> selectItemList() throws Exception;
 	public List<ItemDto> selectItemByName(String itemName) throws Exception;
 	public List<StoreDto> selectStoreByItemCode(String itemCode) throws Exception;
+	public Map<String, Object> selectCategory() throws Exception;
 }
