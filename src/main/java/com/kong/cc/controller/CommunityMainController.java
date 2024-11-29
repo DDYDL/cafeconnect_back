@@ -2,13 +2,18 @@ package com.kong.cc.controller;
 
 import com.kong.cc.dto.AskDto;
 import com.kong.cc.dto.NoticeDto;
+import com.kong.cc.dto.StoreDto;
 import com.kong.cc.service.CommunityMainService;
+import com.kong.cc.util.PageInfo;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,7 +21,22 @@ public class CommunityMainController {
 
     private final CommunityMainService communityMainService;
 	
-//  @GetMapping("/askListMain")  	 	// AskListMain.js
+    @GetMapping("/askListMain")  	 	// AskListMain.js
+    		public ResponseEntity<Map<String,Object>> deleteReqList(@RequestParam(value="page", required=false, defaultValue = "1") Integer page) {
+    			try {
+    				PageInfo pageInfo = new PageInfo();
+    				pageInfo.setCurPage(page);
+    				List<AskDto> askDtoList = communityMainService.askListMain(pageInfo);
+    				System.out.println(askDtoList);
+    				Map<String,Object> listInfo = new HashMap<>();
+    				listInfo.put("askList", askDtoList);
+    				listInfo.put("pageInfo", pageInfo);
+    				return new ResponseEntity<Map<String,Object>>(listInfo, HttpStatus.OK);
+    			} catch(Exception e) {
+    				e.printStackTrace();
+    				return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
+    			}
+    		}
 //  @GetMapping("/askDetailMain") 	 	// AskDetailMain.js
 //  @PostMapping("/askAnswer") 			// AskDetailMain.js
 //  @PostMapping("/complainListMain")   // ComplainListMain.js
