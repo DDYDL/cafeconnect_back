@@ -1,7 +1,9 @@
 package com.kong.cc.controller;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -240,7 +242,8 @@ public class ShopController {
 		}
 	
 	}
-	//장바구니 이전 주문 목록에서 장바구니로 상품 추가 
+	//장바구니 이전 주문 목록에서 장바구니로 상품 추가
+	@PostMapping("/addPreOrderItemToCart")	 
 	public ResponseEntity<List<CartDto>> addPreviousOrderItemsToCart (@RequestParam Integer storeCode, @RequestParam("check") String[] checkedItemCodes) {
 		try {
 			 List<CartDto> result = shopService.addPreviousItemsToCart(storeCode,Arrays.asList(checkedItemCodes));
@@ -373,11 +376,27 @@ public class ShopController {
     public ResponseEntity <Map<String,Object>> selectExpenseItemList(@RequestParam Integer storeCode,
 			@RequestParam(name="startDate",required = false)String startDate,
 			@RequestParam(name="endDate",required = false)String endDate){
+
     	try {
-    	
+    		
+    		Date sqlStartDate =null;	
+    		Date sqlEndDate =null;
+    		
+    		//파라미터 없음 default 기간설정 (오늘날짜~30일 기준 startDate:30일전,endDate:오늘)
+    		if(startDate==null &&endDate==null ) {
+    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+    		 Calendar now = Calendar.getInstance();
+    		 Calendar amonthAgo = Calendar.getInstance();
+    		 amonthAgo.add(Calendar.MONTH, -1);    // 한달 전
+    		 
+    		 endDate = sdf.format(now.getTime()); // 오늘 날짜로   
+    		 startDate = sdf.format(amonthAgo.getTime()); // 한달 전
+   
+    		}
+    		// 파라미터 있음
     		//String Date 형식 => 2024-11-27
-    		Date sqlStartDate = Date.valueOf(startDate);	
-    		Date sqlEndDate = Date.valueOf(endDate);
+    		 sqlStartDate = Date.valueOf(startDate);	
+    		 sqlEndDate = Date.valueOf(endDate);
     		
     		Map<String,Object> result = shopService.selectExpenseItemList(storeCode,sqlStartDate,sqlEndDate);
     		
