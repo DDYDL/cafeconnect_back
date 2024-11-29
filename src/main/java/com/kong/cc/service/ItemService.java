@@ -224,6 +224,7 @@ public class ItemService {
                 .itemMajorCategoryName(itemMajorCategoryName)
                 .itemMiddleCategoryName(itemMiddleCategoryName)
                 .itemSubCategoryName(itemSubCategoryName)
+                .itemPrice(item.getItemPrice())
                 .imageUrl(imageUrl)
                 .build();
     }
