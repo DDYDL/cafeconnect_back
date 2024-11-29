@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.sql.Date;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @Transactional
@@ -39,6 +40,7 @@ public class MenuService {
     private final MenuQuerydslRepositoryImpl menuQuerydslRepository;
     private final MenuCategoryRepository menuCategoryRepository;
     private final ImageFileRepository imageFileRepository;
+    private static AtomicLong sequence = new AtomicLong(1L);
 
 
     @Value("${upload.path}")
@@ -79,7 +81,7 @@ public class MenuService {
 
         MenuCategory menuCategory = menuCategoryRepository.findByMenuCategoryName(menuSaveForm.getMenuCategoryName());
         Menu.MenuBuilder menuBuilder = Menu.builder()
-                .menuCode(UUID.randomUUID().toString())
+                .menuCode("B"+sequence.incrementAndGet())
                 .menuName(menuSaveForm.getMenuName())
                 .menuPrice(menuSaveForm.getMenuPrice())
                 .menuCapacity(menuSaveForm.getMenuCapacity())

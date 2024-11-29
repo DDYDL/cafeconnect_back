@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.sql.Date;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @Transactional
@@ -35,6 +36,7 @@ public class ItemService {
     private final ItemMajorCategoryRepository itemMajorCategoryRepository;
     private final ItemMiddleCategoryRepository itemMiddleCategoryRepository;
     private final ItemSubCategoryRepository itemSubCategoryRepository;
+    private static AtomicLong sequence = new AtomicLong(0L);
 
     @Value("${upload.path}")
     private String uploadDir;
@@ -73,7 +75,7 @@ public class ItemService {
         ItemSubCategory itemSubCategory = itemSubCategoryRepository.findByItemCategoryName(itemSaveForm.getItemCategorySubName());
 
         Item.ItemBuilder itemBuilder = Item.builder()
-                .itemCode(UUID.randomUUID().toString())
+                .itemCode("A"+sequence.incrementAndGet())
                 .itemName(itemSaveForm.getItemName())
                 .itemPrice(itemSaveForm.getItemPrice())
                 .itemCapacity(itemSaveForm.getItemCapacity())

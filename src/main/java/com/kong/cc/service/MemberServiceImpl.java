@@ -22,7 +22,7 @@ public class MemberServiceImpl implements MemberService {
                 .username(memberDto.getUsername())
                 .password(encoder.encode(memberDto.getPassword()))
                 .deptName(memberDto.getDeptName())
-                .roles("ROLE_STORE")
+                .roles("ROLE_MAINSTORE")
                 .build();
 
         return memberRepository.save(member);
