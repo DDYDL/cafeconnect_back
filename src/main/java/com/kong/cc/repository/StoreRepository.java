@@ -8,5 +8,5 @@ import java.util.List;
 public interface StoreRepository extends JpaRepository<Store, Integer> {
 	public List<Store> findByStoreNameContaining(String storeName) throws Exception;
 	public List<Store> findByStoreStatus(String storeStatus) throws Exception;
-
+	public Store findByStoreName(String storeName) throws Exception;
 }

@@ -15,4 +15,5 @@ public interface MainService {
 	public List<MenuDto> selectMenuByCategory(Integer categoryNum) throws Exception;
 	public List<ComplainDto> complainList() throws Exception;
 	public String complainWrite(ComplainDto complainDto) throws Exception;
+	public List<StoreDto> allStoreList() throws Exception;
 }
