@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
+import com.kong.cc.dto.ItemExpenseDto;
 import com.kong.cc.dto.PaymentRequestDto;
 import com.kong.cc.dto.PaymentResponseDto;
 import com.kong.cc.dto.ShopOrderDto;
@@ -51,4 +52,5 @@ public interface ShopService {
 	List<ShopOrderDto> selectOrderByOrderCode(Integer storeCode,String orderCode) throws Exception;
 	//지출 내역
 	Map<String,Object> selectExpenseItemList(Integer storeCode,Date startDate,Date endDate) throws Exception; 
+	
 }

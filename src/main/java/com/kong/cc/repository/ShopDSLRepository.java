@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.criterion.Distinct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -457,7 +458,7 @@ public class ShopDSLRepository {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
 	    QStore store = QStore.store;
-
+	    QItemSubCategory subCategory = QItemSubCategory.itemSubCategory;
 	 
 	    if(startDate !=null ||endDate !=null) {
 
@@ -468,13 +469,15 @@ public class ShopDSLRepository {
 				            item.itemMajorCategory.itemCategoryNum.as("majorCategoryNum"),
 				            item.itemMiddleCategory.itemCategoryName.as("middleCategoryName"),
 				            item.itemMiddleCategory.itemCategoryNum.as("middleCategoryNum"),
-				            item.itemSubCategory.itemCategoryName.as("subCategoryName"),
+				            item.itemSubCategory.itemCategoryName.coalesce("없음").as("subCategoryName"),
 				            item.itemSubCategory.itemCategoryNum.as("subCategoryNum"),
 				            item.itemPrice, //단가
 				            order.orderCount.sum().as("totalOrderCount"), // 총 주문 개수
 				            item.itemPrice.multiply(order.orderCount).sum().as("totalOrderPrice") // 구매 상품 총 금액(개수*단가)
-				            )).from(order)
-		    		        .join(order.itemO, item)
+				            ))
+	    					.from(order)
+		    		        .leftJoin(order.itemO, item) 
+		    		        .leftJoin(item.itemSubCategory,subCategory) // leftJoin으로 Null이 포함되도록 함 (소분류 없는 상품 존재함, 대,중분류는 Null없) 
 		    		        .join(order.storeO,store)
 		    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
 		    		        .groupBy(item.itemCode)
@@ -496,7 +499,7 @@ public class ShopDSLRepository {
 			   		item.itemMajorCategory.itemCategoryNum.as("majorCategoryNum"),
 			   		order.orderCount.sum().as("totalOrderCount"), // 총 주문 개수
     		        item.itemPrice.multiply(order.orderCount).sum().as("totalOrderPrice"),
-    		        item.itemCode.count().as("rowspanCount")))  //rowspan counts
+    		        item.itemCode.countDistinct().as("rowspanCount")))  //rowspan counts
     		        .from(order)
     		        .join(order.itemO, item)
     		        .join(order.storeO, store)
@@ -521,7 +524,7 @@ public class ShopDSLRepository {
 			   		item.itemMiddleCategory.itemCategoryNum.as("middleCategoryNum"),
 			   		order.orderCount.sum().as("totalOrderCount"), // 총 주문 개수
     		        item.itemPrice.multiply(order.orderCount).sum().as("totalOrderPrice"),
-    		        item.itemCode.count().as("rowspanCount")))  //rowspan counts
+    		        item.itemCode.countDistinct().as("rowspanCount")))  //rowspan counts
     		        .from(order)
     		        .join(order.itemO, item)
     		        .join(order.storeO, store)
@@ -536,7 +539,7 @@ public class ShopDSLRepository {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
 	    QStore store = QStore.store;
-
+	    QItemSubCategory subCategory = QItemSubCategory.itemSubCategory;
 	    if(startDate !=null ||endDate !=null) {
 
 	   return 	jpaQueryFactory.select(Projections.bean(ItemExpenseDto.class,
@@ -548,9 +551,10 @@ public class ShopDSLRepository {
 			   		item.itemSubCategory.itemCategoryNum.as("subCategoryNum"),
 				   	order.orderCount.sum().as("totalOrderCount"), // 총 주문 개수
     		        item.itemPrice.multiply(order.orderCount).sum().as("totalOrderPrice"),
-    		        item.itemCode.count().as("rowspanCount")))  //rowspan counts
+    		        item.itemCode.countDistinct().as("rowspanCount")))  //rowspan counts
     		        .from(order)
-    		        .join(order.itemO, item)
+    		        .leftJoin(order.itemO, item) 
+    		        .leftJoin(item.itemSubCategory,subCategory) //대,중분류는 Null없음 leftJoin으로 Null이 포함되도록 함 
     		        .join(order.storeO, store)
     		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
     		        .groupBy(item.itemSubCategory.itemCategoryNum)

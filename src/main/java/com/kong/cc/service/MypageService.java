@@ -11,7 +11,7 @@ public interface MypageService {
 	public List<AlarmDto> selectAlarmType(String alarmType) throws Exception;
 	public StoreDto selectStore(Integer storeCode) throws Exception;
 	public String updateStore(StoreDto storeDto) throws Exception;
-	public List<StoreDto> selectStoreList(Integer memberNum) throws Exception;
+	public List<StoreDto> selectStoreList(String username) throws Exception;
 	public String addStore(StoreDto storeDto) throws Exception;
 	public String deleteStore(Integer storeCode) throws Exception;
 }

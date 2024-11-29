@@ -35,14 +35,15 @@ public class AlarmDslRepository {
 		
 		return jpaQueryFactory.selectFrom(alarm)
 				.where(alarm.storeAr.storeCode.eq(storeCode))
+				.orderBy(alarm.alarmDate.desc(), alarm.alarmNum.desc())
 				.fetch();
 	}
 	
-	public List<Store> selectStoreList(Integer memberNum) throws Exception {
+	public List<Store> selectStoreList(String username) throws Exception {
 		QStore store = QStore.store;
 		
 		return jpaQueryFactory.selectFrom(store)
-				.where(store.member.memberNum.eq(memberNum))
+				.where(store.member.username.eq(username))
 				.fetch();
 	}
 	

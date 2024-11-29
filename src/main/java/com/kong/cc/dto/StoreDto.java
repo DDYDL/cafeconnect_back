@@ -1,6 +1,7 @@
 package com.kong.cc.dto;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.sql.Date;
 
 import com.kong.cc.entity.Member;
@@ -38,10 +39,10 @@ public class StoreDto {
 	private String managerName;
 	private String managerPhone;
 	
-	private Date contractPeriodStart;
-	private Date contractPeriodEnd;
-	private Date contractDate;
-	private Date openingDate;
+	private String contractPeriodStart;
+	private String contractPeriodEnd;
+	private String contractDate;
+	private String openingDate;
 	private String storeStatus;
 	 
 	private Integer memberNum;
@@ -66,10 +67,10 @@ public class StoreDto {
 				.ownerPhone(ownerPhone)
 				.managerName(managerName)
 				.managerPhone(managerPhone)
-				.contractPeriodStart(contractPeriodStart)
-				.contractPeriodEnd(contractPeriodEnd)
-				.contractDate(contractDate)
-				.openingDate(openingDate)
+				.contractPeriodStart(Date.valueOf(contractPeriodStart))
+				.contractPeriodEnd(Date.valueOf(contractPeriodEnd))
+				.contractDate(Date.valueOf(contractDate))
+				.openingDate(Date.valueOf(openingDate))
 				.storeStatus(storeStatus)
 				.build();
 		
