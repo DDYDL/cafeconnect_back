@@ -40,7 +40,6 @@ public class Complain {
     private Date complainDate;
     private Boolean complainStatus;
     private String complainAnswer;
-    @CreationTimestamp
     private Date complainAnswerDate;
     
     @ManyToOne(fetch=FetchType.LAZY)
@@ -59,6 +58,7 @@ public class Complain {
     			.complainAnswer(complainAnswer)
     			.complainAnswerDate(complainAnswerDate)
     			.storeCode(storeCo.getStoreCode())
+    			.storeName(storeCo.getStoreName())
     			.build();
     }
 }

@@ -1,5 +1,6 @@
 package com.kong.cc.dto;
 
+import com.kong.cc.entity.ImageFile;
 import com.kong.cc.entity.Menu;
 import com.kong.cc.entity.MenuCategory;
 
@@ -45,6 +46,7 @@ public class MenuDto {
 				   .protein(protein)
 				   .menuStatus(menuStatus)
 				   .menuCategory(MenuCategory.builder().menuCategoryNum(menuCategoryNum).build())
+				   .menuImageFile(ImageFile.builder().fileNum(menuFileNum).build())
 				   .build();
 	   }
 }

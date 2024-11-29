@@ -56,6 +56,7 @@ public class Menu {
 			   .protein(protein)
 			   .menuStatus(menuStatus)
 			   .menuCategoryNum(menuCategory.getMenuCategoryNum())
+			   .menuFileNum(menuImageFile.getFileNum())
 			   .build();
    }
 }
