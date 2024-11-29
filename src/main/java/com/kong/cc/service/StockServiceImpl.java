@@ -1,6 +1,7 @@
 package com.kong.cc.service;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,12 @@ public class StockServiceImpl implements StockService {
 	
 	@Override
 	public List<ShopOrderDto> selectOrderList(Integer storeCode) throws Exception {
+		List<ShopOrderDto> shopOrderDtoList = stockDslRepository.selectOrderList(storeCode).stream().map(s->s.toDto()).collect(Collectors.toList());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		for(ShopOrderDto shopOrderDto: shopOrderDtoList) {
+			String formattedDate = dateFormat.format(shopOrderDto.getOrderDate());
+			shopOrderDto.setOrderDateStr(formattedDate);
+		}
 		return stockDslRepository.selectOrderList(storeCode).stream().map(s->s.toDto()).collect(Collectors.toList());
 	}
 

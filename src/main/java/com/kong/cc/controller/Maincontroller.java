@@ -1,13 +1,17 @@
 package com.kong.cc.controller;
 
+import java.io.FileInputStream;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kong.cc.dto.ComplainDto;
@@ -92,13 +96,36 @@ public class Maincontroller {
 	}
 	
 	@PostMapping("/complainWrite") // ComplainWrite.js
-	public ResponseEntity<String> complainWrite(@RequestBody ComplainDto complainDto) {
+	public ResponseEntity<String> complainWrite(@ModelAttribute ComplainDto complainDto) {
 		try {
 			mainService.complainWrite(complainDto);
 			return new ResponseEntity<String>("true", HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping("/allStoreList") // ComplainWrite.js
+	public ResponseEntity<List<StoreDto>> allStoreList() {
+		try {
+			List<StoreDto> storeDtoList = mainService.allStoreList();
+			return new ResponseEntity<List<StoreDto>>(storeDtoList, HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<StoreDto>>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping("image/{fileName}")
+	public void imageView(@PathVariable String fileName, HttpServletResponse response) {
+		System.out.println(fileName);
+		try {
+			String path = "C:/ldy/upload/";
+			FileInputStream fis = new FileInputStream(path+fileName);
+			FileCopyUtils.copy(fis, response.getOutputStream());
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

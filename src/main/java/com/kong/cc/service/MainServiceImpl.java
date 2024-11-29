@@ -1,16 +1,23 @@
 package com.kong.cc.service;
 
+import java.sql.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import com.kong.cc.dto.ComplainDto;
 import com.kong.cc.dto.MenuCategoryDto;
 import com.kong.cc.dto.MenuDto;
 import com.kong.cc.dto.StoreDto;
-import com.kong.cc.repository.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
+import com.kong.cc.repository.AlarmDslRepository;
+import com.kong.cc.repository.ComplainRepository;
+import com.kong.cc.repository.MenuCategoryRepository;
+import com.kong.cc.repository.MenuRepository;
+import com.kong.cc.repository.StoreRepository;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +63,14 @@ public class MainServiceImpl implements MainService {
 
 	@Override
 	public String complainWrite(ComplainDto complainDto) throws Exception {
+		complainDto.setStoreCode(storeRepository.findByStoreName(complainDto.getStoreName()).getStoreCode());
+		complainDto.setComplainStatus(false);
 		comlainRepository.save(complainDto.toEntity());
 		return "true";
+	}
+
+	@Override
+	public List<StoreDto> allStoreList() throws Exception {
+		return storeRepository.findByStoreStatus("active").stream().map(s->s.toDto()).collect(Collectors.toList());
 	}
 }
