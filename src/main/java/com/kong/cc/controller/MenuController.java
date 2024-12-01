@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -23,8 +25,9 @@ public class MenuController {
     @PostMapping(value = "/addMenu" ,consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.MULTIPART_FORM_DATA_VALUE})  //MenuInsert.js
     public ResponseEntity<Object> addMenu(@RequestPart MenuSaveForm menuSaveForm, @RequestPart("file") MultipartFile file ){
         try{
-            menuService.saveMenu(menuSaveForm,file);
-            return new ResponseEntity<>(HttpStatus.OK);
+            String code = menuService.saveMenu(menuSaveForm, file);
+            Map<String, String> body = Map.of("code", code);
+            return new ResponseEntity<>(body,HttpStatus.OK);
         }catch (Exception e){
             log.error("Exception",e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

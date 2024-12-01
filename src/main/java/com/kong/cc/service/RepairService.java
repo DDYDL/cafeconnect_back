@@ -17,7 +17,6 @@ import com.kong.cc.dto.RepairSearchCondition;
 import com.kong.cc.dto.RepairUpdateForm;
 import com.kong.cc.entity.Item;
 import com.kong.cc.entity.Repair;
-import com.kong.cc.entity.Store;
 import com.kong.cc.repository.RepairQuerydslRepositoryImpl;
 import com.kong.cc.repository.RepairRepository;
 import com.kong.cc.repository.StoreRepository;
@@ -42,11 +41,19 @@ public class RepairService {
             throw new IllegalArgumentException("해당하는 수리내역이 없습니다");
 
         }
-        String storeName = repair.getStoreR().getStoreName();
+        String storeName = repair.getStoreR() != null ? repair.getStoreR().getStoreName() : null;
+        Integer storeCode = repair.getStoreR() != null ? repair.getStoreR().getStoreCode() : null;
         Item item = repair.getItemR();
-        String itemCode = item.getItemCode();
-        String itemCategoryMajorName = item.getItemMajorCategory().getItemCategoryName();
-        String itemCategoryMiddleName = item.getItemMiddleCategory().getItemCategoryName();
+        String itemCode = item != null ? item.getItemCode() : null;
+        String itemCategoryMajorName=null;
+        String itemCategoryMiddleName=null;
+        String itemCategorySubName=null;
+        if(item != null){
+            itemCategoryMajorName = item.getItemMajorCategory() != null ? item.getItemMajorCategory().getItemCategoryName() : null;
+            itemCategoryMiddleName = item.getItemMiddleCategory() != null ? item.getItemMiddleCategory().getItemCategoryName() : null;
+            itemCategorySubName = item.getItemSubCategory() != null ? item.getItemSubCategory().getItemCategoryName() : null;
+        }
+
 
         return RepairResponseDto.builder()
                 .repairNum(repair.getRepairNum())
@@ -58,9 +65,11 @@ public class RepairService {
                 .repairAnswer(repair.getRepairAnswer())
                 .repairAnswerDate(repair.getRepairAnswerDate())
                 .storeName(storeName)
+                .storeCode(storeCode)
                 .itemCode(itemCode)
                 .itemCategoryMajorName(itemCategoryMajorName)
                 .itemCategoryMiddleName(itemCategoryMiddleName)
+                .itemCategorySubName(itemCategorySubName)
                 .build();
     }
 
@@ -114,5 +123,12 @@ public class RepairService {
     
     	
     }
-   
+
+    public void updateStateRepair(Integer repairNum,RepairUpdateForm repairUpdateForm) {
+        Repair findRepair = repairRepository.findByRepairNum(repairNum);
+        findRepair.setRepairAnswer(repairUpdateForm.getRepairAnswer());
+        findRepair.setRepairStatus(repairUpdateForm.getRepairStatus());
+        findRepair.setRepairAnswerDate(new Date(System.currentTimeMillis()));
+
+    }
 }

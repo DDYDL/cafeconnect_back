@@ -28,6 +28,7 @@ import lombok.Setter;
 public class ItemMajorCategory {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer itemCategoryNum;
+
 	private String itemCategoryName;
 	
 	@OneToMany(mappedBy="itemMajorCategory", fetch=FetchType.LAZY)

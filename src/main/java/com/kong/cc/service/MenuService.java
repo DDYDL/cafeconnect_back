@@ -48,7 +48,7 @@ public class MenuService {
 
 
 
-    public void saveMenu(MenuSaveForm menuSaveForm, MultipartFile file) {
+    public String saveMenu(MenuSaveForm menuSaveForm, MultipartFile file) {
         ImageFile imageFile = null;
         if (file.isEmpty()){
             throw new RuntimeException("해당하는 파일이 없습니다");
@@ -101,6 +101,7 @@ public class MenuService {
 
         Menu menu = menuBuilder.build();
         menuRepository.save(menu);
+        return menu.getMenuCode();
 
 
     }
@@ -182,15 +183,23 @@ public class MenuService {
         if(menu == null){
             throw new IllegalArgumentException("해당하는 메뉴가 없습니다");
         }
-        ImageFile imageFile = menu.getMenuImageFile();
-        String fileDirectory = imageFile.getFileDirectory();
-        String fileName = imageFile.getFileName();
-        String fileContentType = imageFile.getFileContentType();
-        Path imagePath = Paths.get(fileDirectory+fileName);
-        byte[] imageBytes = Files.readAllBytes(imagePath);
-        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-        String menuCategoryName = menu.getMenuCategory().getMenuCategoryName();
-        String imageUrl = "data:"+fileContentType+";base64,"+base64Image;
+        String menuCategoryName = null;
+        String imageUrl = null;
+
+        if(menu.getMenuImageFile() != null){
+            ImageFile imageFile = menu.getMenuImageFile();
+            String fileDirectory = imageFile.getFileDirectory();
+            String fileName = imageFile.getFileName();
+            String fileContentType = imageFile.getFileContentType();
+            Path imagePath = Paths.get(fileDirectory+fileName);
+            byte[] imageBytes = Files.readAllBytes(imagePath);
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+            imageUrl = "data:"+fileContentType+";base64,"+base64Image;
+        }
+        if(menu.getMenuCategory() != null) {
+            menuCategoryName = menu.getMenuCategory().getMenuCategoryName();
+        }
+
 
 
 
