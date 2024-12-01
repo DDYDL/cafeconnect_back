@@ -25,6 +25,7 @@ public class StockDto {
 	private Integer storeCode;
 	private String itemCode;
 
+	private Integer itemFileNum;
 	private String itemMajorCategoryName;
 	private String itemMiddleCategoryName;
 	private String itemSubCategoryName;

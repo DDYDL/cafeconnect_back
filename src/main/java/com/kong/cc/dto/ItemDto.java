@@ -28,7 +28,7 @@ public class ItemDto {
 	private String  itemMiddleCategoryName;
 	
 	private Integer itemSubCategoryNum;
-	private String itemSubCategoryName;
+	private String 	itemSubCategoryName;
 	private Integer itemFileNum;
 
 	private Integer wishItemNum;

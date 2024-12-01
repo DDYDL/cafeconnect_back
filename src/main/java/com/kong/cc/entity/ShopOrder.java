@@ -61,6 +61,7 @@ public class ShopOrder {
 				.itemUnitQuantity(itemO.getItemUnitQuantity())
 				.itemUnit(itemO.getItemUnit())
 				.itemStorage(itemO.getItemStorage())
+				.itemFileNum(itemO.getItemImageFile().getFileNum())
 				.build();
 	}
 }

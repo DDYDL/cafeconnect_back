@@ -116,11 +116,13 @@ public class ShopDSLRepository {
 		QItem item = QItem.item;
 		
 		return jpaQueryFactory.select(Projections.bean(ItemDto.class,
+				item.itemCode,
 				item.itemName,
 				item.itemMajorCategory,
 				item.itemMiddleCategory,
 				item.itemSubCategory,
 				item.itemPrice,
+				item.itemImageFile.fileNum,
 				item.itemStorage,
 				wishItem.wishItemNum))
 				.from(item)
@@ -139,11 +141,13 @@ public class ShopDSLRepository {
 		List<ItemDto> resultList = null;
 		if(subNum!=null) {
 			resultList=jpaQueryFactory.select(Projections.bean(ItemDto.class,
+					item.itemCode,
 					item.itemName,
 					item.itemMajorCategory,
 					item.itemMiddleCategory,
 					item.itemSubCategory,
 					item.itemPrice,
+					item.itemImageFile.fileNum,
 					item.itemStorage,
 					wishItem.wishItemNum))
 					.from(item)
@@ -155,11 +159,13 @@ public class ShopDSLRepository {
 		if(middleNum !=null) {
 			
 			resultList=jpaQueryFactory.select(Projections.bean(ItemDto.class,
+					item.itemCode,
 					item.itemName,
 					item.itemMajorCategory,
 					item.itemMiddleCategory,
 					item.itemSubCategory,
 					item.itemPrice,
+					item.itemImageFile.fileNum,
 					item.itemStorage,
 					wishItem.wishItemNum))
 					.from(item)
@@ -170,11 +176,13 @@ public class ShopDSLRepository {
 		}
 		if(majorNum != null) {
 			resultList=jpaQueryFactory.select(Projections.bean(ItemDto.class,
+					item.itemCode,
 					item.itemName,
 					item.itemMajorCategory,
 					item.itemMiddleCategory,
 					item.itemSubCategory,
 					item.itemPrice,
+					item.itemImageFile.fileNum,
 					item.itemStorage,
 					wishItem.wishItemNum))
 					.from(item)

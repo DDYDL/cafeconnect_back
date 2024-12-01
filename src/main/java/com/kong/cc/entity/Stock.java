@@ -56,6 +56,7 @@ public class Stock {
 				.itemUnitQuantity(itemS.getItemUnitQuantity())
 				.itemUnit(itemS.getItemUnit())
 				.itemStorage(itemS.getItemStorage())
+				.itemFileNum(itemS.getItemImageFile().getFileNum())
 				.build();
 	}
 }

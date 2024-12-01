@@ -67,13 +67,21 @@ public class StoreDto {
 				.ownerPhone(ownerPhone)
 				.managerName(managerName)
 				.managerPhone(managerPhone)
-				.contractPeriodStart(Date.valueOf(contractPeriodStart))
-				.contractPeriodEnd(Date.valueOf(contractPeriodEnd))
-				.contractDate(Date.valueOf(contractDate))
-				.openingDate(Date.valueOf(openingDate))
 				.storeStatus(storeStatus)
 				.build();
 		
+	 	if(contractPeriodStart!=null) {
+	 		store.setContractPeriodStart(Date.valueOf(contractPeriodStart));
+	 	}
+	 	if(contractPeriodEnd!=null) {
+	 		store.setContractPeriodEnd(Date.valueOf(contractPeriodEnd));
+	 	}
+	 	if(contractDate!=null) {
+	 		store.setContractDate(Date.valueOf(contractDate));
+	 	}
+	 	if(openingDate!=null) {
+	 		store.setOpeningDate(Date.valueOf(openingDate));
+	 	}
 		if(memberNum!=null) {
 			store.setMember(Member.builder().memberNum(memberNum).build());
 		}

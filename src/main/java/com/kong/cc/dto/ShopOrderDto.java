@@ -36,6 +36,8 @@ public class ShopOrderDto {
 	private Integer itemPrice;
 	private Integer orderPrice;
 	
+	private String orderDateStr;
+	private Integer itemFileNum;
 	private String itemMajorCategoryName;
 	private String itemMiddleCategoryName;
 	private String itemSubCategoryName;
