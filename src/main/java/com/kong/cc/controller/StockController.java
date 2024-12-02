@@ -1,13 +1,13 @@
 package com.kong.cc.controller;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -95,13 +95,11 @@ public class StockController {
 	}
 	
 	@PostMapping("/selectStockByCategory") // StockManage.js
-	public ResponseEntity<List<StockDto>> selectStockByCategory(@RequestBody Map<String, String> param) {
+	public ResponseEntity<List<StockDto>> selectStockByCategory(@RequestBody Map<String, Object> param) {
 		try {
 			// {"storeCode":12354, "category":"middle", "categoryNum":1, "expirationDate":"true"}
-			Integer storeCode = Integer.parseInt(param.get("storeCode"));
-			String expirationDate = param.get("expirationDate");
-			
-			List<StockDto> stockDtoList = stockService.selectStockByCategory(storeCode, param, expirationDate);
+			System.out.println("SS");
+			List<StockDto> stockDtoList = stockService.selectStockByCategory(param);
 			return new ResponseEntity<List<StockDto>>(stockDtoList, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();

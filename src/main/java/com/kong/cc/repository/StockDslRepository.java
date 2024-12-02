@@ -46,7 +46,7 @@ public class StockDslRepository {
 				.fetch();
 	}
 	
-	public List<Stock> selectStockByCategory(Integer storeCode, Map<String, String> param, String expirationDate) throws Exception {
+	public List<Stock> selectStockByCategory(Integer storeCode, Map<String, Object> param, String expirationDate) throws Exception {
 		QStock stock = QStock.stock;
 		QItem item = QItem.item;
 		List<Stock> stockList = new ArrayList<>();
@@ -55,7 +55,7 @@ public class StockDslRepository {
 		// StringTemplate expirationDateFormat = Expressions.stringTemplate("DATE_FORMAT( {0}, {1} )", expirationDate, ConstantImpl.create("%Y-%m-%d"));
 
 		if(param.get("category").equals("major")) {
-			Integer categoryNum = Integer.parseInt(param.get("categoryNum"));
+			Integer categoryNum = (Integer)param.get("categoryNum");
 
 			stockList = jpaQueryFactory.selectFrom(stock)
 					.leftJoin(item)
@@ -64,7 +64,7 @@ public class StockDslRepository {
 					.where(expirationDateSelect(expirationDate, stock.stockExpirationDate))
 					.fetch();
 		} else if(param.get("category").equals("middle")) {
-			Integer categoryNum = Integer.parseInt(param.get("categoryNum"));
+			Integer categoryNum = (Integer)param.get("categoryNum");
 
 			stockList = jpaQueryFactory.selectFrom(stock)
 					.leftJoin(item)
@@ -73,7 +73,7 @@ public class StockDslRepository {
 					.where(expirationDateSelect(expirationDate, stock.stockExpirationDate))
 					.fetch();
 		} else if(param.get("category").equals("sub")) {
-			Integer categoryNum = Integer.parseInt(param.get("categoryNum"));
+			Integer categoryNum = (Integer)param.get("categoryNum");
 
 			stockList = jpaQueryFactory.selectFrom(stock)
 					.leftJoin(item)

@@ -110,7 +110,9 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public List<StockDto> selectStockByCategory(Integer storeCode, Map<String, String> param, String expirationDate) throws Exception {
+	public List<StockDto> selectStockByCategory(Map<String, Object> param) throws Exception {
+		Integer storeCode = (Integer)param.get("storeCode");
+		String expirationDate = (String)param.get("expirationDate");
 		return stockDslRepository.selectStockByCategory(storeCode, param, expirationDate).stream().map(s->s.toDto()).collect(Collectors.toList());
 	}
 
