@@ -13,7 +13,8 @@ import com.kong.cc.dto.ShopOrderDto;
 import com.kong.cc.util.PageInfo;
 
 public interface ShopService {
-
+	
+	Map<String, List<ItemDto>> getshopMainItems() throws Exception;
 	List<ItemDto> selectItemsByCategroy(Integer majorNum,Integer middleNum,Integer subNum) throws Exception;
 	List<ItemDto> selectItemsByKeyword(String Keyword) throws Exception;
 	ItemDto selectItem(String itemCode) throws Exception;
