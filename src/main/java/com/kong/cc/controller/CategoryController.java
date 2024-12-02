@@ -148,6 +148,19 @@ public class CategoryController {
         }
     }
 
+    @GetMapping("/majorCategoryCopy")
+    public ResponseEntity<Object> majorCategoryCopy(){
+        try{
+            List<CategoryResponseCopy> body = categoryService.majorCategoryCopy();
+            body.add(0,new CategoryResponseCopy(0,"대분류",""));
+            return new ResponseEntity<>(body,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     @GetMapping("/middleCategory")
     public ResponseEntity<Object> middleCategory(@RequestParam String categoryName){
@@ -161,10 +174,36 @@ public class CategoryController {
         }
     }
 
+    @GetMapping("/middleCategoryCopy")
+    public ResponseEntity<Object> middleCategoryCopy(@RequestParam String categoryName){
+        try{
+            List<CategoryResponseCopy> body = categoryService.middleCategoryCopy(categoryName);
+            body.add(0,new CategoryResponseCopy(0,"중분류",""));
+            return new ResponseEntity<>(body,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/subCategory")
+    public ResponseEntity<Object> majorCategoryCopy(@RequestParam String categoryName){
+        try{
+            List<CategoryResponseCopy> body = categoryService.subCategoryCopy(categoryName);
+            body.add(0,new CategoryResponseCopy(0,"중분류",""));
+            return new ResponseEntity<>(body,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/subCategoryCopy")
     public ResponseEntity<Object> majorCategory(@RequestParam String categoryName){
         try{
-            List<CategoryResponse> body = categoryService.subCategory(categoryName);
+            List<CategoryResponseCopy> body = categoryService.subCategoryCopy(categoryName);
             return new ResponseEntity<>(body,HttpStatus.OK);
 
         }catch (Exception e){
@@ -185,7 +224,7 @@ public class CategoryController {
         }
     }
     @GetMapping("/menuCategoryCopy")
-    public ResponseEntity<Object> majorCategoryCopy(){
+    public ResponseEntity<Object> menuCategoryCopy(){
         try{
             List<MenuCategoryResponseCopy> body = categoryService.menuCategoryCopy();
             body.add(0, new MenuCategoryResponseCopy(0,"대분류",""));

@@ -1,11 +1,13 @@
 package com.kong.cc.repository;
 
+import static com.kong.cc.entity.QItem.*;
 import static com.kong.cc.entity.QRepair.repair;
 
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.util.StringUtils;
 
 @Repository
 public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
@@ -40,7 +43,9 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
     public Page<RepairResponseDto> findRepairResponseDtoListByKeyword(String keyword, Pageable pageable) {
         QueryResults<Repair> repairQueryResults = queryFactory.select(repair)
                 .from(repair)
-                .where(repair.storeR.storeName.like("%" + keyword + "%"))
+                .where(storeNameContains(keyword))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetchResults();
 
 
@@ -58,17 +63,23 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
                         .repairStatus(r.getRepairStatus())
                         .repairAnswer(r.getRepairAnswer())
                         .repairAnswerDate(r.getRepairAnswerDate())
-                        .storeName(r.getStoreR().getStoreName())
-                        .itemCode(r.getItemR().getItemCode())
-                        .itemName(r.getItemR().getItemName())
-                        .itemCategoryMajorName(r.getItemR().getItemMajorCategory().getItemCategoryName())
-                        .itemCategoryMiddleName(r.getItemR().getItemMiddleCategory().getItemCategoryName())
+                        .storeName(r.getStoreR() != null ? r.getStoreR().getStoreName() : null)
+                        .itemCode(r.getItemR() != null ? r.getItemR().getItemCode() : null)
+                        .itemName(r.getItemR() != null ? r.getItemR().getItemName() : null)
+                        .itemCategoryMajorName(r.getItemR() != null && r.getItemR().getItemMajorCategory() != null ?
+                                r.getItemR().getItemMajorCategory().getItemCategoryName() : null)
+                        .itemCategoryMiddleName(r.getItemR() != null && r.getItemR().getItemMiddleCategory() != null ?
+                                r.getItemR().getItemMiddleCategory().getItemCategoryName() : null)
                         .build()
 
                 );
 
 
         return repairResponseDtoPage;
+    }
+
+    private BooleanExpression storeNameContains(String keyword) {
+        return StringUtils.hasText(keyword) ? repair.storeR.storeName.contains(keyword) : null;
     }
 
     @Override
@@ -78,6 +89,8 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
                 .selectFrom(repair)
                 .where(majorCategoryNameEq(condition.getItemCategoryMajorName()),
                         middleCategoryNameEq(condition.getItemCategoryMiddleName()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetchResults();
 
 
@@ -96,11 +109,13 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
                         .repairStatus(r.getRepairStatus())
                         .repairAnswer(r.getRepairAnswer())
                         .repairAnswerDate(r.getRepairAnswerDate())
-                        .storeName(r.getStoreR().getStoreName())
-                        .itemCode(r.getItemR().getItemCode())
-                        .itemName(r.getItemR().getItemName())
-                        .itemCategoryMajorName(r.getItemR().getItemMajorCategory().getItemCategoryName())
-                        .itemCategoryMiddleName(r.getItemR().getItemMiddleCategory().getItemCategoryName())
+                        .storeName(r.getStoreR() != null ? r.getStoreR().getStoreName() : null)
+                        .itemCode(r.getItemR() != null ? r.getItemR().getItemCode() : null)
+                        .itemName(r.getItemR() != null ? r.getItemR().getItemName() : null)
+                        .itemCategoryMajorName(r.getItemR() != null && r.getItemR().getItemMajorCategory() != null ?
+                                r.getItemR().getItemMajorCategory().getItemCategoryName() : null)
+                        .itemCategoryMiddleName(r.getItemR() != null && r.getItemR().getItemMiddleCategory() != null ?
+                                r.getItemR().getItemMiddleCategory().getItemCategoryName() : null )
                         .build()
 
         );
