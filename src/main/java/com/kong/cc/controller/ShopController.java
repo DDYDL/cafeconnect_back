@@ -54,7 +54,7 @@ public class ShopController {
 	}
 
 	// 카테고리 선택 별 아이템 리스트
-	@GetMapping("/categoryItemList") // CategoryItemList.js
+	@PostMapping("/categoryItemList") // CategoryItemList.js
 	public ResponseEntity<List<ItemDto>> selectItemByCategory(
 			@RequestParam(name = "majorNum", required = false) Integer majorNum,
 			@RequestParam(name = "middleNum", required = false) Integer middleNum,
