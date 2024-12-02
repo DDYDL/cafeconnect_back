@@ -55,7 +55,7 @@ public class StoreJoinServiceImpl implements StoreJoinService {
 
     @Override
     public StoreDto checkStoreCode(Integer storeCode) throws Exception {
-        Store searchStore = this.storeRepository.findByStoreCode(storeCode).orElseThrow(
+        Store searchStore = storeRepository.findByStoreCode(storeCode).orElseThrow(
                 () -> new Exception("일치하는 storeCode가 없습니다."));
 
         return searchStore.toDto();
