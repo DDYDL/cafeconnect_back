@@ -2,13 +2,14 @@ package com.kong.cc.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.sql.Date;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class RepairUpdateForm {
+public class UpdateRepairForm {
 
     private String repairAnswer;
+    private Date repairAnswerDate;
     private String repairStatus;
 }

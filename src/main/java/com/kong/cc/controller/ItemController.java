@@ -10,6 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -22,8 +26,9 @@ public class ItemController {
     public ResponseEntity<Object> addItem(@RequestPart ItemSaveForm itemSaveForm,
                                           @RequestPart ("file") MultipartFile file){
         try{
-            itemService.saveItem(itemSaveForm,file);
-            return new ResponseEntity<>(HttpStatus.OK);
+            String code = itemService.saveItem(itemSaveForm, file);
+            Map<String, String> body = Map.of("code", code);
+            return new ResponseEntity<>(body,HttpStatus.OK);
         }catch (Exception e){
             log.error("Exception",e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

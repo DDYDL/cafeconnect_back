@@ -32,6 +32,7 @@ public class RepairResponseDto {
     private String itemName;
     private String itemCategoryMajorName;
     private String itemCategoryMiddleName;
+    private String itemCategorySubName;
     
     public Repair toEntity() {
     	return Repair.builder()

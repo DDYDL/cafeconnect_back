@@ -3,16 +3,11 @@ package com.kong.cc.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.kong.cc.dto.UpdateRepairForm;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.kong.cc.dto.RepairResponseDto;
 import com.kong.cc.dto.RepairSearchCondition;
@@ -137,6 +132,17 @@ public class RepairController {
 		}
 
 	}
+
+    @PostMapping("/updateStateRepair/{repairNum}")
+    public ResponseEntity<Object> updateStateRepair(@PathVariable Integer repairNum, @RequestPart RepairUpdateForm repairUpdateForm){
+        try {
+            repairService.updateStateRepair(repairNum,repairUpdateForm);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 	
     
     

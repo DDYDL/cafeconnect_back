@@ -5,6 +5,7 @@ import com.kong.cc.dto.ItemSearchCondition;
 import com.kong.cc.entity.Item;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -65,10 +66,11 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
                                 .itemStandard(i.getItemStandard())
                                 .itemStorage(i.getItemStorage())
                                 .itemCountryOrigin(i.getItemCountryOrigin())
-                                .itemMajorCategoryName(i.getItemMajorCategory().getItemCategoryName())
-                                .itemMiddleCategoryName(i.getItemMiddleCategory().getItemCategoryName())
-                                .itemSubCategoryName(i.getItemSubCategory().getItemCategoryName())
-                                .imageUrl(imageUrl(i.getItemImageFile().getFileDirectory(),i.getItemImageFile().getFileName(),i.getItemImageFile().getFileContentType()))
+                                .itemMajorCategoryName(i.getItemMajorCategory() != null ? i.getItemMajorCategory().getItemCategoryName() : null)
+                                .itemMiddleCategoryName(i.getItemMiddleCategory() != null ? i.getItemMiddleCategory().getItemCategoryName() : null)
+                                .itemSubCategoryName(i.getItemSubCategory() != null ? i.getItemSubCategory().getItemCategoryName() : null)
+                                .imageUrl(i.getItemImageFile() == null ? null :
+                                        imageUrl(i.getItemImageFile().getFileDirectory(), i.getItemImageFile().getFileName(), i.getItemImageFile().getFileContentType()))
                                 .build();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -94,10 +96,11 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
                         .itemStandard(i.getItemStandard())
                         .itemStorage(i.getItemStorage())
                         .itemCountryOrigin(i.getItemCountryOrigin())
-                        .itemMajorCategoryName(i.getItemMajorCategory().getItemCategoryName())
-                        .itemMiddleCategoryName(i.getItemMiddleCategory().getItemCategoryName())
-                        .itemSubCategoryName(i.getItemSubCategory().getItemCategoryName())
-                        .imageUrl(imageUrl(i.getItemImageFile().getFileDirectory(),i.getItemImageFile().getFileName(),i.getItemImageFile().getFileContentType()))
+                        .itemMajorCategoryName(i.getItemMajorCategory() != null ? i.getItemMajorCategory().getItemCategoryName() : null)
+                        .itemMiddleCategoryName(i.getItemMiddleCategory() != null ? i.getItemMiddleCategory().getItemCategoryName() :null)
+                        .itemSubCategoryName(i.getItemSubCategory() != null ? i.getItemSubCategory().getItemCategoryName() : null)
+                        .imageUrl(i.getItemImageFile() == null ? null :
+                                imageUrl(i.getItemImageFile().getFileDirectory(), i.getItemImageFile().getFileName(), i.getItemImageFile().getFileContentType()))
                         .build();
             }catch (Exception e){
                 throw new RuntimeException(e);
@@ -116,18 +119,31 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
 
     @Override
     public Page<Item> findItemListByCategory(ItemSearchCondition condition, Pageable pageable) {
-        QueryResults<Item> itemQueryResults = queryFactory
+
+
+
+        JPAQuery<Item> query = queryFactory
                 .select(item)
-                .from(item)
-                .join(item.itemMajorCategory, itemMajorCategory)
-                .join(item.itemMiddleCategory, itemMiddleCategory)
-                .join(item.itemSubCategory, itemSubCategory)
+                .from(item);
+
+        if (StringUtils.hasText(condition.getItemCategoryMajorName())) {
+            query.join(item.itemMajorCategory, itemMajorCategory);
+        }
+        if (StringUtils.hasText(condition.getItemCategoryMiddleName())) {
+            query.join(item.itemMiddleCategory, itemMiddleCategory);
+        }
+        if (StringUtils.hasText(condition.getItemCategorySubName())) {
+            query.join(item.itemSubCategory, itemSubCategory);
+        }
+
+        QueryResults<Item> itemQueryResults = query
                 .where(majorCategoryEq(condition.getItemCategoryMajorName()),
                         middleCategoryEq(condition.getItemCategoryMiddleName()),
                         subCategoryEq(condition.getItemCategorySubName()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
+
 
         List<Item> content = itemQueryResults.getResults();
         long total = itemQueryResults.getTotal();
@@ -137,16 +153,16 @@ public class ItemQuerydslRepositoryImpl implements ItemQuerydslRepository {
     }
 
     private BooleanExpression majorCategoryEq(String itemCategoryMajorName) {
-        return (itemCategoryMajorName != null && StringUtils.hasText(itemCategoryMajorName)) ? itemMajorCategory.itemCategoryName.eq(itemCategoryMajorName) : null;
+        return (StringUtils.hasText(itemCategoryMajorName)) ? itemMajorCategory.itemCategoryName.eq(itemCategoryMajorName) : null;
     }
 
     private BooleanExpression middleCategoryEq(String itemCategoryMiddleName) {
 
-        return (itemCategoryMiddleName != null && StringUtils.hasText(itemCategoryMiddleName)) ? itemMiddleCategory.itemCategoryName.eq(itemCategoryMiddleName) : null;
+        return (StringUtils.hasText(itemCategoryMiddleName)) ? itemMiddleCategory.itemCategoryName.eq(itemCategoryMiddleName) : null;
     }
 
     private BooleanExpression subCategoryEq(String itemCategorySubName) {
-        return (itemCategorySubName != null && StringUtils.hasText(itemCategorySubName)) ? itemSubCategory.itemCategoryName.eq(itemCategorySubName) : null;
+        return (StringUtils.hasText(itemCategorySubName)) ? itemSubCategory.itemCategoryName.eq(itemCategorySubName) : null;
     }
 
     private String imageUrl(String fileDirectory,String fileName,String contentType) throws IOException {
