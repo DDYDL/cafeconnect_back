@@ -2,22 +2,18 @@ package com.kong.cc.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kong.cc.dto.*;
+import com.kong.cc.entity.MenuCategory;
+import com.kong.cc.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kong.cc.dto.ItemMajorCategoryForm;
-import com.kong.cc.dto.ItemMiddleCategoryForm;
-import com.kong.cc.dto.ItemSubCategoryForm;
 import com.kong.cc.entity.ItemMajorCategory;
 import com.kong.cc.entity.ItemMiddleCategory;
 import com.kong.cc.entity.ItemSubCategory;
-import com.kong.cc.repository.ItemMajorCategoryRepository;
-import com.kong.cc.repository.ItemMiddleCategoryRepository;
-import com.kong.cc.repository.ItemSubCategoryRepository;
-import com.kong.cc.repository.ShopDSLRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,20 +25,22 @@ public class CategoryService {
     private final ItemMajorCategoryRepository itemMajorCategoryRepository;
     private final ItemMiddleCategoryRepository itemMiddleCategoryRepository;
     private final ItemSubCategoryRepository itemSubCategoryRepository;
+    private final MenuCategoryRepository menuCategoryRepository;
 
     //소연
     private final ShopDSLRepository shopDslRepo;
 
-    public ItemMajorCategory saveMajorCategory(ItemMajorCategoryForm itemMajorCategoryForm){
+    public Integer saveMajorCategory(ItemMajorCategoryForm itemMajorCategoryForm){
 
         ItemMajorCategory itemMajorCategory = ItemMajorCategory.builder()
                 .itemCategoryName(itemMajorCategoryForm.getItemCategoryName())
                 .build();
 
-        return itemMajorCategoryRepository.save(itemMajorCategory);
+        ItemMajorCategory savedItemMajorCategory = itemMajorCategoryRepository.save(itemMajorCategory);
+        return savedItemMajorCategory.getItemCategoryNum();
     }
 
-    public ItemMiddleCategory saveMiddleCategory(ItemMiddleCategoryForm itemMiddleCategoryForm){
+    public Integer saveMiddleCategory(ItemMiddleCategoryForm itemMiddleCategoryForm){
         String itemCategoryMajorName = itemMiddleCategoryForm.getItemCategoryMajorName();
         String itemCategoryName = itemMiddleCategoryForm.getItemCategoryName();
 
@@ -57,12 +55,13 @@ public class CategoryService {
                 .build();
         itemMajorCategory.getItemMiddelCategoryList().add(itemMiddleCategory);
 
-        return itemMiddleCategoryRepository.save(itemMiddleCategory);
+        ItemMiddleCategory savedItemMiddleCategory = itemMiddleCategoryRepository.save(itemMiddleCategory);
+        return savedItemMiddleCategory.getItemCategoryNum();
 
 
     }
 
-    public ItemSubCategory saveSubCategory(ItemSubCategoryForm itemSubCategoryForm){
+    public Integer saveSubCategory(ItemSubCategoryForm itemSubCategoryForm){
         String itemCategoryMiddleName = itemSubCategoryForm.getItemCategoryMiddleName();
         String itemCategoryName = itemSubCategoryForm.getItemCategoryName();
         ItemMiddleCategory itemMiddleCategory = itemMiddleCategoryRepository.findByItemCategoryName(itemCategoryMiddleName);
@@ -74,7 +73,8 @@ public class CategoryService {
                 .itemCategoryName(itemCategoryName)
                 .build();
         itemMiddleCategory.getItemSubCategoryList().add(itemSubCategory);
-        return itemSubCategoryRepository.save(itemSubCategory);
+        ItemSubCategory savedItemSubCategory = itemSubCategoryRepository.save(itemSubCategory);
+        return savedItemSubCategory.getItemCategoryNum();
 
     }
 
@@ -105,7 +105,7 @@ public class CategoryService {
             throw new IllegalArgumentException("하위 카테고리의 항목이 있습니다.");
         }
 
-        itemMiddleCategory.getItemSubCategoryList().remove(itemMiddleCategory);
+        itemMajorCategory.getItemMiddelCategoryList().remove(itemMiddleCategory);
         itemMiddleCategoryRepository.delete(itemMiddleCategory);
 
 
@@ -142,7 +142,89 @@ public class CategoryService {
                 .map(ItemMajorCategory::toDto)
                 .collect(Collectors.toList());
     }
-//     
+
+    public List<CategoryResponse> majorCategory() {
+
+        return itemMajorCategoryRepository.findAllCategory();
+    }
+
+    public List<CategoryResponse> middleCategory(String categoryName) {
+        return itemMiddleCategoryRepository.findAllCategory(categoryName);
+    }
+
+    public List<CategoryResponse> subCategory(String categoryName) {
+        return itemSubCategoryRepository.findAllCategory(categoryName);
+    }
+
+    public List<MenuCategoryResponse> menuCategory() {
+        return menuCategoryRepository.findMenuCategoryResponse();
+    }
+
+    public Integer addMenuCategory(AddMenuCategoryForm addMenuCategoryForm) {
+        MenuCategory menuCategory = new MenuCategory();
+        menuCategory.setMenuCategoryName(addMenuCategoryForm.getCategoryName());
+        MenuCategory savedMenuCategory = menuCategoryRepository.save(menuCategory);
+        return savedMenuCategory.getMenuCategoryNum();
+    }
+
+    public void updateMenuCategory(UpdateMenuCategoryForm updateMenuCategoryForm) {
+        MenuCategory menuCategory = menuCategoryRepository.findById(updateMenuCategoryForm.getCategoryNum()).orElseThrow();
+        menuCategory.setMenuCategoryName(updateMenuCategoryForm.getCategoryName());
+    }
+
+    public void deleteMenuCategory(Integer categoryNum) {
+        MenuCategory menuCategory = menuCategoryRepository.findById(categoryNum).orElseThrow();
+        menuCategoryRepository.delete(menuCategory);
+    }
+
+
+    public List<MenuCategoryResponseCopy> menuCategoryCopy() {
+        return menuCategoryRepository.findMenuCategoryResponseCopy();
+    }
+
+    public void updateItemMajorCategory(ItemMajorCategoryForm itemMajorCategoryForm) {
+        ItemMajorCategory itemMajorCategory = itemMajorCategoryRepository.findById(itemMajorCategoryForm.getItemCategoryNum()).orElseThrow();
+        itemMajorCategory.setItemCategoryName(itemMajorCategoryForm.getItemCategoryName());
+    }
+
+    public void updateItemMiddleCategory(ItemMiddleCategoryForm itemMiddleCategoryForm) {
+        ItemMiddleCategory itemMiddleCategory = itemMiddleCategoryRepository.findById(itemMiddleCategoryForm.getItemCategoryNum()).orElseThrow();
+        itemMiddleCategory.setItemCategoryName(itemMiddleCategoryForm.getItemCategoryName());
+    }
+
+    public void updateItemSubCategory(ItemSubCategoryForm itemSubCategoryForm) {
+        ItemSubCategory itemSubCategory = itemSubCategoryRepository.findById(itemSubCategoryForm.getItemCategoryNum()).orElseThrow();
+        itemSubCategory.setItemCategoryName(itemSubCategoryForm.getItemCategoryName());
+    }
+
+    public List<String> categoryList(Integer categoryNum) {
+        List<String> body = new ArrayList<>();
+        ItemMajorCategory itemMajorCategory = itemMajorCategoryRepository.findByItemCategoryNum(categoryNum).orElseThrow();
+        List<ItemMiddleCategory> itemMiddelCategoryList = itemMajorCategory.getItemMiddelCategoryList();
+        if(itemMiddelCategoryList.size() == 0 || itemMiddelCategoryList == null){
+            String s = new String(itemMajorCategory.getItemCategoryName());
+            body.add(s);
+            return body;
+        }else {
+            for (ItemMiddleCategory itemMiddleCategory : itemMiddelCategoryList) {
+                List<ItemSubCategory> itemSubCategoryList = itemMiddleCategory.getItemSubCategoryList();
+                if(itemSubCategoryList.size() == 0 || itemSubCategoryList == null){
+                    String s = new String(itemMajorCategory.getItemCategoryName() + " > " + itemMiddleCategory.getItemCategoryName());
+                    body.add(s);
+                }else {
+                    for (ItemSubCategory itemSubCategory : itemSubCategoryList) {
+                        String s = new String(itemMajorCategory.getItemCategoryName() + " > "
+                                + itemMiddleCategory.getItemCategoryName() + " > "
+                                + itemSubCategory.getItemCategoryName());
+                        body.add(s);
+                    }
+                }
+            }
+            return body;
+        }
+
+    }
+//
 //    	List<ItemMajorCategoryForm> result = new ArrayList<>();
 //
 //    	List<ItemMajorCategory> majors = itemMajorCategoryRepository.findAll();

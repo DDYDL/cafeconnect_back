@@ -5,6 +5,7 @@ import com.kong.cc.entity.Menu;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -65,8 +66,9 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
                                 .fat(m.getFat())
                                 .protein(m.getProtein())
                                 .menuStatus(m.getMenuStatus())
-                                .menuCategoryName(m.getMenuCategory().getMenuCategoryName())
-                                .imageUrl(imageUrl(m.getMenuImageFile().getFileDirectory(),m.getMenuImageFile().getFileName(),m.getMenuImageFile().getFileContentType()))
+                                .menuCategoryName(m.getMenuCategory() != null ? m.getMenuCategory().getMenuCategoryName() : null)
+                                .imageUrl(m.getMenuImageFile() == null ? null :
+                                        imageUrl(m.getMenuImageFile().getFileDirectory(),m.getMenuImageFile().getFileName(), m.getMenuImageFile().getFileContentType()))
                                 .build();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -84,10 +86,15 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
     @Override
     public Page<MenuResponseDto> findMenuResponseDtoListByCategory(String categoryName, Pageable pageable) {
 
-        QueryResults<Menu> menuQueryResults = queryFactory
+        JPAQuery<Menu> query = queryFactory
                 .select(menu)
-                .from(menu)
-                .join(menu.menuCategory, menuCategory)
+                .from(menu);
+
+        if(StringUtils.hasText(categoryName)){
+            query.join(menu.menuCategory, menuCategory);
+        }
+
+        QueryResults<Menu> menuQueryResults = query
                 .where(menuCategoryeq(categoryName))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -112,8 +119,9 @@ public class MenuQuerydslRepositoryImpl implements MenuQuerydslRepository {
                                 .fat(m.getFat())
                                 .protein(m.getProtein())
                                 .menuStatus(m.getMenuStatus())
-                                .menuCategoryName(m.getMenuCategory().getMenuCategoryName())
-                                .imageUrl(imageUrl(m.getMenuImageFile().getFileDirectory(),m.getMenuImageFile().getFileName(),m.getMenuImageFile().getFileContentType()))
+                                .menuCategoryName(m.getMenuCategory() != null ? m.getMenuCategory().getMenuCategoryName() : null)
+                                .imageUrl(m.getMenuImageFile() == null ? null :
+                                        imageUrl(m.getMenuImageFile().getFileDirectory(),m.getMenuImageFile().getFileName(), m.getMenuImageFile().getFileContentType()))
                                 .build();
                     } catch (IOException e) {
                         throw new RuntimeException(e);

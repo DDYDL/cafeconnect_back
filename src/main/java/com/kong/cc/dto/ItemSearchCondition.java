@@ -8,4 +8,5 @@ public class ItemSearchCondition {
     private String ItemCategoryMajorName;
     private String ItemCategoryMiddleName;
     private String ItemCategorySubName;
+
 }

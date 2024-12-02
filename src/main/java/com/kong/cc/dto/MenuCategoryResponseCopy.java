@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RepairUpdateForm {
-
-    private String repairAnswer;
-    private String repairStatus;
+public class MenuCategoryResponseCopy {
+    private Integer categoryNum;
+    private String categoryName;
+    private String categoryValue;
 }

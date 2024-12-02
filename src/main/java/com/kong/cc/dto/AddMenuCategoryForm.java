@@ -5,10 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class RepairUpdateForm {
+@NoArgsConstructor
+public class AddMenuCategoryForm {
 
-    private String repairAnswer;
-    private String repairStatus;
+    private String categoryName;
 }

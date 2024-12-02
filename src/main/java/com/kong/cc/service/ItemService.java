@@ -41,7 +41,7 @@ public class ItemService {
     @Value("${upload.path}")
     private String uploadDir;
 
-    public void saveItem(ItemSaveForm itemSaveForm, MultipartFile file) {
+    public String saveItem(ItemSaveForm itemSaveForm, MultipartFile file) {
 
         ImageFile imageFile = null;
         if (file.isEmpty()){
@@ -98,6 +98,7 @@ public class ItemService {
         Item item = itemBuilder.build();
 
         itemRepository.save(item);
+        return item.getItemCode();
     }
 
     public void updateItem(String itemCode, ItemUpdateForm itemUpdateForm, MultipartFile file) {
@@ -210,7 +211,7 @@ public class ItemService {
         String base64Image = Base64.getEncoder().encodeToString(imageBytes);
         String itemMajorCategoryName = item.getItemMajorCategory().getItemCategoryName();
         String itemMiddleCategoryName = item.getItemMiddleCategory().getItemCategoryName();
-        String itemSubCategoryName = item.getItemSubCategory().getItemCategoryName();
+        String itemSubCategoryName = item.getItemSubCategory() != null ? item.getItemSubCategory().getItemCategoryName() : null;
         String imageUrl = "data:"+fileContentType+";base64,"+base64Image;
         return  ItemResponseDto.builder()
                 .itemCode(item.getItemCode())
@@ -224,6 +225,7 @@ public class ItemService {
                 .itemMajorCategoryName(itemMajorCategoryName)
                 .itemMiddleCategoryName(itemMiddleCategoryName)
                 .itemSubCategoryName(itemSubCategoryName)
+                .itemPrice(item.getItemPrice())
                 .imageUrl(imageUrl)
                 .build();
     }

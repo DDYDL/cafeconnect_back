@@ -4,11 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class RepairUpdateForm {
+public class UpdateMenuCategoryForm {
 
-    private String repairAnswer;
-    private String repairStatus;
+    private Integer categoryNum;
+    private String categoryName;
 }

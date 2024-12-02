@@ -1,8 +1,11 @@
 package com.kong.cc.repository;
 
+import com.kong.cc.dto.CategoryResponse;
 import com.kong.cc.entity.ItemMajorCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ItemMajorCategoryRepository extends JpaRepository<ItemMajorCategory, Integer> {
@@ -11,5 +14,8 @@ public interface ItemMajorCategoryRepository extends JpaRepository<ItemMajorCate
 
     //상민
     Optional<ItemMajorCategory> findByItemCategoryNum(Integer subCategoryNum);
+
+    @Query("select new com.kong.cc.dto.CategoryResponse(m.itemCategoryName,m.itemCategoryNum) from ItemMajorCategory m")
+    List<CategoryResponse> findAllCategory();
 
 }
