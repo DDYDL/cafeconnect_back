@@ -38,13 +38,8 @@ public class AskDto {
                 .askStatus(this.askStatus)
                 .askAnswer(this.askAnswer)
                 .askAnswerDate(this.askAnswerDate)
+                .storeAs(Store.builder().storeCode(storeCode).build())
                 .build();
-		if(storeCode!=null) {
-			ask.setStoreAs(Store.builder().storeCode(storeCode).build());
-		}
-		if(storeName!=null) {
-			ask.setStoreAs(Store.builder().storeName(storeName).build());
-		}
 		
 		return ask;
     }
