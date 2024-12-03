@@ -208,18 +208,27 @@ public class ItemService {
         if(item == null){
             throw new IllegalArgumentException("해당하는 아이템이 없습니다");
         }
-
+        String fileContentType = null;
+        String fileDirectory = null;
+        String fileName = null;
+        String imageUrl = null;
         ImageFile imageFile = item.getItemImageFile();
-        String fileContentType = imageFile.getFileContentType();
-        String fileDirectory = imageFile.getFileDirectory();
-        String fileName = imageFile.getFileName();
-        Path imagePath = Paths.get(fileDirectory+fileName);
-        byte[] imageBytes = Files.readAllBytes(imagePath);
-        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-        String itemMajorCategoryName = item.getItemMajorCategory().getItemCategoryName();
-        String itemMiddleCategoryName = item.getItemMiddleCategory().getItemCategoryName();
+
+        if(imageFile != null){
+            fileContentType = imageFile.getFileContentType();
+            fileDirectory = imageFile.getFileDirectory();
+            fileName = imageFile.getFileName();
+            Path imagePath = Paths.get(fileDirectory+fileName);
+            byte[] imageBytes = Files.readAllBytes(imagePath);
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+            imageUrl = "data:"+fileContentType+";base64,"+base64Image;
+        }
+
+
+
+        String itemMajorCategoryName = item.getItemMajorCategory() != null ? item.getItemMajorCategory().getItemCategoryName() : null;
+        String itemMiddleCategoryName = item.getItemMiddleCategory() != null ? item.getItemMiddleCategory().getItemCategoryName() : null;
         String itemSubCategoryName = item.getItemSubCategory() != null ? item.getItemSubCategory().getItemCategoryName() : null;
-        String imageUrl = "data:"+fileContentType+";base64,"+base64Image;
         return  ItemResponseDto.builder()
                 .itemCode(item.getItemCode())
                 .itemName(item.getItemName())
@@ -233,7 +242,7 @@ public class ItemService {
                 .itemMiddleCategoryName(itemMiddleCategoryName)
                 .itemSubCategoryName(itemSubCategoryName)
                 .itemPrice(item.getItemPrice())
-                .imageUrl(imageUrl)
+                .imageUrl(item.getItemImageFile() != null ? imageUrl : null)
                 .build();
     }
 
