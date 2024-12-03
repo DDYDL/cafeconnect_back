@@ -10,6 +10,7 @@ import com.kong.cc.repository.ImageFileRepository;
 import com.kong.cc.repository.MenuCategoryRepository;
 import com.kong.cc.repository.MenuQuerydslRepositoryImpl;
 import com.kong.cc.repository.MenuRepository;
+import com.kong.cc.util.TranslateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +41,7 @@ public class MenuService {
     private final MenuQuerydslRepositoryImpl menuQuerydslRepository;
     private final MenuCategoryRepository menuCategoryRepository;
     private final ImageFileRepository imageFileRepository;
-    private static AtomicLong sequence = new AtomicLong(1L);
+
 
 
     @Value("${upload.path}")
@@ -48,7 +49,7 @@ public class MenuService {
 
 
 
-    public String saveMenu(MenuSaveForm menuSaveForm, MultipartFile file) {
+    public String saveMenu(MenuSaveForm menuSaveForm, MultipartFile file) throws IOException {
         ImageFile imageFile = null;
         if (file.isEmpty()){
             throw new RuntimeException("해당하는 파일이 없습니다");
@@ -80,8 +81,12 @@ public class MenuService {
         imageFileRepository.save(imageFile);
 
         MenuCategory menuCategory = menuCategoryRepository.findByMenuCategoryName(menuSaveForm.getMenuCategoryName());
+
         Menu.MenuBuilder menuBuilder = Menu.builder()
-                .menuCode("B"+sequence.incrementAndGet())
+                .menuCode("M24"
+                        + String.format("%02d", menuCategory != null ? menuCategory.getMenuCategoryNum() : 0)
+                        + TranslateUtil.translate(menuSaveForm.getMenuName()).toUpperCase().charAt(0)
+                        +((int) (Math.random() * 9000) + 1000))
                 .menuName(menuSaveForm.getMenuName())
                 .menuPrice(menuSaveForm.getMenuPrice())
                 .menuCapacity(menuSaveForm.getMenuCapacity())

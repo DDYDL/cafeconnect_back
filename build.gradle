@@ -70,6 +70,8 @@ dependencies {
 	
 	// Google Firebase Admin
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
+	// Google translate api
+	implementation 'com.google.cloud:google-cloud-translate:2.6.0'
 }
 
 tasks.named('bootBuildImage') {
