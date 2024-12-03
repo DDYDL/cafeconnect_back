@@ -1,11 +1,9 @@
 package com.kong.cc.repository;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.hibernate.criterion.Distinct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -25,6 +23,7 @@ import com.kong.cc.entity.QItemSubCategory;
 import com.kong.cc.entity.QShopOrder;
 import com.kong.cc.entity.QStore;
 import com.kong.cc.entity.QWishItem;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
@@ -83,7 +82,31 @@ public class ShopDSLRepository {
 	
 		return resultList;
 	}
-	
+	// 카테고리 별 상품조회 + 주문 수량 정렬 
+	public List<Item> selectItemsByCategoriesWithSort(Integer majorNum,Integer middleNum,Integer subNum) {
+		QItem item = QItem.item;
+		QShopOrder order = QShopOrder.shopOrder;
+
+		//동적 쿼리 사용 BooleanBuilder	.and,.or로 조건을 누적시킬 수 있음 
+		BooleanBuilder builder = new BooleanBuilder();
+		   
+		   if(subNum != null) {
+		       builder.and(item.itemSubCategory.itemCategoryNum.eq(subNum));
+		   } else if(middleNum != null) {
+		       builder.and(item.itemMiddleCategory.itemCategoryNum.eq(middleNum));
+		   } else if(majorNum != null) {
+		       builder.and(item.itemMajorCategory.itemCategoryNum.eq(majorNum));
+		   }
+
+		   return jpaQueryFactory
+		       .selectFrom(item)
+		       .leftJoin(order).on(order.itemO.eq(item))
+		       .where(builder)
+		       .groupBy(item)
+		       .orderBy(order.orderCount.sum().coalesce(0).desc()) //coalesce 만약에 주문량이 없으면 0으로 함 
+		       .fetch();
+	}
+
 	//키워드,카테고리 선택 없는 전체 상품 조회
 	public List<Item> selectAllItems() {
 		QItem item = QItem.item;
@@ -253,7 +276,7 @@ public class ShopDSLRepository {
 		QStore store  = QStore.store;
 		
 		
-		//필요한 정보만 조회 하기 위해 Projections 사용함
+		//필요한 정보만 조회 하기 위해 Projections 사용함 (직접 참조시 주의 할 점 null인 형태의 crossjoin 꼭! null처리 해줘야함!)
 		return jpaQueryFactory
 			        .select(Projections.bean(CartDto.class,
 			            cart.cartNum,
@@ -264,6 +287,7 @@ public class ShopDSLRepository {
 			                item.itemCode,
 			                item.itemName,
 			                item.itemPrice,
+			                item.itemStorage,
 			                item.itemMajorCategory.itemCategoryNum.as("itemMajorCategoryNum"),
 			                item.itemMajorCategory.itemCategoryName.as("itemMajorCategoryName"),
 			                item.itemMiddleCategory.itemCategoryNum.as("itemMiddleCategoryNum"),
@@ -282,11 +306,12 @@ public class ShopDSLRepository {
 			            ).as("store")
 			        ))
 			        .from(cart)
-			        .join(item).on(cart.itemCa.itemCode.eq(item.itemCode))
-			        .join(store).on(cart.storeCa.storeCode.eq(store.storeCode))
-			        .where(cart.storeCa.storeCode.eq(storeCode)
-			              .and(cart.cartNum.in(cartItemNumList)))
-			        .groupBy(store.storeCode, cart.cartNum) // 가맹점과 장바구니 항목 기준 그룹화
+			        .leftJoin(item).on(cart.itemCa.itemCode.eq(item.itemCode))
+			        .leftJoin(store).on(cart.storeCa.storeCode.eq(store.storeCode))
+			        .leftJoin(item.itemMajorCategory)
+			        .leftJoin(item.itemMiddleCategory)
+			        .leftJoin(item.itemSubCategory) // 소분류없는 상품의 경우가 있음, 따라서 crossjoin되면 안돼서 임의적으로 추가해줌 
+			        .where(cart.storeCa.storeCode.eq(storeCode).and(cart.cartNum.in(cartItemNumList)))
 			        .fetch();
 		
 	}
@@ -562,7 +587,7 @@ public class ShopDSLRepository {
     		        item.itemCode.countDistinct().as("rowspanCount")))  //rowspan counts
     		        .from(order)
     		        .leftJoin(order.itemO, item) 
-    		        .leftJoin(item.itemSubCategory,subCategory) //대,중분류는 Null없음 leftJoin으로 Null이 포함되도록 함 
+    		        .leftJoin(item.itemSubCategory,subCategory) //대,중분류는 Null없음,소분류 없는 상품이 있으니 leftJoin으로 Null이 포함되도록 함 
     		        .join(order.storeO, store)
     		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
     		        .groupBy(item.itemSubCategory.itemCategoryNum)
