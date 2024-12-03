@@ -16,4 +16,10 @@ public interface CommunityMainService {
     void noticeWriteMain(NoticeDto noticeDto) throws Exception;
     
     List<AskDto> askListMain(PageInfo page) throws Exception;
+    AskDto askDetailMain(Integer askNum) throws Exception;
+    Integer addAskAnswerMain(AskDto askDto) throws Exception;
+    
+    List<ComplainDto> complainListMain(PageInfo page) throws Exception;
+    ComplainDto complainDetailMain(Integer complainNum) throws Exception;
+    Integer addComplainCommentMain(ComplainDto complainDto) throws Exception;
 }

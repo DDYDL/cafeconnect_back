@@ -45,6 +45,39 @@ public class ShopServiceImpl implements ShopService {
 	private final ShopOrderRepository shopOrderRepo;
 	
 	
+	
+	//쇼핑몰 메인 - 주문량이 많은 순 (주문량 없어도 리스트에 개수 맞추어 출력)
+	@Override
+	public Map<String, List<ItemDto>> getshopMainItems() throws Exception {
+		 Map<String, List<ItemDto>> result = new HashMap<>();
+		 
+		    // 대분류별로 상품 조회  6개씩 자르기 (대분류 고정)
+		 	// 커피자재
+		    List<ItemDto> coffeeItemList = shopDslRepo.selectItemsByCategoriesWithSort(1, null, null)
+		        .stream()
+		        .limit(6)
+		        .map(item->item.toDto())
+		        .collect(Collectors.toList());
+		    //분말가공    
+		    List<ItemDto> powderItemList = shopDslRepo.selectItemsByCategoriesWithSort(2, null, null)
+		        .stream()
+		        .limit(6)
+		        .map(item->item.toDto())
+		        .collect(Collectors.toList());
+		    
+		    //유가공품
+		    List<ItemDto> dairyItemList = shopDslRepo.selectItemsByCategoriesWithSort(7, null, null)
+		        .stream()
+		        .limit(6)
+		        .map(item->item.toDto())
+		        .collect(Collectors.toList());
+
+		    result.put("커피자재", coffeeItemList);
+		    result.put("분말가공", powderItemList);
+		    result.put("유가공품", dairyItemList);
+		    
+		    return result;
+	}
 
 	// 카테고리 별 아이템 리스트 (검색X)
 	@Override
@@ -183,6 +216,7 @@ public class ShopServiceImpl implements ShopService {
 	}
 
 	//장바구니 삭제
+	@Transactional
 	@Override
 	public Boolean deleteCartItem(Integer storeCode, Integer cartNum) throws Exception {
 		
@@ -402,6 +436,8 @@ public class ShopServiceImpl implements ShopService {
 
 	
 	}
+
+
 
 }
 

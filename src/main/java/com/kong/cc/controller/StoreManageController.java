@@ -146,12 +146,10 @@ public class StoreManageController {
 		try {
 			SimpleDateFormat fmt=new SimpleDateFormat("HH:mm");
 			System.out.println("storeDetail");
-			System.out.println(storeCode);
 			Map<String, Object> res = new HashMap<>();
 			StoreDto storeDto = storeManageService.storeDetail(storeCode);
 			res.put("store", storeDto);
-			res.put("storeOpenTime", fmt.format(storeDto.getStoreOpenTime()));
-			res.put("storeCloseTime", fmt.format(storeDto.getStoreCloseTime()));
+			System.out.println(storeDto);
 			return new ResponseEntity<Map<String,Object>>(res, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();

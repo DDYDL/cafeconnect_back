@@ -36,9 +36,22 @@ public class ShopController {
 	@Autowired
 	private ShopService shopService;
 
-	// 가맹점
-	// @GetMapping("/shopMain") // ShopMain.js
-
+	// 가맹점 & 본사
+	//대분류(커피자재,분말가공,유가공품)상품 6개 -> 판매순 6개로 바꾸기 
+	@GetMapping("/shopMain") // ShopMain.js
+	public ResponseEntity<Map<String, Object>> allShopMainItemList() {
+		Map<String, Object> map = new HashMap<>();
+		
+		try {
+			Map<String, List<ItemDto>> shopMainItems = shopService.getshopMainItems();
+			map.put("allCategory", shopMainItems);
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Map<String, Object>>(HttpStatus.BAD_REQUEST);
+		}
+	
+	}
 	// 전체 카테고리 목록 출력
 	@GetMapping("/shopCategory") // HoverCategorySidebar.js FixedCategorySideBar.js
 	public ResponseEntity<Map<String, Object>> allCategoryList() {
@@ -90,18 +103,21 @@ public class ShopController {
 			@RequestParam(name = "storeCode", required = false) Integer storeCode) {
 
 		try {
-			ItemDto item = null; // item정보 담기 -프론트에 이미 가지고 있는 정보를 가지고 사용할 지 재 조회할 지 고민중
-			// Boolean isWished = false;
-			Integer wishNum = null; // 관심 상품 등록 여부 확인
-
-			item = shopService.selectItem(itemCode);
-			// isWished = shopService.checkIsWished(itemCode, storeCode);
-			wishNum = shopService.checkIsWished(itemCode, storeCode);
-
 			Map<String, Object> result = new HashMap<>();
-			result.put("item", item);
+			ItemDto item = null; // item정보 담기 -프론트에 이미 가지고 있는 정보를 가지고 사용할 지 재 조회할 지 고민중
+			Integer wishNum = null; 
+			
+			item = shopService.selectItem(itemCode);
+			result.put("item", item); 
+			
+			//store일때만 관심 상품 등록 여부 확인 (본사 접속 시 null)
+			if (storeCode != null && !storeCode.equals("null")) { 
+			wishNum = shopService.checkIsWished(itemCode, storeCode);
 			result.put("wishNum", wishNum);
-
+			}
+			
+			
+			
 			return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -218,7 +234,7 @@ public class ShopController {
 		}
 	}
 	
-	//장바구니에서 이전 주문 목록 선택 
+	//장바구니에서 이전 주문 목록 선택 (페이지 1 고정이라 pageInfo안쓰고, 인덱스로 데이터 변경함 리팩토링 필요 )
 	@PostMapping("/selectPreviouOrder") //CartList.js
 	public ResponseEntity<Map<String,Object>>selectPreviousOrderList(@RequestParam Integer storeCode, 
 																	   @RequestParam(name="orderDate",required = false) String orderDate,
