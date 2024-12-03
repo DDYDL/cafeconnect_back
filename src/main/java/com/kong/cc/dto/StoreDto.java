@@ -1,8 +1,7 @@
 package com.kong.cc.dto;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.sql.Date;
+import java.sql.Time;
 
 import com.kong.cc.entity.Member;
 import com.kong.cc.entity.Store;
@@ -24,14 +23,8 @@ public class StoreDto {
 	private String storeAddressNum;
 	private String storePhone;
 	
-//	@JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
-//	@JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
-//	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd kk:mm:ss") // 원하는 형태의 LocalDateTime 설정
-	private Timestamp storeOpenTime;
-//	@JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
-//	@JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
-//	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd kk:mm:ss") // 원하는 형태의 LocalDateTime 설정
-	private Timestamp storeCloseTime;
+	private Time storeOpenTime;
+	private Time storeCloseTime;
 	private String storeCloseDate;
 	
 	private String ownerName;
@@ -51,6 +44,9 @@ public class StoreDto {
 	private Integer stockCount;
 	private String storeOpenTimeStr;
 	private String storeCloseTimeStr;
+	
+	private String username;
+	private String password;
 	
 	public Store toEntity() {
 		Store store = Store.builder()

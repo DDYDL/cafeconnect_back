@@ -60,6 +60,7 @@ public class MypageController {
 	public ResponseEntity<StoreDto> selectStore(@PathVariable Integer storeCode) {
 		try {
 			StoreDto storeDto = mypageService.selectStore(storeCode);
+			storeDto.setPassword("********");
 			return new ResponseEntity<StoreDto>(storeDto, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -70,8 +71,8 @@ public class MypageController {
 	@PostMapping("/updateStore") // MyStoreInfo.js
 	public ResponseEntity<String> updateStore(@ModelAttribute StoreDto storeDto) {
 		try {
-			mypageService.updateStore(storeDto);
-			return new ResponseEntity<String>("true", HttpStatus.OK);
+			String str = mypageService.updateStore(storeDto);
+			return new ResponseEntity<String>(str, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
@@ -89,14 +90,14 @@ public class MypageController {
 		}
 	}
 	
-	@PostMapping("/addStore") // MyStoreManage.js
-	public ResponseEntity<String> addStore(@RequestBody StoreDto storeDto) {
+	@GetMapping("/addStore/{storeCode}/{username}") // MyStoreManage.js
+	public ResponseEntity<StoreDto> addStore(@PathVariable Integer storeCode, @PathVariable String username) {
 		try {
-			mypageService.addStore(storeDto);
-			return new ResponseEntity<String>("true", HttpStatus.OK);
+			StoreDto storeDto = mypageService.addStore(storeCode, username);
+			return new ResponseEntity<StoreDto>(storeDto, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<StoreDto>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	

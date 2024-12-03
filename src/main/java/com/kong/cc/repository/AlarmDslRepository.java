@@ -95,4 +95,12 @@ public class AlarmDslRepository {
 				.where(alarm.alarmType.eq(alarmType))
 				.fetch();
 	}
+	
+	public Store selectStoreByStoreCode(Integer storeCode) throws Exception {
+		QStore store = QStore.store;
+		
+		return jpaQueryFactory.selectFrom(store)
+				.where(store.storeCode.eq(storeCode))
+				.fetchOne();
+	}
 }

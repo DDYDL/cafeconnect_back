@@ -1,6 +1,7 @@
 package com.kong.cc.entity;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,10 +40,8 @@ public class Store {
 	 private String storeAddressNum;
 	 private String storePhone;
 
-	 @Column(columnDefinition = "TIMESTAMP")
-	 private Timestamp storeOpenTime;
-	 @Column(columnDefinition = "TIMESTAMP")
-	 private Timestamp storeCloseTime;
+	 private Time storeOpenTime;
+	 private Time storeCloseTime;
 	 private String storeCloseDate;
 	 
 	 private String ownerName;
@@ -108,15 +107,11 @@ public class Store {
 					.build();
 			
 		 	if(storeOpenTime!=null) {
-		 		String str = StringUtils.split(storeOpenTime.toString(), " ")[1];
-		 		str = str.substring(0, 5);
-		 		storeDto.setStoreOpenTimeStr(str);
+		 		storeDto.setStoreOpenTimeStr(storeOpenTime.toString().substring(0, 5));
 		 	}
 		 	
 		 	if(storeCloseTime!=null) {
-		 		String str = StringUtils.split(storeCloseTime.toString(), " ")[1];
-		 		str = str.substring(0, 5);
-		 		storeDto.setStoreCloseTimeStr(str);
+		 		storeDto.setStoreCloseTimeStr(storeCloseTime.toString().substring(0, 5));
 		 	}
 		 	
 		 	if(contractPeriodStart!=null) {
@@ -133,6 +128,8 @@ public class Store {
 		 	}
 		 	if(member!=null) {
 				storeDto.setMemberNum(member.getMemberNum());
+				storeDto.setUsername(member.getUsername());
+				storeDto.setPassword(member.getPassword());
 			}
 		 	
 			return storeDto;

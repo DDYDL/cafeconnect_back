@@ -12,6 +12,6 @@ public interface MypageService {
 	public StoreDto selectStore(Integer storeCode) throws Exception;
 	public String updateStore(StoreDto storeDto) throws Exception;
 	public List<StoreDto> selectStoreList(String username) throws Exception;
-	public String addStore(StoreDto storeDto) throws Exception;
+	public StoreDto addStore(Integer storeCode, String username) throws Exception;
 	public String deleteStore(Integer storeCode) throws Exception;
 }
