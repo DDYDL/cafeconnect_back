@@ -202,6 +202,7 @@ public class ItemService {
         if(item == null){
             throw new IllegalArgumentException("해당하는 아이템이 없습니다");
         }
+
         ImageFile imageFile = item.getItemImageFile();
         String fileContentType = imageFile.getFileContentType();
         String fileDirectory = imageFile.getFileDirectory();
