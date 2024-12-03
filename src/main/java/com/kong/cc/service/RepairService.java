@@ -17,6 +17,8 @@ import com.kong.cc.dto.RepairSearchCondition;
 import com.kong.cc.dto.RepairUpdateForm;
 import com.kong.cc.entity.Item;
 import com.kong.cc.entity.Repair;
+import com.kong.cc.entity.Store;
+import com.kong.cc.repository.ItemRepository;
 import com.kong.cc.repository.RepairQuerydslRepositoryImpl;
 import com.kong.cc.repository.RepairRepository;
 import com.kong.cc.repository.StoreRepository;
@@ -32,7 +34,7 @@ public class RepairService {
     private final RepairRepository repairRepository;
     private final StoreRepository storeRepository;
     private final RepairQuerydslRepositoryImpl repairQuerydslRepository;
-    
+    private final ItemRepository itemRepository;
     
 
     public RepairResponseDto selectRepairByRepairNum(Integer repairNum) {
@@ -117,8 +119,10 @@ public class RepairService {
     public Repair insertWriteNewRepairForm(RepairResponseDto repairForm) throws Exception  {
     	
     	//가맹점 조회
-    	storeRepository.findById(repairForm.getStoreCode()).orElseThrow(()->new Exception("가맹점 조회 실패"));
-
+    	Store store = storeRepository.findById(repairForm.getStoreCode()).orElseThrow(()->new Exception("가맹점 조회 실패"));
+    	//아이템조회
+    	 Item item = itemRepository.findById(repairForm.getItemCode()).orElseThrow(() -> new Exception("상품 조회 실패"));
+    
     	return repairRepository.save(repairForm.toEntity());
     
     	
