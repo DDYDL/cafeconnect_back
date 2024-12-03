@@ -236,6 +236,14 @@ public class CategoryService {
     public List<CategoryResponseCopy> subCategoryCopy(String categoryName) {
         return itemSubCategoryRepository.findAllSubCategoryCopy(categoryName);
     }
+
+    public List<CategoryResponseCopy> middleCategoryCopy2() {
+        return itemMiddleCategoryRepository.findAllMiddleCategoryCopy();
+    }
+
+    public List<CategoryResponseCopy> subCategoryCopy2() {
+        return itemSubCategoryRepository.findAllSubCategoryCopy();
+    }
 //
 //    	List<ItemMajorCategoryForm> result = new ArrayList<>();
 //
