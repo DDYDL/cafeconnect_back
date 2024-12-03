@@ -6,6 +6,7 @@ import com.kong.cc.dto.ItemSearchCondition;
 import com.kong.cc.dto.ItemUpdateForm;
 import com.kong.cc.entity.*;
 import com.kong.cc.repository.*;
+import com.kong.cc.util.TranslateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -41,7 +42,7 @@ public class ItemService {
     @Value("${upload.path}")
     private String uploadDir;
 
-    public String saveItem(ItemSaveForm itemSaveForm, MultipartFile file) {
+    public String saveItem(ItemSaveForm itemSaveForm, MultipartFile file) throws IOException {
 
         ImageFile imageFile = null;
         if (file.isEmpty()){
@@ -75,7 +76,12 @@ public class ItemService {
         ItemSubCategory itemSubCategory = itemSubCategoryRepository.findByItemCategoryName(itemSaveForm.getItemCategorySubName());
 
         Item.ItemBuilder itemBuilder = Item.builder()
-                .itemCode("A"+sequence.incrementAndGet())
+                .itemCode("I24"
+                        + String.format("%02d", itemMajorCategory != null ? itemMajorCategory.getItemCategoryNum() : 0)
+                        + String.format("%02d", itemMiddleCategory != null ? itemMiddleCategory.getItemCategoryNum() : 0)
+                        + String.format("%02d", itemSubCategory != null ? itemSubCategory.getItemCategoryNum() : 0)
+                        + TranslateUtil.translate(itemSaveForm.getItemName()).toUpperCase().charAt(0)
+                        +((int) (Math.random() * 9000) + 1000))
                 .itemName(itemSaveForm.getItemName())
                 .itemPrice(itemSaveForm.getItemPrice())
                 .itemCapacity(itemSaveForm.getItemCapacity())
