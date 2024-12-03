@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.ShopOrderDto;
@@ -110,7 +111,11 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public List<StockDto> selectStockByCategory(Integer storeCode, Map<String, String> param, String expirationDate) throws Exception {
+	public List<StockDto> selectStockByCategory(@ModelAttribute Map<String, String> param) throws Exception {
+		Integer storeCode = Integer.parseInt(param.get("storeCode"));
+		String expirationDate = param.get("expirationDate");
+		System.out.println(storeCode);
+		System.out.println(expirationDate);
 		return stockDslRepository.selectStockByCategory(storeCode, param, expirationDate).stream().map(s->s.toDto()).collect(Collectors.toList());
 	}
 

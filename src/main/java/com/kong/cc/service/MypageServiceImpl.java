@@ -64,7 +64,7 @@ public class MypageServiceImpl implements MypageService {
 	@Override
 	public String deleteStore(Integer storeCode) throws Exception {
 		StoreDto storeDto = storeRepository.findById(storeCode).orElseThrow(()->new Exception("해당 가맹점 없음")).toDto();
-		storeDto.setStoreStatus("request");
+		storeDto.setStoreStatus("req");
 		storeRepository.save(storeDto.toEntity());
 		return "true";
 	}
