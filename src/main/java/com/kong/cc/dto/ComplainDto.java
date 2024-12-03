@@ -30,17 +30,19 @@ public class ComplainDto {
     private String storeName;
     
     public Complain toEntity() {
-    	return Complain.builder()
-    			.complainNum(complainNum)
-    			.userName(userName)
-    			.userPhone(userPhone)
-    			.complainTitle(complainTitle)
-    			.complainContent(complainContent)
-    			.complainDate(complainDate)
-    			.complainStatus(complainStatus)
-    			.complainAnswer(complainAnswer)
-    			.complainAnswerDate(complainAnswerDate)
-    			.storeCo(Store.builder().storeCode(storeCode).build())
-    			.build();
+    	Complain complain = Complain.builder()
+			    			.complainNum(complainNum)
+			    			.userName(userName)
+			    			.userPhone(userPhone)
+			    			.complainTitle(complainTitle)
+			    			.complainContent(complainContent)
+			    			.complainDate(complainDate)
+			    			.complainStatus(complainStatus)
+			    			.complainAnswer(complainAnswer)
+			    			.complainAnswerDate(complainAnswerDate)
+			    			.storeCo(Store.builder().storeCode(storeCode).build())
+			    			.build();
+
+		return complain;
     }
 }
