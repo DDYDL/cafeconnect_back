@@ -8,7 +8,7 @@ import java.util.List;
 public interface MypageService {
 	public List<AlarmDto> selectAlarmList(Integer storeCode) throws Exception;
 	public String checkAlarmConfirm(Integer alarmNum) throws Exception;
-	public List<AlarmDto> selectAlarmType(String alarmType) throws Exception;
+	public List<AlarmDto> selectAlarmType(Integer storeCode, String alarmType) throws Exception;
 	public StoreDto selectStore(Integer storeCode) throws Exception;
 	public String updateStore(StoreDto storeDto) throws Exception;
 	public List<StoreDto> selectStoreList(String username) throws Exception;

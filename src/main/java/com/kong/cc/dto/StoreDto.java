@@ -49,6 +49,8 @@ public class StoreDto {
 	
 	// 추가
 	private Integer stockCount;
+	private String storeOpenTimeStr;
+	private String storeCloseTimeStr;
 	
 	public Store toEntity() {
 		Store store = Store.builder()

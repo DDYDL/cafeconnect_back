@@ -33,8 +33,8 @@ public class MypageServiceImpl implements MypageService {
 	}
 
 	@Override
-	public List<AlarmDto> selectAlarmType(String alarmType) throws Exception {
-		return alarmRepository.findByAlarmType(alarmType).stream().map(a->a.toDto()).collect(Collectors.toList());
+	public List<AlarmDto> selectAlarmType(Integer storeCode, String alarmType) throws Exception {
+		return alarmDslRepository.selectAlarmByAlarmType(storeCode, alarmType).stream().map(a->a.toDto()).collect(Collectors.toList());
 	}
 
 	@Override

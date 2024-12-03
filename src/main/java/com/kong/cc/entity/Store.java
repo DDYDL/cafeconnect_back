@@ -1,14 +1,9 @@
 package com.kong.cc.entity;
 
-import com.kong.cc.dto.StoreDto;
-import lombok.*;
-
-import javax.persistence.*;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -20,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.util.StringUtils;
 
 import com.kong.cc.dto.StoreDto;
 
@@ -111,6 +107,18 @@ public class Store {
 					.storeStatus(storeStatus)
 					.build();
 			
+		 	if(storeOpenTime!=null) {
+		 		String str = StringUtils.split(storeOpenTime.toString(), " ")[1];
+		 		str = str.substring(0, 5);
+		 		storeDto.setStoreOpenTimeStr(str);
+		 	}
+		 	
+		 	if(storeCloseTime!=null) {
+		 		String str = StringUtils.split(storeCloseTime.toString(), " ")[1];
+		 		str = str.substring(0, 5);
+		 		storeDto.setStoreCloseTimeStr(str);
+		 	}
+		 	
 		 	if(contractPeriodStart!=null) {
 		 		storeDto.setContractPeriodStart(fmt.format(contractPeriodStart));
 		 	}
