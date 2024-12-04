@@ -1,6 +1,8 @@
 package com.kong.cc.controller;
 
-import com.kong.cc.dto.*;
+
+import com.kong.cc.dto.MenuDto;
+import com.kong.cc.dto.SalesListDto;
 import com.kong.cc.entity.Sales;
 import com.kong.cc.service.SalesManagementService;
 import lombok.RequiredArgsConstructor;
