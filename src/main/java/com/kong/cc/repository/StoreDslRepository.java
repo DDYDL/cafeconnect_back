@@ -188,13 +188,4 @@ public class StoreDslRepository {
 		}
 		return storeList;
 	}
-	
-	public Integer selectLastStoreCode() {
-		QStore store = QStore.store;
-		Integer lastStoreCode = jpaQueryFactory.select(store.storeCode)
-												.orderBy(store.storeCode.desc())
-												.limit(1)
-												.from(store).fetchOne();
-		return lastStoreCode;
-	}
 }

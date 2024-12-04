@@ -119,9 +119,10 @@ public class RepairController {
     
     //가맹점 수리 신청
 	@PostMapping("/writeRepairRequest") //RepairRequestForm.js
-	public ResponseEntity<String> writeRepairRequestFormByStore(RepairResponseDto repairForm) {
+	public ResponseEntity<String> writeRepairRequestFormByStore(@RequestBody RepairResponseDto repairForm) {
 			Boolean result= false;
     	try {
+    		
     		if(repairService.insertWriteNewRepairForm(repairForm)!=null) {
     			result = true;
     		}

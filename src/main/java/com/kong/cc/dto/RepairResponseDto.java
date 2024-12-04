@@ -37,6 +37,7 @@ public class RepairResponseDto {
     public Repair toEntity() {
     	return Repair.builder()
     			.repairType(repairType)
+    			.repairTitle(repairTitle)
     			.repairContent(repairContent)
     			.storeR(Store.builder().storeCode(storeCode).build())
     			.itemR(Item.builder().itemCode(itemCode).build())

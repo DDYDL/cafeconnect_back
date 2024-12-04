@@ -104,6 +104,7 @@ public class Store {
 					.managerName(managerName)
 					.managerPhone(managerPhone)
 					.storeStatus(storeStatus)
+					.storeRegion(storeAddress.split(" ")[0])
 					.build();
 			
 		 	if(storeOpenTime!=null) {

@@ -286,16 +286,25 @@ public class ShopController {
 	}
 	
 	
-	//결제 요청 전 검증
+	//결제 요청 전 검증 (주문번호 생성해서 내려보내기)
 	@PostMapping("/paymentRequest") //프론트에서 아임포트로 결제 요청 완성 전 검증
-	public ResponseEntity<PaymentRequestDto>requestPayment(@RequestBody PaymentRequestDto paymentRequest) {
+	public ResponseEntity<Map<String,Object>>requestPayment(@RequestBody PaymentRequestDto paymentRequest) {
+		Map<String,Object> validateResult = new HashMap<>();
 		try {
+			Boolean result = shopService.validatePaymentRequest(paymentRequest);
+		
+			// 여기서 주문 번호 생성해서 보내기 
+			ShopOrderDto dto = new ShopOrderDto();
+			String merchantUid = dto.makeOrderCode();
 			
-			shopService.validatePaymentRequest(paymentRequest);
-		return new ResponseEntity<PaymentRequestDto>(paymentRequest,HttpStatus.OK);
+			validateResult.put("isValidated",result); //true
+			validateResult.put("orderCode", merchantUid);//주문번호 생성해서 내려보내기 
+					
+			return new ResponseEntity<Map<String,Object>>(validateResult,HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<PaymentRequestDto>(HttpStatus.BAD_REQUEST);
+			validateResult.put("isValidated", false);// true
+			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	// 결제 완료 후 검증
