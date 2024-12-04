@@ -1,14 +1,10 @@
 package com.kong.cc.entity;
 
-import com.kong.cc.dto.StoreDto;
-import lombok.*;
-
-import javax.persistence.*;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -20,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.util.StringUtils;
 
 import com.kong.cc.dto.StoreDto;
 
@@ -43,10 +40,8 @@ public class Store {
 	 private String storeAddressNum;
 	 private String storePhone;
 
-	 @Column(columnDefinition = "TIMESTAMP")
-	 private Timestamp storeOpenTime;
-	 @Column(columnDefinition = "TIMESTAMP")
-	 private Timestamp storeCloseTime;
+	 private Time storeOpenTime;
+	 private Time storeCloseTime;
 	 private String storeCloseDate;
 	 
 	 private String ownerName;
@@ -111,6 +106,14 @@ public class Store {
 					.storeStatus(storeStatus)
 					.storeRegion(storeAddress.split(" ")[0])
 					.build();
+			
+		 	if(storeOpenTime!=null) {
+		 		storeDto.setStoreOpenTimeStr(storeOpenTime.toString().substring(0, 5));
+		 	}
+		 	
+		 	if(storeCloseTime!=null) {
+		 		storeDto.setStoreCloseTimeStr(storeCloseTime.toString().substring(0, 5));
+		 	}
 		 	
 		 	if(contractPeriodStart!=null) {
 		 		storeDto.setContractPeriodStart(fmt.format(contractPeriodStart));
@@ -126,6 +129,8 @@ public class Store {
 		 	}
 		 	if(member!=null) {
 				storeDto.setMemberNum(member.getMemberNum());
+				storeDto.setUsername(member.getUsername());
+				storeDto.setPassword(member.getPassword());
 			}
 		 	
 			return storeDto;

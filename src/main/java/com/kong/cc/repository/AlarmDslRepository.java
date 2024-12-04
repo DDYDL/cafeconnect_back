@@ -86,4 +86,21 @@ public class AlarmDslRepository {
 		NumberTemplate dateFormat = Expressions.numberTemplate(Integer.class, "DATEDIFF(curdate(), {0})", noticeDate);
 		return StringUtils.hasText(noticeDateBool) ? dateFormat.loe(1) : null;
 	}
+	
+	public List<Alarm> selectAlarmByAlarmType(Integer storeCode, String alarmType) throws Exception {
+		QAlarm alarm = QAlarm.alarm;
+
+		return jpaQueryFactory.selectFrom(alarm)
+				.where(alarm.storeAr.storeCode.eq(storeCode))
+				.where(alarm.alarmType.eq(alarmType))
+				.fetch();
+	}
+	
+	public Store selectStoreByStoreCode(Integer storeCode) throws Exception {
+		QStore store = QStore.store;
+		
+		return jpaQueryFactory.selectFrom(store)
+				.where(store.storeCode.eq(storeCode))
+				.fetchOne();
+	}
 }
