@@ -75,8 +75,26 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public List<StockDto> selectStockByStoreCode(Integer storeCode) throws Exception {
-		return stockDslRepository.selectStockByStoreCode(storeCode).stream().map(s->s.toDto()).collect(Collectors.toList());
+	public Map<String, List<StockDto>> selectStockByStoreCode(Integer storeCode) throws Exception {
+		List<StockDto> stockDtoList = stockDslRepository.selectStockByStoreCode(storeCode).stream().map(s->s.toDto()).collect(Collectors.toList()); 
+		Map<String, List<StockDto>> stock = new HashMap<>();
+		
+		List<StockDto> newStockList = new ArrayList<>();
+		
+		for(StockDto stockDto : stockDtoList) {
+			if(stock.containsKey(stockDto.getItemCode())) {
+				newStockList = new ArrayList<>();
+				newStockList = stock.get(stockDto.getItemCode());
+				newStockList.add(stockDto);
+				stock.put(stockDto.getItemCode(), newStockList);
+			} else {
+				newStockList = new ArrayList<>();
+				newStockList.add(stockDto);
+				stock.put(stockDto.getItemCode(), newStockList);
+			}
+		}
+		
+		return stock;
 	}
 
 	@Override

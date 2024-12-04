@@ -1,6 +1,7 @@
 package com.kong.cc.dto;
 
 import java.sql.Date;
+import java.util.Map;
 
 import com.kong.cc.entity.Item;
 import com.kong.cc.entity.Stock;
@@ -35,6 +36,8 @@ public class StockDto {
 	private String itemUnit;
 	private String itemStorage;
 	private Integer itemAllCount;
+	
+	private Map<String, String> stockList;
 	
 	public Stock toEntity() {
 		return Stock.builder()

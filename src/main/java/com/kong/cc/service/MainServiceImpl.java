@@ -65,6 +65,7 @@ public class MainServiceImpl implements MainService {
 	public String complainWrite(ComplainDto complainDto) throws Exception {
 		complainDto.setStoreCode(storeRepository.findByStoreName(complainDto.getStoreName()).getStoreCode());
 		complainDto.setComplainStatus(false);
+		System.out.println(complainDto);
 		comlainRepository.save(complainDto.toEntity());
 		return "true";
 	}
