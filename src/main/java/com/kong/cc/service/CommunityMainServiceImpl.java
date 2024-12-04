@@ -3,31 +3,21 @@ package com.kong.cc.service;
 import com.kong.cc.dto.AskDto;
 import com.kong.cc.dto.ComplainDto;
 import com.kong.cc.dto.NoticeDto;
-import com.kong.cc.dto.StoreDto;
 import com.kong.cc.entity.Ask;
 import com.kong.cc.entity.Complain;
 import com.kong.cc.entity.Notice;
-import com.kong.cc.entity.Store;
 import com.kong.cc.repository.AskDslRepository;
 import com.kong.cc.repository.AskRepository;
 import com.kong.cc.repository.ComplainDslRepository;
 import com.kong.cc.repository.ComplainRepository;
 import com.kong.cc.repository.NoticeRepository;
-import com.kong.cc.repository.StoreRepository;
 import com.kong.cc.util.PageInfo;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-
-import org.hibernate.query.criteria.internal.expression.function.CurrentDateFunction;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +28,7 @@ public class CommunityMainServiceImpl implements CommunityMainService {
     private final AskRepository askRepository;
     private final ComplainDslRepository complainDslRepository;
     private final ComplainRepository complainRepository;
-    
+
     @Override
     public List<NoticeDto> noticeListMain() {
         List<Notice> noticeListMain = this.noticeRepository.findAll();
@@ -48,9 +38,9 @@ public class CommunityMainServiceImpl implements CommunityMainService {
     }
 
     @Override
-    public NoticeDto noticeDetailMain(Integer noticeNum) {
+    public NoticeDto noticeDetailMain(Integer noticeNum) throws Exception {
         Notice noticeInfoMain = this.noticeRepository.findByNoticeNum(noticeNum)
-                .orElseThrow( () -> new RuntimeException("noticeNum에 해당하는 정보가 없습니다."));
+                .orElseThrow( () -> new Exception("noticeNum에 해당하는 정보가 없습니다."));
         return noticeInfoMain.toDto();
 
     }
@@ -69,15 +59,15 @@ public class CommunityMainServiceImpl implements CommunityMainService {
 				.stream().map(s -> s.toDto()).collect(Collectors.toList());
 		Long allCnt = 0L;
         allCnt = askDslRepository.findAskCount();
-        
+
         Integer allPage = (int)(Math.ceil(allCnt.doubleValue()/pageRequest.getPageSize()));
 		Integer startPage = (page.getCurPage()-1)/10*10+1;
-		Integer endPage = Math.min(startPage+10-1, allPage);		
-		
+		Integer endPage = Math.min(startPage+10-1, allPage);
+
 		page.setAllPage(allPage);
 		page.setStartPage(startPage);
 		page.setEndPage(endPage);
-		
+
 		return askDtoList;
 	}
 
@@ -86,7 +76,7 @@ public class CommunityMainServiceImpl implements CommunityMainService {
 		Ask ask = askRepository.findById(askNum).orElseThrow(()->new Exception("문의번호 오류"));
 		return ask.toDto();
 	}
-	
+
 	@Override
 	public Integer addAskAnswerMain(AskDto askDto) throws Exception {
 //		Ask ask = askRepository.findById(askNum).orElseThrow(()->new Exception("문의 번호 오류"));
@@ -104,15 +94,15 @@ public class CommunityMainServiceImpl implements CommunityMainService {
 				.stream().map(s -> s.toDto()).collect(Collectors.toList());
 		Long allCnt = 0L;
         allCnt = complainDslRepository.findComplainCount();
-        
+
         Integer allPage = (int)(Math.ceil(allCnt.doubleValue()/pageRequest.getPageSize()));
 		Integer startPage = (page.getCurPage()-1)/10*10+1;
-		Integer endPage = Math.min(startPage+10-1, allPage);		
-		
+		Integer endPage = Math.min(startPage+10-1, allPage);
+
 		page.setAllPage(allPage);
 		page.setStartPage(startPage);
 		page.setEndPage(endPage);
-        
+
 		return complainDtoList;
 	}
 

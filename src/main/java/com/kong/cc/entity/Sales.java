@@ -1,7 +1,7 @@
 package com.kong.cc.entity;
 
+import com.kong.cc.dto.SalesDto;
 import java.sql.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -9,16 +9,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import com.kong.cc.dto.SalesDto;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 
 @Builder
 @AllArgsConstructor
@@ -47,7 +44,6 @@ public class Sales {
 
 	public SalesDto toDto() {
 		return SalesDto.builder()
-				.salesNum(salesNum)
 				.salesDate(salesDate)
 				.salesCount(salesCount)
 				.salesAmount(salesAmount)

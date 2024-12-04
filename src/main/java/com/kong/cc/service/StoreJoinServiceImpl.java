@@ -1,6 +1,7 @@
 package com.kong.cc.service;
 
 import com.kong.cc.dto.StoreDto;
+import com.kong.cc.dto.StoreJoinDto;
 import com.kong.cc.entity.Member;
 import com.kong.cc.entity.Store;
 import com.kong.cc.repository.AskRepository;
@@ -24,24 +25,42 @@ public class StoreJoinServiceImpl implements StoreJoinService {
     private final ComplainRepository complainRepository;
     private final MemberRepository memberRepository;
 
-    @Override
-    public void joinStore(StoreDto storeDto) throws Exception {
-
-        // storeCode를 기반으로 Store 엔티티 조회
-//        Store store = storeRepository.findById(askDto.getStoreCode())
-//                .orElseThrow(() -> new IllegalArgumentException("해당 storeCode에 해당하는 Store가 존재하지 않습니다."));
-//        System.out.println("StoreCode dto " + askDto.getStoreCode());
-//        System.out.println("StoreCode repo" + store.getStoreCode());
-//        Integer storeCode = store.getStoreCode();
+//    @Override
+//    public void joinStore(StoreJoinDto storeJoinDto) throws Exception {
 //
-//        askRepository.save(AskDto.builder()
-//                .askType(askDto.getAskType())
-//                .askTitle(askDto.getAskTitle())
-//                .askContent(askDto.getAskContent())
-//                .askStatus("1")
-//                .storeCode(storeCode)
-//                .build()
-//                .toEntity());
+//        memberRepository.save(Member.builder()
+//                .username(storeJoinDto.getUsername())
+//                .password(storeJoinDto.getPassword())
+//                .storeCode(storeJoinDto.getStoreCode())
+//                .build());
+//
+//        storeRepository.save()
+//    }
+
+    @Override
+    public void joinStore(StoreJoinDto storeJoinDto) throws Exception {
+        // 1. Member 저장 및 member_num 생성
+        Member savedMember = memberRepository.save(
+                Member.builder()
+                        .username(storeJoinDto.getUsername())
+                        .password(storeJoinDto.getPassword())
+                        .storeCode(storeJoinDto.getStoreCode())
+                        .build()
+        );
+
+        // 2. 저장된 Member에서 memberNum 가져오기
+//        Integer memberNum = savedMember.getMemberNum();
+
+        // 3. StoreCode와 일치하는 Store 조회
+//        Store store = storeRepository.findByStoreCode(storeJoinDto.getStoreCode())
+//                .orElseThrow(() -> new Exception("해당 StoreCode를 찾을 수 없습니다."));
+//
+//        Store saveMemberNum = new Store();
+//        saveMemberNum.setMember(store.getMember());
+//        storeRepository.save(saveMemberNum);
+//
+//        System.out.println("saveMemberNum" + saveMemberNum);
+
     }
 
     @Override
@@ -57,6 +76,8 @@ public class StoreJoinServiceImpl implements StoreJoinService {
     public StoreDto checkStoreCode(Integer storeCode) throws Exception {
         Store searchStore = storeRepository.findByStoreCode(storeCode).orElseThrow(
                 () -> new Exception("일치하는 storeCode가 없습니다."));
+
+
 
         return searchStore.toDto();
     }
