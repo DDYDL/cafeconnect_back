@@ -125,11 +125,11 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
     }
 
     private Predicate majorCategoryNameEq(String itemCategoryMajorName) {
-        return itemCategoryMajorName != null ? repair.itemR.itemMajorCategory.itemCategoryName.eq(itemCategoryMajorName) : null;
+        return StringUtils.hasText(itemCategoryMajorName) ? repair.itemR.itemMajorCategory.itemCategoryName.eq(itemCategoryMajorName) : null;
     }
 
     private Predicate middleCategoryNameEq(String itemCategoryMiddleName) {
-        return itemCategoryMiddleName != null ? repair.itemR.itemMiddleCategory.itemCategoryName.eq(itemCategoryMiddleName) : null;
+        return StringUtils.hasText(itemCategoryMiddleName) ? repair.itemR.itemMiddleCategory.itemCategoryName.eq(itemCategoryMiddleName) : null;
     }
 
     // 가맹점 시작
