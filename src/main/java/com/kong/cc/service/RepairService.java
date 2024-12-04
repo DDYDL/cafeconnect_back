@@ -22,6 +22,7 @@ import com.kong.cc.repository.ItemRepository;
 import com.kong.cc.repository.RepairQuerydslRepositoryImpl;
 import com.kong.cc.repository.RepairRepository;
 import com.kong.cc.repository.StoreRepository;
+import com.kong.cc.util.PageInfo;
 import com.querydsl.core.Tuple;
 
 import lombok.RequiredArgsConstructor;
@@ -98,9 +99,31 @@ public class RepairService {
     }
     
     //가맹점 시작
-    //수리 요청 리스트 출력
-    public List<RepairResponseDto> selectAllRepairRequestList(Integer storeCode) {	
-    	return repairQuerydslRepository.selectRepairRequestOfStore(storeCode); 
+    //수리 요청 리스트 출력      
+    public List<RepairResponseDto> selectAllRepairRequestList(Integer storeCode,String type,String word,PageInfo pageInfo) {	
+    	PageRequest pageRequest = PageRequest.of(pageInfo.getCurPage() - 1, 10);
+    	List<RepairResponseDto> repairRequestList = null;
+    	Long allCnt = 0L;
+    	
+    	//전체 조회
+    	if(word == null || word.trim().equals("")) {
+    		repairRequestList=repairQuerydslRepository.selectRepairRequestOfStore(storeCode,pageRequest);
+    		allCnt = repairQuerydslRepository.findRepairRequestCount(storeCode);
+    	
+    	//검색 조건 조회 
+    	}else {
+    		repairRequestList=repairQuerydslRepository.selectSearchRepairRequestOfStore(storeCode,pageRequest,type,word);
+    		allCnt = repairQuerydslRepository.findSearchRepairRequestCount(storeCode,type,word);
+    	}
+    	Integer allPage = (int) (Math.ceil(allCnt.doubleValue() / pageRequest.getPageSize()));
+		Integer startPage = (pageInfo.getCurPage() - 1) / 10 * 10 + 1;
+		Integer endPage = Math.min(startPage + 10 - 1, allPage);
+
+		pageInfo.setAllPage(allPage);
+		pageInfo.setStartPage(startPage);
+		pageInfo.setEndPage(endPage);
+    	
+    	return  repairRequestList; 
     }
     //수리 요청 상세 보기 - selectRepairByRepairNum 사용   
     public List<Map<String,Object>>selectAllMachineList() {
@@ -118,6 +141,7 @@ public class RepairService {
     //수리 신청서 작성
     public Repair insertWriteNewRepairForm(RepairResponseDto repairForm) throws Exception  {
     	
+    	repairForm.setRepairStatus("접수");
     	//가맹점 조회
     	Store store = storeRepository.findById(repairForm.getStoreCode()).orElseThrow(()->new Exception("가맹점 조회 실패"));
     	//아이템조회
