@@ -48,10 +48,16 @@ public class ShopOrderDto {
 	
 	//주문번호 생성
 	public String makeOrderCode () {
-		String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-		String uuid = UUID.randomUUID().toString().substring(0,8); //36자 문자열에서 앞 8자만 가져옴
+		//241127(주문날짜)+랜덤숫자문자(4자리)+결제시간(시분초) 조합 
+		
+		//210101135046 (날짜시분초 가져와서 자르기)
+		String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));  
+		String orderDate = date.substring(0, 6);
+		String orderTime = date.substring(6);
+				
+		String uuid = UUID.randomUUID().toString().substring(0,4); //36자 문자열에서 앞 4자만 가져옴
 
-		return date+"-"+uuid;
+		return orderDate+uuid+orderTime;
 	}
 
 	

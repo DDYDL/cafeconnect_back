@@ -1,6 +1,7 @@
 package com.kong.cc.controller;
 
 import com.kong.cc.dto.StoreDto;
+import com.kong.cc.dto.StoreJoinDto;
 import com.kong.cc.service.StoreJoinService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,9 @@ public class StoreJoinController {
     // 1:1 문의 작성
     // todo storeCode 넣는 부분 수정 필요
     @PostMapping("/joinStore") // AskWrite.js
-    public ResponseEntity<String> joinStore(@RequestBody StoreDto storeDto) throws Exception {
+    public ResponseEntity<String> joinStore(@RequestBody StoreJoinDto storeJoinDto) throws Exception {
         try {
-            this.storeService.joinStore(storeDto);
+            this.storeService.joinStore(storeJoinDto);
             return new ResponseEntity<>("가맹점 등록 완료", HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();

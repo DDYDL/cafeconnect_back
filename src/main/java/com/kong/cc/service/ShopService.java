@@ -40,7 +40,7 @@ public interface ShopService {
 		
 	//주문 및 결제 시작
 	List<CartDto>selectAllOrderItemAndInfo(Integer storeCode,List<Integer>cartItemNumList) throws Exception;
-	void validatePaymentRequest(PaymentRequestDto paymentRequest)throws Exception;
+	Boolean validatePaymentRequest(PaymentRequestDto paymentRequest)throws Exception;
 	PaymentRequestDto  requestPayment(Integer storeCode,List<Integer> cartNums)throws Exception;
 	PaymentResponseDto verifyPayment(String imUid,String merchanUid,Integer amount) throws Exception; 
 	List<ShopOrderDto> createOrder(String merchantUid,Integer storeCode, List<Integer> cartNums) throws Exception;
