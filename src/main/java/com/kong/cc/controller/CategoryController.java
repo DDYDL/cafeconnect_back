@@ -187,10 +187,10 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/subCategory")
-    public ResponseEntity<Object> majorCategoryCopy(@RequestParam String categoryName){
+    @GetMapping("/middleCategoryCopy2")
+    public ResponseEntity<Object> middleCategoryCopy2(){
         try{
-            List<CategoryResponseCopy> body = categoryService.subCategoryCopy(categoryName);
+            List<CategoryResponseCopy> body = categoryService.middleCategoryCopy2();
             body.add(0,new CategoryResponseCopy(0,"중분류",""));
             return new ResponseEntity<>(body,HttpStatus.OK);
 
@@ -200,10 +200,37 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/subCategoryCopy")
-    public ResponseEntity<Object> majorCategory(@RequestParam String categoryName){
+    @GetMapping("/subCategory")
+    public ResponseEntity<Object> subCategory(@RequestParam String categoryName){
         try{
             List<CategoryResponseCopy> body = categoryService.subCategoryCopy(categoryName);
+
+            return new ResponseEntity<>(body,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/subCategoryCopy")
+    public ResponseEntity<Object> subCategoryCopy(@RequestParam String categoryName){
+        try{
+            List<CategoryResponseCopy> body = categoryService.subCategoryCopy(categoryName);
+            body.add(0,new CategoryResponseCopy(0,"소분류",""));
+            return new ResponseEntity<>(body,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/subCategoryCopy2")
+    public ResponseEntity<Object> subCategoryCopy2(){
+        try{
+            List<CategoryResponseCopy> body = categoryService.subCategoryCopy2();
+            body.add(0,new CategoryResponseCopy(0,"소분류",""));
             return new ResponseEntity<>(body,HttpStatus.OK);
 
         }catch (Exception e){
