@@ -3,19 +3,20 @@ package com.kong.cc.controller;
 import com.kong.cc.dto.AskDto;
 import com.kong.cc.dto.ComplainDto;
 import com.kong.cc.dto.NoticeDto;
-import com.kong.cc.dto.StoreDto;
 import com.kong.cc.service.CommunityMainService;
 import com.kong.cc.util.PageInfo;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -142,6 +143,7 @@ public class CommunityMainController {
     @GetMapping("/noticeListMain") // NoticeListMain.js
     public ResponseEntity<List<NoticeDto>> noticeListMain() {
         try {
+            // todo  main storeCode도 같이 조회되도록 해야되는지? (프론트에서 가지고 있어서, 안해도 될듯? 생각해보기)
             List<NoticeDto> noticeMainDtoList = communityMainService.noticeListMain();
             return new ResponseEntity<>(noticeMainDtoList, HttpStatus.OK);
         } catch (Exception e) {
@@ -163,6 +165,7 @@ public class CommunityMainController {
     }
 
     // 공지사항 작성 (본사)
+    // todo repo에 저장할 때 mainStoreId 저장 필요(memberNum 인지 storeCode를 의미하는지?)
     @PostMapping("/noticeWriteMain")
     public ResponseEntity<String> noticeWriteMain(@RequestBody NoticeDto noticeDto) {
         try {

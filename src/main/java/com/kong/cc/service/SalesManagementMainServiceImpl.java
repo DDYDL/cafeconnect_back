@@ -1,15 +1,5 @@
 package com.kong.cc.service;
 
-import java.util.ArrayList;
-import java.sql.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.ItemMajorCategoryForm;
 import com.kong.cc.dto.ItemMiddleCategoryForm;
@@ -29,8 +19,15 @@ import com.kong.cc.repository.ShopOrderRepository;
 import com.kong.cc.repository.StoreRepository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +59,7 @@ public class SalesManagementMainServiceImpl implements SalesManagementMainServic
                 .where(shopOrder.orderDate.between(startDate, endDate),
                         shopOrder.storeO.storeCode.eq(storeCode))
                 .fetch();
+        System.out.println("orderList" + orderList);
 
 
         // 대분류, 중분류, 소분류를 담을 맵을 생성

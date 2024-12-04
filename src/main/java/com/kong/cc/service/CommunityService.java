@@ -4,8 +4,6 @@ package com.kong.cc.service;
 import com.kong.cc.dto.AskDto;
 import com.kong.cc.dto.ComplainDto;
 import com.kong.cc.dto.NoticeDto;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import java.util.List;
 
 public interface CommunityService {
@@ -15,7 +13,7 @@ public interface CommunityService {
 
     NoticeDto noticeDetail(Integer noticeNum) throws Exception;
 
-    List<AskDto> askList() throws Exception;
+    List<AskDto> askList(Integer storeCode) throws Exception;
 
     void saveAnswer(Integer askNum, AskDto askDto) throws Exception;
 
@@ -23,5 +21,11 @@ public interface CommunityService {
 
     void askWrite(AskDto askDto) throws Exception;
 
-    List<ComplainDto> complainList() throws Exception;
+    List<ComplainDto> complainList(Integer storeCode) throws Exception;
+
+    ComplainDto complainDetail(Integer complainNum) throws Exception;
+
+    AskDto askAnswer(Integer storeCode, Integer askNum) throws Exception;
+
+    List<NoticeDto> noticeModal() throws Exception;
 }

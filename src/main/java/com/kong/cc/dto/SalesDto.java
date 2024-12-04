@@ -1,11 +1,8 @@
 package com.kong.cc.dto;
 
-import java.sql.Date;
-import java.util.List;
-
 import com.kong.cc.entity.Menu;
 import com.kong.cc.entity.Sales;
-import com.kong.cc.entity.Store;
+import java.sql.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,7 +30,6 @@ public class SalesDto {
 				.salesCount(salesCount)
 				.salesAmount(salesAmount)
 				.salesStatus(salesStatus)
-				.storeSa(Store.builder().storeCode(storeCode).build())
 				.menu(Menu.builder().menuCode(menuCode).build())
 				.build();
 	}

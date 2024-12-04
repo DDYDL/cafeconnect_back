@@ -3,17 +3,22 @@ package com.kong.cc.service;
 import com.kong.cc.dto.AskDto;
 import com.kong.cc.dto.ComplainDto;
 import com.kong.cc.dto.NoticeDto;
-import com.kong.cc.entity.*;
-import com.kong.cc.repository.*;
+import com.kong.cc.entity.Ask;
+import com.kong.cc.entity.Complain;
+import com.kong.cc.entity.Notice;
+import com.kong.cc.entity.Store;
+import com.kong.cc.repository.AskRepository;
+import com.kong.cc.repository.ComplainRepository;
+import com.kong.cc.repository.NoticeRepository;
+import com.kong.cc.repository.StoreRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -36,18 +41,26 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public NoticeDto noticeDetail(Integer noticeNum) throws Exception {
         Notice noticeInfo = this.noticeRepository.findByNoticeNum(noticeNum)
-                .orElseThrow( () ->  new Exception("noticeNum 정보가 없습니다."));
+                .orElseThrow(() -> new Exception("noticeNum 정보가 없습니다."));
         return noticeInfo.toDto();
     }
 
     @Override
-    public List<AskDto> askList() throws Exception {
+    public List<AskDto> askList(Integer storeCode) throws Exception {
 
-        List<Ask> askList = this.askRepository.findAll();
-        List<AskDto> askDtoList = askList.stream().map(Ask::toDto).collect(Collectors.toList());
-        ;
-        return askDtoList;
+        List<Ask> askList = askRepository.findByStoreCode(storeCode);
+        List<Ask> askSaved = new ArrayList<>();
 
+        if (askList.isEmpty()) {
+            throw new IllegalArgumentException("No complains found with the provided ids.");
+        }
+        for (Ask ask : askList) {
+            ask.setStoreAs(Store.builder().storeCode(storeCode).build());
+            askSaved.add(ask);
+            System.out.println("ask" + ask);
+        }
+
+        return askSaved.stream().map(Ask::toDto).collect(Collectors.toList());
     }
 
     @Override
@@ -84,30 +97,61 @@ public class CommunityServiceImpl implements CommunityService {
         // storeCode를 기반으로 Store 엔티티 조회
         Store store = storeRepository.findById(askDto.getStoreCode())
                 .orElseThrow(() -> new IllegalArgumentException("해당 storeCode에 해당하는 Store가 존재하지 않습니다."));
-
-        // 저장하는 로직
-        // askRepository.save(ask);
-
+        System.out.println("StoreCode dto " + askDto.getStoreCode());
+        System.out.println("StoreCode repo" + store.getStoreCode());
+        Integer storeCode = store.getStoreCode();
 
         askRepository.save(AskDto.builder()
                 .askType(askDto.getAskType())
                 .askTitle(askDto.getAskTitle())
                 .askContent(askDto.getAskContent())
                 .askStatus("1")
-                .storeCode(askDto.getStoreCode())
+                .storeCode(storeCode)
                 .build()
                 .toEntity());
     }
 
     @Override
-    public List<ComplainDto> complainList() throws Exception {
+    public AskDto askAnswer(Integer storeCode, Integer askNum) throws Exception {
+        Ask askInfo = this.askRepository.findByStoreCodeAndAskNum(storeCode, askNum)
+                .orElseThrow(() -> new Exception("storeCode 또는 askNum이 일치하는 정보가 없습니다."));
+        return askInfo.toDto();
+    }
 
-
-        List<Complain> complainList = this.complainRepository.findAll();
-        List<ComplainDto> complainDtoList = complainList.stream().map(Complain::toDto).collect(Collectors.toList());
-
-        return complainDtoList;
-
+    @Override
+    public List<NoticeDto> noticeModal() throws Exception {
+        List<Notice> noticeList = this.noticeRepository.findAll();
+        List<NoticeDto> noticeDtoList = noticeList.stream().map(Notice::toDto).collect(Collectors.toList());
+        ;
+        return noticeDtoList;
 
     }
-};
+
+    ;
+
+    @Override
+    public List<ComplainDto> complainList(Integer storeCode) throws Exception {
+
+        List<Complain> complainList = complainRepository.findByStoreCode(storeCode);
+        List<Complain> complainSaved = new ArrayList<>();
+
+        if (complainList.isEmpty()) {
+            throw new IllegalArgumentException("No complains found with the provided ids.");
+        }
+        for (Complain complain : complainList) {
+            complain.setStoreCo(Store.builder().storeCode(storeCode).build());
+            complainSaved.add(complain);
+            System.out.println("complain" + complain);
+        }
+
+        return complainSaved.stream().map(Complain::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public ComplainDto complainDetail(Integer complainNum) throws Exception {
+        Complain complainInfo = this.complainRepository.findByComplainNum(complainNum)
+                .orElseThrow(() -> new Exception("complainNum에 해당하는 정보가 없습니다."));
+        return complainInfo.toDto();
+    }
+
+}

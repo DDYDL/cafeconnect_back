@@ -2,11 +2,12 @@ package com.kong.cc.service;
 
 
 import com.kong.cc.dto.StoreDto;
+import com.kong.cc.dto.StoreJoinDto;
 
 public interface StoreJoinService {
 
 
-    void joinStore(StoreDto storeDto) throws Exception;
+    void joinStore(StoreJoinDto storeJoinDto) throws Exception;
 
 
     Boolean checkDoubleId(String username) throws Exception;
