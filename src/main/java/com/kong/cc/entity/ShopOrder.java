@@ -62,6 +62,7 @@ public class ShopOrder {
 				.itemUnit(itemO.getItemUnit())
 				.itemStorage(itemO.getItemStorage())
 				.itemFileNum(itemO.getItemImageFile().getFileNum())
+				.orderDateStr(orderDate.toString())
 				.build();
 	}
 }

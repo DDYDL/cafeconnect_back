@@ -306,12 +306,16 @@ public class ShopServiceImpl implements ShopService {
 		return shopDslRepo.selectAllCartItemForOrder(storeCode, cartItemNumList);
 	}
 	
-	//결제 요청 정보 검증
+	//결제 요청 정보 검증 (상품 재고는 따로 없음,결제 총 금액만 확인)
 	@Override
-	public void validatePaymentRequest(PaymentRequestDto paymentRequest) throws Exception {
-		 if (paymentRequest.getAmount() <= 0) {
+	public Boolean validatePaymentRequest(PaymentRequestDto paymentRequest) throws Exception {
+		 
+		// 쿼리로 결제 금액 계산해서 비교하는거로 바꾸기  
+		if (paymentRequest.getAmount() <= 0) {
 	            throw new IllegalArgumentException("결제 금액이 올바르지 않습니다.");
 	        }
+		
+		return true;
 	}
 
 	@Override

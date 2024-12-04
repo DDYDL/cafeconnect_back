@@ -1,10 +1,13 @@
 package com.kong.cc.controller;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
@@ -27,6 +30,9 @@ import lombok.RequiredArgsConstructor;
 public class Maincontroller {
 	
 	private final MainService mainService;
+	
+	@Value("${upload.path}")
+	private String uploadPath;
 	
 	@GetMapping("/selectMenu") // IntroMain.js
 	public ResponseEntity<List<MenuDto>> selectMenu() {
@@ -121,9 +127,9 @@ public class Maincontroller {
 	public void imageView(@PathVariable String fileName, HttpServletResponse response) {
 		System.out.println(fileName);
 		try {
-			String path = "C:/ldy/upload/";
-			FileInputStream fis = new FileInputStream(path+fileName);
-			FileCopyUtils.copy(fis, response.getOutputStream());
+			InputStream ins = new FileInputStream(new File(uploadPath, fileName));
+			FileCopyUtils.copy(ins, response.getOutputStream());
+			ins.close();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
