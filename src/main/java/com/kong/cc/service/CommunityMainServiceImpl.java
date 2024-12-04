@@ -3,21 +3,32 @@ package com.kong.cc.service;
 import com.kong.cc.dto.AskDto;
 import com.kong.cc.dto.ComplainDto;
 import com.kong.cc.dto.NoticeDto;
+import com.kong.cc.dto.StoreDto;
 import com.kong.cc.entity.Ask;
 import com.kong.cc.entity.Complain;
+import com.kong.cc.entity.Member;
 import com.kong.cc.entity.Notice;
+import com.kong.cc.entity.Store;
 import com.kong.cc.repository.AskDslRepository;
 import com.kong.cc.repository.AskRepository;
 import com.kong.cc.repository.ComplainDslRepository;
 import com.kong.cc.repository.ComplainRepository;
 import com.kong.cc.repository.NoticeRepository;
+import com.kong.cc.repository.StoreRepository;
 import com.kong.cc.util.PageInfo;
-import java.sql.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+
+import org.hibernate.query.criteria.internal.expression.function.CurrentDateFunction;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

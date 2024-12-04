@@ -1,6 +1,7 @@
 package com.kong.cc.repository;
 
 import com.kong.cc.entity.Ask;
+import com.kong.cc.entity.Complain;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

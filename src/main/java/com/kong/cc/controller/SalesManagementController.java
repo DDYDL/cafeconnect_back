@@ -1,16 +1,16 @@
 package com.kong.cc.controller;
 
-import com.kong.cc.dto.MenuDto;
-import com.kong.cc.dto.SalesListDto;
+import com.kong.cc.dto.*;
+import com.kong.cc.entity.Sales;
 import com.kong.cc.service.SalesManagementService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 //재무 관리 - 매출 입력(가맹점)
 @RestController

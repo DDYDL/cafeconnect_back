@@ -1,5 +1,9 @@
 package com.kong.cc.dto;
 
+import com.kong.cc.entity.Member;
+import com.kong.cc.entity.Store;
+import java.sql.Date;
+import java.sql.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
