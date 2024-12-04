@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,12 +32,12 @@ public class StoreManageServiceImpl implements StoreManageService {
 
 		if (isWordEmpty) {
 		    switch (status) {
-		        case "req":
+		        case "req": System.out.println("req service");
 		            storeDtoList = storeDslRepository.findDeleteReqStoreListByPaging(pageRequest)
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.findDeleteReqStoreCount();
 		            break;
-		        case "inactive":
+		        case "inactive": System.out.println("inactive service");
 		            storeDtoList = storeDslRepository.findDeleteStoreListByPaging(pageRequest)
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.findDeleteStoreCount();
@@ -163,10 +166,36 @@ public class StoreManageServiceImpl implements StoreManageService {
 	}
 
 	@Override
-	public Integer createStoreCode() throws Exception {
-		Integer storeCode = storeDslRepository.selectLastStoreCode();
-		if(storeCode!=null || storeCode==0) storeCode+=1;
-		else storeCode=100000;
+	public Integer createStoreCode(StoreDto storeDto) throws Exception {
+		String sStoreCode = "";
+		String storeRegion = storeDto.getStoreRegion();
+		String contractDate = storeDto.getContractDate();
+		System.out.println(contractDate);
+		Map<String,String> koRegion = new HashMap<>();
+		koRegion.put("서울", "200");
+		koRegion.put("인천", "320");
+		koRegion.put("대전", "420");
+		koRegion.put("부산", "510");
+		koRegion.put("울산", "520");
+		koRegion.put("대구", "530");
+		koRegion.put("광주", "620");
+		koRegion.put("제주특별자치도", "640");
+		koRegion.put("경기", "310");
+		koRegion.put("강원", "330");
+		koRegion.put("충남", "410");
+		koRegion.put("충북", "430");
+		koRegion.put("경북", "540");
+		koRegion.put("경남", "550");
+		koRegion.put("전남", "610");
+		koRegion.put("전북", "630");
+
+		for(String key : koRegion.keySet()) {
+			if(storeRegion==key) sStoreCode=koRegion.get(key);
+		}
+		
+		sStoreCode += contractDate + new Random().nextInt(100);
+		
+		Integer storeCode = Integer.parseInt(sStoreCode);
 		return storeCode;
 	}
 
