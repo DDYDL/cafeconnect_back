@@ -5,12 +5,12 @@ import com.kong.cc.dto.MenuDto;
 import com.kong.cc.dto.SalesListDto;
 import com.kong.cc.entity.Sales;
 import com.kong.cc.service.SalesManagementService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
