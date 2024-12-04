@@ -49,7 +49,6 @@ public class StoreDto {
 	
 	private String username;
 	private String password;
-	private String storeRegion;
 	
 	public Store toEntity() {
 		Store store = Store.builder()
