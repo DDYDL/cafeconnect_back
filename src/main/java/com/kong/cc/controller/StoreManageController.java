@@ -39,10 +39,10 @@ public class StoreManageController {
 				pageInfo.setCurPage(page);
 				List<StoreDto> storeList = storeManageService.storeList(pageInfo, type, keyword, "active");
 				System.out.println(storeList);
-				Map<String,Object> listInfo = new HashMap<>();
-				listInfo.put("storeList", storeList);
-				listInfo.put("pageInfo", pageInfo);
-				return new ResponseEntity<Map<String,Object>>(listInfo, HttpStatus.OK);
+				Map<String,Object> res = new HashMap<>();
+				res.put("storeList", storeList);
+				res.put("pageInfo", pageInfo);
+				return new ResponseEntity<Map<String,Object>>(res, HttpStatus.OK);
 			} catch(Exception e) {
 				e.printStackTrace();
 				return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
@@ -52,8 +52,7 @@ public class StoreManageController {
   	@PostMapping("/addStoreMain")  	 // AddStoreMain.js
 	public ResponseEntity<String> addStore(@RequestBody StoreDto storeDto) {
 		try {
-			System.out.println(storeDto.getStoreName());
-			Integer storeCode = storeManageService.createStoreCode();
+			Integer storeCode = storeManageService.createStoreCode(storeDto);
 			storeDto.setStoreCode(storeCode);
 			storeDto.setStoreStatus("active");
 			storeManageService.addStore(storeDto);
@@ -146,12 +145,10 @@ public class StoreManageController {
 		try {
 			SimpleDateFormat fmt=new SimpleDateFormat("HH:mm");
 			System.out.println("storeDetail");
-			System.out.println(storeCode);
 			Map<String, Object> res = new HashMap<>();
 			StoreDto storeDto = storeManageService.storeDetail(storeCode);
 			res.put("store", storeDto);
-			res.put("storeOpenTime", fmt.format(storeDto.getStoreOpenTime()));
-			res.put("storeCloseTime", fmt.format(storeDto.getStoreCloseTime()));
+			System.out.println(storeDto);
 			return new ResponseEntity<Map<String,Object>>(res, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();

@@ -224,6 +224,18 @@ public class CategoryService {
         }
 
     }
+
+    public List<CategoryResponseCopy> majorCategoryCopy() {
+        return itemMajorCategoryRepository.findAllMajorCategoryCopy();
+    }
+
+    public List<CategoryResponseCopy> middleCategoryCopy(String categoryName) {
+        return itemMiddleCategoryRepository.findAllMiddleCategoryCopy(categoryName);
+    }
+
+    public List<CategoryResponseCopy> subCategoryCopy(String categoryName) {
+        return itemSubCategoryRepository.findAllSubCategoryCopy(categoryName);
+    }
 //
 //    	List<ItemMajorCategoryForm> result = new ArrayList<>();
 //

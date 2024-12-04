@@ -1,6 +1,7 @@
 package com.kong.cc.repository;
 
 import com.kong.cc.dto.CategoryResponse;
+import com.kong.cc.dto.CategoryResponseCopy;
 import com.kong.cc.entity.ItemSubCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,6 @@ public interface ItemSubCategoryRepository extends JpaRepository<ItemSubCategory
 
     @Query("select new com.kong.cc.dto.CategoryResponse(m.itemCategoryName,m.itemCategoryNum) from ItemSubCategory m join m.itemMiddleCategorySb n where n.itemCategoryName = :categoryName")
     List<CategoryResponse> findAllCategory(@Param("categoryName") String categoryName);
+    @Query("select new com.kong.cc.dto.CategoryResponseCopy(m.itemCategoryNum,m.itemCategoryName,m.itemCategoryName) from ItemSubCategory m join m.itemMiddleCategorySb n where n.itemCategoryName = :categoryName")
+    List<CategoryResponseCopy> findAllSubCategoryCopy(String categoryName);
 }

@@ -44,11 +44,13 @@ public class StoreDto {
 	private String contractDate;
 	private String openingDate;
 	private String storeStatus;
+	
 	 
 	private Integer memberNum;
 	
 	// 추가
 	private Integer stockCount;
+	private String storeRegion;
 	
 	public Store toEntity() {
 		Store store = Store.builder()

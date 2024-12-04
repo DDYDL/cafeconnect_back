@@ -8,7 +8,7 @@ import java.util.List;
 public interface StoreManageService {
 	List<StoreDto> storeList(PageInfo page, String type, String word, String status) throws Exception;
 	StoreDto storeDetail(Integer storeCode) throws Exception;
-	Integer createStoreCode() throws Exception; 
+	Integer createStoreCode(StoreDto storeDto) throws Exception; 
 	Integer addStore(StoreDto storeDto) throws Exception;
 	Integer modifyStore(StoreDto storeDto) throws Exception;
 	Integer deleteStore(Integer storeCode) throws Exception;
