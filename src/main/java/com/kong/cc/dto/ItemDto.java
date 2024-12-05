@@ -32,6 +32,7 @@ public class ItemDto {
 	private Integer itemFileNum;
 
 	private Integer wishItemNum;
+	private Integer orderCount;
 	
 	public Item toEntity() {
 		return Item.builder()
