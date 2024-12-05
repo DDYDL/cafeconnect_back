@@ -339,7 +339,7 @@ public class ShopServiceImpl implements ShopService {
 	// 주문 생성 및 장바구니 삭제
 	@Transactional
 	@Override
-	public List<ShopOrderDto> createOrder(String merchantUid, Integer storeCode, List<Integer> cartNums)
+	public List<ShopOrderDto> createOrder(String merchantUid, String impUid,String paymentMethod, Integer storeCode, List<Integer> cartNums)
 			throws Exception {
 		try {
 			// 1. 장바구니 상품 조회
@@ -352,12 +352,15 @@ public class ShopServiceImpl implements ShopService {
 			List<ShopOrder> orders = carts.stream()
 					.map(cart -> ShopOrder.builder()
 							.orderCode(merchantUid) //생성한 주문번호  
+							.impUid(impUid)
 							.orderCount(cart.getCartItemCount())
 							.orderDate(new Date(System.currentTimeMillis()))
 							.orderState("주문접수")
-							.orderPayment("카드결제")
+							.orderPayment(paymentMethod)
 							.orderDelivery(cart.getItemCa().getItemStorage()) // 상품 보관 타입에 따른 배송
-							.storeO(cart.getStoreCa()).itemO(cart.getItemCa()).build())
+							.storeO(cart.getStoreCa())
+							.itemO(cart.getItemCa())
+							.build())
 					.collect(Collectors.toList());
 
 			// 주문 저장

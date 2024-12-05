@@ -296,6 +296,7 @@ public class ShopController {
 			// 여기서 주문 번호 생성해서 보내기 
 			ShopOrderDto dto = new ShopOrderDto();
 			String merchantUid = dto.makeOrderCode();
+			System.out.println(merchantUid);
 			
 			validateResult.put("isValidated",result); //true
 			validateResult.put("orderCode", merchantUid);//주문번호 생성해서 내려보내기 
@@ -307,11 +308,11 @@ public class ShopController {
 			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	// 결제 완료 후 검증
+	// 결제 완료 후 데이터베이스 저장 전 api-key,secret으로 아임포트 서버인증토큰발급 및 서버와 결제정보 조회 및 검증
 	@PostMapping("/paymentVerify")
 	public ResponseEntity<PaymentResponseDto>responsePayment(@RequestBody PaymentResponseDto paymentResponse) {
 		try {
-			shopService.verifyPayment(paymentResponse.getImpUid(),paymentResponse.getMerchantUid(), paymentResponse.getAmount());
+			shopService.verifyPayment(paymentResponse.getImpUid(),paymentResponse.getMerchantUid(), paymentResponse.getTotalAmount());
 			return new ResponseEntity<PaymentResponseDto>(paymentResponse,HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -322,11 +323,16 @@ public class ShopController {
  	
 	//아임포트 검증 및 결제 완료 후 주문 생성 
 	@PostMapping("/paymentComplete") // OrderForm.js
-	public ResponseEntity<List<ShopOrderDto>>orderComplete(@RequestParam Integer storeCode, @RequestParam("check") Integer[] cartNum) {
+	public ResponseEntity<List<ShopOrderDto>>orderComplete(@RequestBody PaymentResponseDto paymentResponse) {
 		try {
-			ShopOrderDto dto = new ShopOrderDto();
-			String merchantUid = dto.makeOrderCode();
-			List<ShopOrderDto> result = shopService.createOrder(merchantUid,storeCode,Arrays.asList(cartNum));
+			 System.out.println("Received payment response: " + paymentResponse); // 로그 추가
+			   List<ShopOrderDto> result = shopService.createOrder(
+			           paymentResponse.getMerchantUid(),
+			           paymentResponse.getImpUid(),
+			           paymentResponse.getPaymentMethod(),
+			           paymentResponse.getStoreCode(),
+			           paymentResponse.getCartNums()
+			           );
 			return new ResponseEntity<List<ShopOrderDto>>(result, HttpStatus.OK);
 
 		} catch (Exception e) {

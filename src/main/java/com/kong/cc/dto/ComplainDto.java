@@ -28,6 +28,7 @@ public class ComplainDto {
     
     private Integer storeCode;
     private String storeName;
+    private String complainDateStr;
     
     public Complain toEntity() {
     	Complain complain = Complain.builder()

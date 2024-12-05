@@ -1,17 +1,19 @@
 package com.kong.cc.repository;
 
-import static com.kong.cc.entity.QItem.*;
 import static com.kong.cc.entity.QRepair.repair;
 
+import java.sql.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
 
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.RepairResponseDto;
@@ -20,12 +22,15 @@ import com.kong.cc.entity.QItem;
 import com.kong.cc.entity.QItemMajorCategory;
 import com.kong.cc.entity.QRepair;
 import com.kong.cc.entity.Repair;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.util.StringUtils;
 
 @Repository
 public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
@@ -134,26 +139,113 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
 
     // 가맹점 시작
     // 가맹점 수리 요청 리스트
-    public List<RepairResponseDto> selectRepairRequestOfStore(Integer storeCode) {
+    public List<RepairResponseDto> selectRepairRequestOfStore(Integer storeCode,PageRequest pageRequest) {
     	QRepair repair = QRepair.repair;
     	QItem item = QItem.item;
 
     	return queryFactory.select(Projections.bean(RepairResponseDto.class,
     			                   repair.repairNum,
     			                   repair.repairStatus,
+    			                   repair.repairDate,
+    			                   //Expressions.dateTemplate(Date.class,"DATE({0})",repair.repairDate).as("repairDate"),
+    			                   //Expressions.stringTemplate("DATE_FORMAT({0}, {1})",repair.repairDate,ConstantImpl.create("%Y-%m-%d")).as("repairDate").as("repairDate"),
     			                   repair.repairType,
     			                   repair.repairTitle,
-    							   Projections.bean(ItemDto.class,
-    										item.itemName,
-    										item.itemCode,
-    	    								item.itemMajorCategory.itemCategoryName,
-    	    								item.itemMiddleCategory.itemCategoryName,
-    	    								item.itemSubCategory.itemCategoryName)))
+    			                   repair.repairContent,
+    			                   repair.repairAnswer,
+    			                   repair.repairAnswerDate,
+    			                   repair.itemR.itemCode.as("itemCode"),
+    			                   repair.itemR.itemName,  
+    			                   repair.itemR.itemMajorCategory.itemCategoryName.as("itemCategoryMajorName"),
+    			                   repair.itemR.itemMiddleCategory.itemCategoryName.as("itemCategoryMiddleName"),
+    			                   repair.itemR.itemSubCategory.itemCategoryName.as("itemCategorySubName")
+    			))
     			.from(repair)
-    			.join(item).on(item.itemCode.eq(repair.itemR.itemCode))
+    			.leftJoin(item).on(item.itemCode.eq(repair.itemR.itemCode))
+		        .leftJoin(item.itemMajorCategory)
+		        .leftJoin(item.itemMiddleCategory)
+		        .leftJoin(item.itemSubCategory) // 소분류없는 상품의 경우가 있음, 따라서 crossjoin되면 안돼서 임의적으로 추가해줌 
     			.where(repair.storeR.storeCode.eq(storeCode))
+    			.offset(pageRequest.getOffset())
+				.limit(pageRequest.getPageSize())
     			.fetch();
     }
+    // 수리 요청 리스트 카운트
+    public Long findRepairRequestCount(Integer storeCode) {
+    	QRepair repair = QRepair.repair;
+    	return queryFactory.select(repair.count())
+    			.from(repair)
+    			.where(repair.storeR.storeCode.eq(storeCode))
+    			.fetchOne();
+    }
+    //검색 조건 수리 요청 리스트 
+    public List<RepairResponseDto> selectSearchRepairRequestOfStore(Integer storeCode,PageRequest pageRequest,String type,String word) {
+    	QRepair repair = QRepair.repair;
+    	QItem item = QItem.item;
+    	List<RepairResponseDto> repairRequestList = null;
+    	BooleanBuilder builder = new BooleanBuilder();
+    	
+    	//전체
+    	if(type.equals("")) {
+    		builder.and(repair.storeR.storeCode.eq(storeCode));
+    	}else if(type.equals("name")) {
+    		builder.and(repair.storeR.storeCode.eq(storeCode).and(repair.itemR.itemName.contains(word)));
+    	}else if (type.equals("kind")) {
+    		builder.and(repair.storeR.storeCode.eq(storeCode).and(repair.repairType.contains(word)));
+    	}else if(type.equals("status")) {
+    		builder.and(repair.storeR.storeCode.eq(storeCode).and(repair.repairStatus.contains(word)));
+    	}
+    	
+    	return queryFactory.select(Projections.bean(RepairResponseDto.class,
+					    			 repair.repairNum,
+					                 repair.repairStatus,
+					                 repair.repairDate,
+					                 repair.repairType,
+					                 repair.repairTitle,
+					                 repair.repairContent,
+					                 repair.repairAnswer,
+					                 repair.repairAnswerDate,
+					                 repair.itemR.itemCode.as("itemCode"),
+					                 repair.itemR.itemName,  
+					                 repair.itemR.itemMajorCategory.itemCategoryName.as("itemCategoryMajorName"),
+					                 repair.itemR.itemMiddleCategory.itemCategoryName.as("itemCategoryMiddleName"),
+					                 repair.itemR.itemSubCategory.itemCategoryName.as("itemCategorySubName")
+    			     
+    			))
+    			.from(repair)
+    			.leftJoin(item).on(item.itemCode.eq(repair.itemR.itemCode))
+		        .leftJoin(item.itemMajorCategory)
+		        .leftJoin(item.itemMiddleCategory)
+		        .leftJoin(item.itemSubCategory) // 소분류없는 상품의 경우가 있음, 따라서 crossjoin되면 안돼서 임의적으로 추가해줌 
+    			.where(builder) // 동적쿼리 활용
+    			.offset(pageRequest.getOffset())
+				.limit(pageRequest.getPageSize())
+    			.fetch();
+    }
+    
+    public Long findSearchRepairRequestCount(Integer storeCode,String type,String word) {
+    	QRepair repair = QRepair.repair;
+    	QItem item = QItem.item;
+    	List<RepairResponseDto> repairRequestList = null;
+    	BooleanBuilder builder = new BooleanBuilder();
+    	
+    	//전체
+    	if(type.equals("")) {
+    		builder.and(repair.storeR.storeCode.eq(storeCode));
+    	}else if(type.equals("name")) {
+    		builder.and(repair.storeR.storeCode.eq(storeCode).and(repair.itemR.itemName.contains(word)));
+    	}else if (type.equals("kind")) {
+    		builder.and(repair.storeR.storeCode.eq(storeCode).and(repair.repairType.contains(word)));
+    	}else if(type.equals("status")) {
+    		builder.and(repair.storeR.storeCode.eq(storeCode).and(repair.repairStatus.contains(word)));
+    	}
+    	return queryFactory.select(repair.count())
+    			.from(repair)
+    			.where(builder)
+    			.fetchOne();
+    }
+    
+    
     //수리 신청 기기 조회에 사용될 전체 머신 리스트 - 대분류가 머신인!
     public List<Tuple> selectAllMachineInfoList() {
     	QItem item = QItem.item;

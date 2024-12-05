@@ -40,6 +40,8 @@ public class ShopOrder {
 	@JoinColumn(name="itemCode")
 	private Item itemO;
 	
+	private String impUid;  //아임포트 결제 건별 발급되는 고유 식별 번호 (검증,취소,환불처리에 필수)
+	
 	public ShopOrderDto toDto() {
 
 		return ShopOrderDto.builder()
@@ -63,6 +65,7 @@ public class ShopOrder {
 				.itemStorage(itemO.getItemStorage())
 				.itemFileNum(itemO.getItemImageFile().getFileNum())
 				.orderDateStr(orderDate.toString())
+				.impUid(impUid)
 				.build();
 	}
 }

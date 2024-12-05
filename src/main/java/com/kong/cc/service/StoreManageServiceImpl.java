@@ -37,12 +37,12 @@ public class StoreManageServiceImpl implements StoreManageService {
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.findDeleteReqStoreCount();
 		            break;
-		        case "inactive": System.out.println("inactive service");
+		        case "delete": System.out.println("delete service");
 		            storeDtoList = storeDslRepository.findDeleteStoreListByPaging(pageRequest)
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.findDeleteStoreCount();
 		            break;
-		        default:
+		        default: System.out.println("active/inactive service");
 		            storeDtoList = storeDslRepository.findStoreListByPaging(pageRequest)
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.findStoreCount();
@@ -55,7 +55,7 @@ public class StoreManageServiceImpl implements StoreManageService {
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.searchDeleteReqStoreCount(type, word);
 		            break;
-		        case "inactive":
+		        case "delete":
 		            storeDtoList = storeDslRepository.searchDeleteStoreListByPaging(pageRequest, type, word)
 		                    .stream().map(s -> s.toDto()).collect(Collectors.toList());
 		            allCnt = storeDslRepository.searchDeleteStoreCount(type, word);
@@ -79,6 +79,8 @@ public class StoreManageServiceImpl implements StoreManageService {
 
 	@Override
 	public Integer addStore(StoreDto storeDto) throws Exception {
+		storeDto.setStoreCode(createStoreCode(storeDto));
+		storeDto.setStoreStatus("inactive");
 		Store store = storeDto.toEntity();
 		storeRepository.save(store);		
 		return store.getStoreCode();
@@ -143,7 +145,7 @@ public class StoreManageServiceImpl implements StoreManageService {
 	public Integer deleteStore(Integer storeCode) throws Exception {
 		Store store = storeRepository.findById(storeCode).orElseThrow(()->new Exception("가맹점 코드 오류"));
 		if(store!=null) {
-			store.setStoreStatus("inactive");
+			store.setStoreStatus("delete");
 		}
 		storeRepository.save(store);		
 		return store.getStoreCode();
@@ -190,10 +192,10 @@ public class StoreManageServiceImpl implements StoreManageService {
 		koRegion.put("전북", "630");
 
 		for(String key : koRegion.keySet()) {
-			if(storeRegion==key) sStoreCode=koRegion.get(key);
+			if(storeRegion==key) sStoreCode=koRegion.get(key); break;
 		}
-		
-		sStoreCode += contractDate + new Random().nextInt(100);
+		System.out.println(sStoreCode);
+		sStoreCode = sStoreCode + (String)contractDate.replace("-", "") + new Random().nextInt(100);
 		
 		Integer storeCode = Integer.parseInt(sStoreCode);
 		return storeCode;
