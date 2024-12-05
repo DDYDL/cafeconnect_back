@@ -1,21 +1,22 @@
 package com.kong.cc.controller;
 
 
-import com.kong.cc.dto.MenuDto;
-import com.kong.cc.dto.SalesListDto;
-import com.kong.cc.entity.Sales;
-import com.kong.cc.service.SalesManagementService;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.kong.cc.dto.MenuDto;
+import com.kong.cc.dto.SalesDto;
+import com.kong.cc.dto.SalesWriteDto;
+import com.kong.cc.service.SalesManagementService;
+
+import lombok.RequiredArgsConstructor;
+
 
 //재무 관리 - 매출 입력(가맹점)
 @RestController
@@ -39,34 +40,30 @@ public class SalesManagementController {
 
     //매출 입력
     @PostMapping("/salesWrite")
-    public ResponseEntity<String> salesWrite(@RequestBody SalesListDto salesList) {
-        System.out.println("salesList1 = " + salesList);
+    public ResponseEntity<String> salesWrite(@RequestBody SalesWriteDto salesWriteDto) {
+        System.out.println(salesWriteDto);
         try {
-            System.out.println("salesList2 = " + salesList);
-            salesManagementService.salesWrite(salesList.getSalesList());
-//                    getSalesList());
+            salesManagementService.salesWrite(salesWriteDto.getSalesDate(),
+                    salesWriteDto.getStoreCode(),
+                    salesWriteDto.getSalesList());
             return ResponseEntity.ok("(controller)매출 정보가 정상적으로 저장되었습니다.");
         } catch (Exception e) {
-            System.out.println("salesList3 = " + salesList);
-            System.out.println("에러남");
             e.printStackTrace();
             return ResponseEntity.status(500).body("(controller) 매출 정보 저장 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
     @PostMapping("/salesTemp")
-    public ResponseEntity<String> salesTemp(@RequestBody SalesListDto salesList) {
+    public ResponseEntity<List<SalesDto>> salesTemp(@RequestBody SalesDto salesDto) {
         try {
-            salesManagementService.salesTemp(salesList);
-            return ResponseEntity.ok("(controller)임시 저장 완료.");
+            List<SalesDto> salesTempList = salesManagementService.salesTemp(salesDto.getSalesDate(), salesDto.getStoreCode());
+            return new ResponseEntity<List<SalesDto>>(salesTempList, HttpStatus.OK);
         } catch(Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<List<SalesDto>>(HttpStatus.BAD_REQUEST);
         }
 
     }
- };
-
 
     //매출 분석
 //    @GetMapping("/salesAnalysis/{storeCode}") // SalesAnalysis.js
@@ -81,7 +78,7 @@ public class SalesManagementController {
 //    }
 
 
-//}
+}
 //
 //    @GetMapping("/anualSales") // SalesAnalysis.js
 //    @GetMapping("/quarterlySales") // SalesAnalysis.js

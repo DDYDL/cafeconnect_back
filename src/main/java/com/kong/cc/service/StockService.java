@@ -11,7 +11,7 @@ import com.kong.cc.dto.StoreDto;
 public interface StockService {
 	public List<ShopOrderDto> selectOrderList(Integer storeCode) throws Exception;
 	public String addStockByOrderNum(List<Integer> orderNumList) throws Exception;
-	public List<StockDto> selectStockByStoreCode(Integer storeCode) throws Exception;
+	public Map<String, List<StockDto>> selectStockByStoreCode(Integer storeCode) throws Exception;
 	public String addStock(StockDto stockDto) throws Exception;
 	public String updateStock(StockDto stockDto) throws Exception;
 	public String deleteStock(Integer stockNum) throws Exception;
