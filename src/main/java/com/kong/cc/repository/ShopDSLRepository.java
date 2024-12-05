@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.ItemExpenseDto;
+import com.kong.cc.dto.OrderItemGroupByCodeDto;
 import com.kong.cc.dto.ShopOrderDto;
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.entity.Cart;
@@ -24,6 +25,7 @@ import com.kong.cc.entity.QShopOrder;
 import com.kong.cc.entity.QStore;
 import com.kong.cc.entity.QWishItem;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
@@ -384,37 +386,45 @@ public class ShopDSLRepository {
 	        .orderBy(order.orderDate.desc())
 	        .fetch();
 	}
-	// 기간 선택 주문 리스트  
-	public List<ShopOrderDto> selectAllShopOrderListByPeriod(Integer storeCode,Date startDate,Date endDate){
-	    QShopOrder order = QShopOrder.shopOrder;
-	    QItem item = QItem.item;
-	    QStore store = QStore.store;
+	//동적 쿼리 사용 전체 조건에 따라 조회됨 (날짜,주문상태에따라 조회)
+	public List<ShopOrderDto> selectAllShopOrderListForStore(Integer storeCode,Date startDate,Date endDate,String orderState){
+		 QShopOrder order = QShopOrder.shopOrder;
+		   QItem item = QItem.item;
+		   QStore store = QStore.store;
+		   
+		   BooleanBuilder builder = new BooleanBuilder();
+		   builder.and(store.storeCode.eq(storeCode));
+		   
+		   if (startDate != null && endDate != null) {
+		       builder.and(order.orderDate.between(startDate, endDate));
+		   }
+		   
+		   if (orderState != null && !orderState.equals("")) {
+		       builder.and(order.orderState.eq(orderState));
+		   }
 
-	    
-	    if(startDate !=null ||endDate !=null) {
-	    	return	jpaQueryFactory
-	    	        .select(Projections.fields(ShopOrderDto.class,
-	    		            order.orderNum,
-	    		            order.orderCode,
-	    		            order.orderCount,
-	    		            order.orderDate,
-	    		            order.orderState,
-	    		            order.orderDelivery,
-	    		            order.orderPayment,
-	    		            store.storeCode,
-	    		            item.itemCode,
-	    		            item.itemPrice,
-	    		            item.itemPrice.multiply(order.orderCount).as("orderPrice"))
-	    	        	)
-	    		        .from(order)
-	    		        .join(order.itemO, item)
-	    		        .join(order.storeO, store)
-	    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
-	    		        .orderBy(order.orderDate.desc())
-	    		        .fetch();
-	    }
-		return null; 
-	}
+		   return jpaQueryFactory.select(Projections.bean(ShopOrderDto.class,
+						           order.orderNum,
+						           order.orderCode,
+						           order.orderCount, 
+						           order.orderDate,
+						           order.orderState,
+						           order.orderDelivery,
+						           order.orderPayment,
+						           store.storeCode,
+						           item.itemCode,
+						           item.itemName,
+						           item.itemPrice
+						           ))
+						       .from(order)
+						       .join(order.itemO, item)
+						       .join(order.storeO, store)
+						       .where(builder)
+						       .orderBy(order.orderDate.desc())
+						       .fetch();
+		}
+	
+	
 	//기간 선택 주문 총 수 
 	public Long countOrders(Integer storeCode, Date startDate, Date endDate) {
 	    QShopOrder order = QShopOrder.shopOrder;

@@ -48,7 +48,7 @@ public interface ShopService {
 
 
 	List<ShopOrderDto> selectAllOrderList(Integer storeCode) throws Exception;
-	List<ShopOrderDto> selectAllOrderListByPeriod(Integer storeCode,Date startDate,Date endDate) throws Exception;
+	Map<String,Object> selectAllOrderListForStore(Integer storeCode,Date startDate,Date endDate,String orderState) throws Exception;
 	List<ShopOrderDto> selectAllOrderListByOrderState(Integer storeCode,String orderState) throws Exception;
 	List<ShopOrderDto> selectOrderByOrderCode(Integer storeCode,String orderCode) throws Exception;
 	//지출 내역

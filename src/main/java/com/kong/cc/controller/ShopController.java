@@ -354,24 +354,41 @@ public class ShopController {
 		}
 	
 	}
-	//기간 설정 내 주문 내역 조회
-	@PostMapping("/orderListByDate") // OrderListForStore.js	
-    public ResponseEntity<List<ShopOrderDto>>selectAllItemOrderByPeriod(@RequestParam Integer storeCode,
+	//기간 설정 내 주문 내역 조회 (조건 추가 state)
+	@PostMapping("/orderListForStore") // OrderListForStore.js	
+    public ResponseEntity<Map<String,Object>>selectAllItemOrderByPeriod(@RequestParam Integer storeCode,
     																	@RequestParam(name="startDate",required = false)String startDate,
-    																	@RequestParam(name="endDate",required = false)String endDate) {
+    																	@RequestParam(name="endDate",required = false)String endDate,
+    																	@RequestParam(name="orderState",required = false) String orderState){
     
     	try {
-     	
-    		Date sqlStartDate = Date.valueOf(startDate);	
-    		Date sqlEndDate = Date.valueOf(endDate);
+   
+    		Date sqlStartDate =null;	
+    		Date sqlEndDate =null;
     		
-    		List<ShopOrderDto>result = shopService.selectAllOrderListByPeriod(storeCode,sqlStartDate,sqlEndDate);
+    		//파라미터 없음 default 기간설정 (오늘날짜~30일 기준 startDate:30일전,endDate:오늘)
+    		if(startDate==null &&endDate==null ) {
+    		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+    		 Calendar now = Calendar.getInstance();
+    		 Calendar amonthAgo = Calendar.getInstance();
+    		 amonthAgo.add(Calendar.MONTH, -1);    // 한달 전
+    		 
+    		 endDate = sdf.format(now.getTime()); // 오늘 날짜로   
+    		 startDate = sdf.format(amonthAgo.getTime()); // 한달 전
+   
+    		}
+    		// 파라미터 있음
+    		//String Date 형식 => 2024-11-27
+    		 sqlStartDate = Date.valueOf(startDate);	
+    		 sqlEndDate = Date.valueOf(endDate);
     		
-    		return new ResponseEntity<List<ShopOrderDto>>(result,HttpStatus.OK); 
+    		Map<String,Object>result = shopService.selectAllOrderListForStore(storeCode,sqlStartDate,sqlEndDate,orderState);
+    		
+    		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK); 
     		
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
 		}
     }
 	
@@ -391,7 +408,7 @@ public class ShopController {
 	//@GetMapping("/deleteOrder") // OrderListForStore.js
 
 	//주문 상세 내역 
-    @GetMapping("/orderDetail") // OrderDetailForStore.js
+    @PostMapping("/orderDetail") // OrderDetailForStore.js
     public ResponseEntity<List<ShopOrderDto>>selectOrderByOrderCode(@RequestParam Integer storeCode,@RequestParam String orderCode) {
     	try {
     		List<ShopOrderDto> result = shopService.selectOrderByOrderCode(storeCode,orderCode);
