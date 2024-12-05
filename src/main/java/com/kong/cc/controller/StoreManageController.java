@@ -33,12 +33,15 @@ public class StoreManageController {
 	  public ResponseEntity<Map<String,Object>> storeList(@RequestParam(value="page", required=false, defaultValue = "1") Integer page,
 				@RequestParam(value="type", required = false) String type,
 				@RequestParam(value="keyword", required = false) String keyword) {
-			System.out.println(keyword);
+		  System.out.println("storeList controller");
 			try {
 				PageInfo pageInfo = new PageInfo();
 				pageInfo.setCurPage(page);
+				
+				System.out.println(keyword);
 				List<StoreDto> storeList = storeManageService.storeList(pageInfo, type, keyword, "active");
 				System.out.println(storeList);
+				
 				Map<String,Object> res = new HashMap<>();
 				res.put("storeList", storeList);
 				res.put("pageInfo", pageInfo);
@@ -52,11 +55,8 @@ public class StoreManageController {
   	@PostMapping("/addStoreMain")  	 // AddStoreMain.js
 	public ResponseEntity<String> addStore(@RequestBody StoreDto storeDto) {
 		try {
-			Integer storeCode = storeManageService.createStoreCode(storeDto);
-			storeDto.setStoreCode(storeCode);
-			storeDto.setStoreStatus("active");
 			storeManageService.addStore(storeDto);
-			return new ResponseEntity<String>(String.valueOf(storeCode), HttpStatus.OK);
+			return new ResponseEntity<String>(String.valueOf(storeDto.getStoreCode()), HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>("가맹점 등록 오류", HttpStatus.BAD_REQUEST);
@@ -128,7 +128,7 @@ public class StoreManageController {
 		try {
 			PageInfo pageInfo = new PageInfo();
 			pageInfo.setCurPage(page);
-			List<StoreDto> storeList = storeManageService.storeList(pageInfo, type, keyword, "inactive");
+			List<StoreDto> storeList = storeManageService.storeList(pageInfo, type, keyword, "delete");
 			System.out.println(storeList);
 			Map<String,Object> listInfo = new HashMap<>();
 			listInfo.put("storeList", storeList);
@@ -143,7 +143,7 @@ public class StoreManageController {
   	@GetMapping("/storeDetailMain/{storeCode}")  // StoreDetailMain.js
   	public ResponseEntity<Map<String,Object>> storeDetail(@PathVariable(value="storeCode") Integer storeCode) {
 		try {
-			SimpleDateFormat fmt=new SimpleDateFormat("HH:mm");
+//			SimpleDateFormat fmt=new SimpleDateFormat("HH:mm");
 			System.out.println("storeDetail");
 			Map<String, Object> res = new HashMap<>();
 			StoreDto storeDto = storeManageService.storeDetail(storeCode);

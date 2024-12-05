@@ -127,7 +127,7 @@ public class Store {
 		 	if(openingDate!=null) {
 		 		storeDto.setOpeningDate(fmt.format(openingDate));
 		 	}
-		 	if(member!=null) {
+		 	if(member!=null && storeDto.getStoreStatus()=="inactive") {
 				storeDto.setMemberNum(member.getMemberNum());
 				storeDto.setUsername(member.getUsername());
 				storeDto.setPassword(member.getPassword());
