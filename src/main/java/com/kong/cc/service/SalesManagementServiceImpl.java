@@ -1,8 +1,17 @@
 package com.kong.cc.service;
 
+import com.kong.cc.dto.SalesListDto;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
+
+import org.springframework.stereotype.Service;
+
 import com.kong.cc.dto.MenuDto;
 import com.kong.cc.dto.SalesDto;
-import com.kong.cc.dto.SalesListDto;
 import com.kong.cc.dto.SalesMenuDto;
 import com.kong.cc.entity.Menu;
 import com.kong.cc.entity.QMenu;
@@ -10,20 +19,14 @@ import com.kong.cc.entity.QSales;
 import com.kong.cc.entity.QShopOrder;
 import com.kong.cc.entity.QStore;
 import com.kong.cc.entity.Sales;
-import com.kong.cc.entity.Store;
 import com.kong.cc.repository.ItemRepository;
 import com.kong.cc.repository.MenuRepository;
 import com.kong.cc.repository.SalesRepository;
 import com.kong.cc.repository.StoreRepository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -42,18 +45,12 @@ public class SalesManagementServiceImpl implements SalesManagementService {
 
     @Override
     @Transactional
-    public void salesWrite(List<SalesDto> salesList) throws Exception {
-
-        for(SalesDto saleDto : salesList){
-
-            Sales sale = new Sales();
-            sale.setSalesAmount(saleDto.getSalesAmount());
-            sale.setSalesCount(saleDto.getSalesCount());
-            sale.setSalesStatus(saleDto.getSalesStatus());
-            sale.setMenu(Menu.builder().menuCode(saleDto.getMenuCode()).build());
-            sale.setStoreSa(Store.builder().storeCode(saleDto.getStoreCode()).build());
-
-            salesRepository.save(sale);
+    public void salesWrite(Date salesDate, Integer storeCode, List<SalesDto> salesList) throws Exception {
+        salesRepository.deleteBySalesDateAndStoreSa_StoreCode(salesDate, storeCode);
+        if(salesList.size()==0) return;
+        List<Sales> salesEntityList = salesList.stream().map(s->s.toEntity()).collect(Collectors.toList());
+        for(Sales s: salesEntityList) {
+            salesRepository.save(s);
         }
     }
 
@@ -110,14 +107,14 @@ public class SalesManagementServiceImpl implements SalesManagementService {
 //            dto.setMenuPrice(m.get(menu.menuPrice));
 //            dto.setMenuCategoryNum(m.get(menu.menuCategory.menuCategoryNum));
 
-            //수량 합계(개별)
+        //수량 합계(개별)
 //            Integer totalCount = m.get(sales.salesCount.sum());
 //            dto.setSalesCount(totalCount);
 
-            //매출 합계 금액(개별)
+        //매출 합계 금액(개별)
 //            dto.setSalesPriceSum(m.get(menu.menuPrice) * (totalCount)); // 매출 합계
 
-            //전월 대비
+        //전월 대비
 
 //
 //            return dto;
@@ -150,55 +147,8 @@ public class SalesManagementServiceImpl implements SalesManagementService {
     }
 
     @Override
-    public void salesTemp(SalesListDto salesList) throws Exception {
-        for(SalesDto saleDto : salesList.getSalesList()) {
-            Date salesDate = saleDto.getSalesDate();
-            Integer storeCode = saleDto.getStoreCode();
-            Integer menuCode = Integer.valueOf(saleDto.getMenuCode());  // 메뉴 코드 추가
-
-            // salesDate와 storeCode로 해당 데이터를 조회
-            List<Sales> findStore = salesRepository.findListBySalesDateAndStoreCode(salesDate, storeCode);
-
-            if (findStore.isEmpty()) {
-                // 만약 일치하는 데이터가 없다면 새로운 데이터를 추가
-                Sales sale = new Sales();
-                sale.setSalesAmount(saleDto.getSalesAmount());
-                sale.setSalesCount(saleDto.getSalesCount());
-                sale.setSalesStatus(saleDto.getSalesStatus());
-                sale.setMenu(Menu.builder().menuCode(saleDto.getMenuCode()).build());
-                sale.setStoreSa(Store.builder().storeCode(saleDto.getStoreCode()).build());
-
-                salesRepository.save(sale); // 새로운 데이터 저장
-            } else {
-                // 일치하는 데이터가 있으면 해당 데이터를 업데이트
-                boolean updated = false;  // 업데이트 여부를 체크하는 플래그
-                for (Sales sale : findStore) {
-                    if (sale.getMenu().getMenuCode().equals(menuCode)) {
-                        // menuCode가 일치하는 데이터만 업데이트
-                        sale.setSalesAmount(saleDto.getSalesAmount());
-                        sale.setSalesCount(saleDto.getSalesCount());
-                        sale.setSalesStatus(saleDto.getSalesStatus());
-                        sale.setMenu(Menu.builder().menuCode(saleDto.getMenuCode()).build());
-
-                        // 업데이트된 데이터 저장
-                        salesRepository.save(sale);
-                        updated = true;
-                        break; // 일치하는 메뉴 코드가 있으면 더 이상 탐색하지 않음
-                    }
-                }
-
-                // 일치하는 menuCode가 없으면 새로 추가
-                if (!updated) {
-                    Sales sale = new Sales();
-                    sale.setSalesAmount(saleDto.getSalesAmount());
-                    sale.setSalesCount(saleDto.getSalesCount());
-                    sale.setSalesStatus(saleDto.getSalesStatus());
-                    sale.setMenu(Menu.builder().menuCode(saleDto.getMenuCode()).build());
-                    sale.setStoreSa(Store.builder().storeCode(saleDto.getStoreCode()).build());
-
-                    salesRepository.save(sale); // 새로운 데이터 저장
-                }
-            }
-        }
+    public List<SalesDto> salesTemp(Date salesDate, Integer storeCode) throws Exception {
+        return salesRepository.findBySalesDateAndStoreSa_StoreCode(salesDate, storeCode)
+                .stream().map(s->s.toDto()).collect(Collectors.toList());
     }
-    }
+};
