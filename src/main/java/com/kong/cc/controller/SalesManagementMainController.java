@@ -1,5 +1,6 @@
 package com.kong.cc.controller;
 
+import com.kong.cc.dto.ItemDto;
 import java.sql.Date;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class SalesManagementMainController {
 
     // 가맹점별 상세 주문내역
     @GetMapping("/itemRevenue") // StoreItemRevenue.js
-    public ResponseEntity<List<ItemMajorCategoryForm>> itemRevenue(
+    public ResponseEntity<List<ItemDto>> itemRevenue(
             @RequestParam Date startDate,
             @RequestParam Date endDate,
             @RequestParam Integer storeCode) {
@@ -34,7 +35,7 @@ public class SalesManagementMainController {
         System.out.println("endDate" + endDate);
         try {
             // 서비스에서 결과 가져오기
-            List<ItemMajorCategoryForm> result = salesManagementMainService.itemRevenue(storeCode, startDate, endDate);
+            List<ItemDto> result = salesManagementMainService.itemRevenue(storeCode, startDate, endDate);
             return ResponseEntity.ok(result);
         } catch(Exception e){
             e.printStackTrace();

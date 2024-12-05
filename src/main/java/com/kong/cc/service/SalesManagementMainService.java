@@ -10,9 +10,7 @@ import com.kong.cc.dto.ItemDto;
 
 public interface SalesManagementMainService {
 
-
-    List<ItemMajorCategoryForm> itemRevenue(Integer storeCode, Date startDate, Date endDate) throws Exception;
-
+    List<ItemDto> itemRevenue(Integer storeCode, Date startDate, Date endDate) throws Exception;
 
 
 
