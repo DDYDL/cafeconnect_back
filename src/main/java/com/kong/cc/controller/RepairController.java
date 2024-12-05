@@ -1,18 +1,27 @@
 package com.kong.cc.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.kong.cc.dto.UpdateRepairForm;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.kong.cc.dto.RepairResponseDto;
 import com.kong.cc.dto.RepairSearchCondition;
 import com.kong.cc.dto.RepairUpdateForm;
 import com.kong.cc.service.RepairService;
+import com.kong.cc.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,14 +86,30 @@ public class RepairController {
     }
     // 가맹점 시작
     // 가맹점 수리 요청 리스트 
-    @GetMapping("/repairRequestList") 	//RepairRequestList.js 
-    public ResponseEntity<List<RepairResponseDto>> selectRepairRequestList(@RequestParam Integer storeCode) {
+    @PostMapping("/repairRequestList") 	//RepairRequestList.js 
+    public ResponseEntity<Map<String,Object>> selectRepairRequestList(
+    												@RequestParam Integer storeCode,
+    												@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+    												@RequestParam(value="type", required = false) String type,
+    												@RequestParam(value="keyword", required = false) String word) {
+    	Map<String,Object> result = new HashMap<>();
     	try {
-    		List<RepairResponseDto> result = repairService.selectAllRepairRequestList(storeCode); 
-			return new ResponseEntity<List<RepairResponseDto>>(result,HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<List<RepairResponseDto>>(HttpStatus.BAD_REQUEST);
+    		
+    		
+    		PageInfo pageInfo = new PageInfo();
+    		pageInfo.setCurPage(page);
+
+    		List<RepairResponseDto> repairRequestList = repairService.selectAllRepairRequestList(storeCode,type,word,pageInfo); 
+    		
+    		result.put("repairRequestList", repairRequestList);
+    		result.put("pageInfo",pageInfo);
+    		
+    		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
+		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		result.put("err", e.getMessage());
+			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
 			
 		}
     }

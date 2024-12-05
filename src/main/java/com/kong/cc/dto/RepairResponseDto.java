@@ -38,6 +38,7 @@ public class RepairResponseDto {
     	return Repair.builder()
     			.repairType(repairType)
     			.repairTitle(repairTitle)
+    			.repairStatus(repairStatus)
     			.repairContent(repairContent)
     			.storeR(Store.builder().storeCode(storeCode).build())
     			.itemR(Item.builder().itemCode(itemCode).build())
