@@ -40,7 +40,7 @@ public class StockServiceImpl implements StockService {
 	public final ItemRepository itemRepository;
 	public final StoreRepository storeRepository;
 	public final StockRepository stockRepository;
-	public final StockDslRepository stockDslRepository; 
+	public final StockDslRepository stockDslRepository;
 	
 	public final ItemMajorCategoryRepository itemMajorCategoryRepository;
 	public final ItemMiddleCategoryRepository itemMiddleCategoryRepository;
