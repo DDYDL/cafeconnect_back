@@ -124,7 +124,7 @@ public class Maincontroller {
 	}
 	
 	@GetMapping("image/{fileName}")
-	public void imageView(@PathVariable String fileName, HttpServletResponse response) {
+	public void image(@PathVariable String fileName, HttpServletResponse response) {
 		System.out.println(fileName);
 		try {
 			InputStream ins = new FileInputStream(new File(uploadPath, fileName));

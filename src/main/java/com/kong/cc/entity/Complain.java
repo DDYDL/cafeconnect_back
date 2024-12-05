@@ -59,6 +59,7 @@ public class Complain {
     			.complainAnswerDate(complainAnswerDate)
     			.storeCode(storeCo.getStoreCode())
     			.storeName(storeCo.getStoreName())
+    			.complainDateStr(complainDate.toString())
     			.build();
     }
 }

@@ -52,13 +52,13 @@ public class StockController {
 	}
 	
 	@GetMapping("/selectStockByStoreCode/{storeCode}") // StockManage.js
-	public ResponseEntity<List<StockDto>> selectStockByStoreCode(@PathVariable Integer storeCode) {
+	public ResponseEntity<Map<String, List<StockDto>>> selectStockByStoreCode(@PathVariable Integer storeCode) {
 		try {
-			List<StockDto> stockDtoList = stockService.selectStockByStoreCode(storeCode);
-			return new ResponseEntity<List<StockDto>>(stockDtoList, HttpStatus.OK);
+			Map<String, List<StockDto>> stockDtoList = stockService.selectStockByStoreCode(storeCode);
+			return new ResponseEntity<Map<String, List<StockDto>>>(stockDtoList, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<StockDto>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String, List<StockDto>>>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	
