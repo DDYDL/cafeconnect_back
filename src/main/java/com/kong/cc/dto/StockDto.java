@@ -37,6 +37,9 @@ public class StockDto {
 	private String itemStorage;
 	private Integer itemAllCount;
 	
+	private String stockReceiptDateStr;
+	private String stockExpirationDateStr;
+	
 	private Map<String, String> stockList;
 	
 	public Stock toEntity() {

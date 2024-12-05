@@ -1,10 +1,9 @@
 package com.kong.cc.service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.kong.cc.dto.ComplainDto;
@@ -12,10 +11,12 @@ import com.kong.cc.dto.MenuCategoryDto;
 import com.kong.cc.dto.MenuDto;
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.repository.AlarmDslRepository;
+import com.kong.cc.repository.ComplainDslRepository;
 import com.kong.cc.repository.ComplainRepository;
 import com.kong.cc.repository.MenuCategoryRepository;
 import com.kong.cc.repository.MenuRepository;
 import com.kong.cc.repository.StoreRepository;
+import com.kong.cc.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +28,7 @@ public class MainServiceImpl implements MainService {
 	private final MenuCategoryRepository menuCategoryRepository;
 	private final StoreRepository storeRepository;
 	private final ComplainRepository comlainRepository;
+	private final ComplainDslRepository comlainDslRepository;
 	private final AlarmDslRepository alarmDslRepository;
 
 	@Override
@@ -57,8 +59,21 @@ public class MainServiceImpl implements MainService {
 	}
 
 	@Override
-	public List<ComplainDto> complainList() throws Exception {
-		return comlainRepository.findAll(Sort.by(Sort.Direction.DESC, "complainDate")).stream().map(c->c.toDto()).collect(Collectors.toList());
+	public List<ComplainDto> complainList(PageInfo pageInfo) throws Exception {
+		PageRequest pageRequest = PageRequest.of(pageInfo.getCurPage()-1, 10);
+		//Sort.by(Sort.Direction.DESC, "complainDate")
+		List<ComplainDto> complainDtoList = comlainDslRepository.findComplainListByPaging(pageRequest).stream().map(c->c.toDto()).collect(Collectors.toList());
+		Long allCnt = comlainDslRepository.findComplainCount();
+		
+		// 페이지 계산
+		Integer allPage = (int)(Math.ceil(allCnt.doubleValue()/pageRequest.getPageSize()));
+		Integer startPage = (pageInfo.getCurPage()-1)/ 10*10+1;
+		Integer endPage = Math.min(startPage+10-1, allPage);
+		
+		pageInfo.setAllPage(allPage);
+		pageInfo.setStartPage(startPage);
+		pageInfo.setEndPage(endPage);
+		return complainDtoList;
 	}
 
 	@Override

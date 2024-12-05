@@ -26,11 +26,14 @@ public class AlarmServiceImpl implements AlarmService {
 	
 	@Override
 	public Integer registFcmToken(String username, String fcmToken) throws Exception {
+		System.out.println(username);
 		Optional<Member> member = memberRepository.findByUsername(username);
 		if(member.isEmpty()) throw new Exception("사용자가 없습니다.");
 		
 		member.get().setFcmToken(fcmToken);
+		System.out.println(fcmToken);
 		memberRepository.save(member.get());
+		System.out.println(member.get().getFcmToken());
 		return member.get().getStoreCode();
 	}
 

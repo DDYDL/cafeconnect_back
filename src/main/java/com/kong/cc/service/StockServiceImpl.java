@@ -82,6 +82,7 @@ public class StockServiceImpl implements StockService {
 		List<StockDto> newStockList = new ArrayList<>();
 		
 		for(StockDto stockDto : stockDtoList) {
+			// 아이템 코드가 같은 행을 리스트로 묶어준다.
 			if(stock.containsKey(stockDto.getItemCode())) {
 				newStockList = new ArrayList<>();
 				newStockList = stock.get(stockDto.getItemCode());
@@ -110,6 +111,8 @@ public class StockServiceImpl implements StockService {
 		System.out.println("stock : " + stock);
 		// 유통기한 수정
 		stock.setStockExpirationDate(stockDto.getStockExpirationDate());
+		// 입고날짜 수정
+		stock.setStockReceiptDate(stockDto.getStockReceiptDate());
 		// 수량 수정
 		stock.setStockCount(stockDto.getStockCount());
 		stockRepository.save(stock);
@@ -117,24 +120,61 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public String deleteStock(Integer stockNum) throws Exception {
-		stockRepository.deleteById(stockNum);
-		return "true";
+	public Integer deleteStock(Integer stockNum) throws Exception {
+		StockDto stock = stockRepository.findById(stockNum).orElseThrow(()->new Exception("해당 재고 없음")).toDto();
+		if(stock!=null) stockRepository.deleteById(stockNum);
+		return stock.getStoreCode();
 	}
 
 	@Override
-	public List<StockDto> selectStockByCategory(@ModelAttribute Map<String, String> param) throws Exception {
+	public Map<String, List<StockDto>> selectStockByCategory(@ModelAttribute Map<String, String> param) throws Exception {
 		Integer storeCode = Integer.parseInt(param.get("storeCode"));
 		String expirationDate = param.get("expirationDate");
 		System.out.println(storeCode);
 		System.out.println(expirationDate);
-		return stockDslRepository.selectStockByCategory(storeCode, param, expirationDate).stream().map(s->s.toDto()).collect(Collectors.toList());
+		
+		List<StockDto> stockDtoList = stockDslRepository.selectStockByCategory(storeCode, param, expirationDate).stream().map(s->s.toDto()).collect(Collectors.toList());
+		Map<String, List<StockDto>> stock = new HashMap<>();
+		
+		List<StockDto> newStockList = new ArrayList<>();
+		
+		for(StockDto stockDto : stockDtoList) {
+			if(stock.containsKey(stockDto.getItemCode())) {
+				newStockList = new ArrayList<>();
+				newStockList = stock.get(stockDto.getItemCode());
+				newStockList.add(stockDto);
+				stock.put(stockDto.getItemCode(), newStockList);
+			} else {
+				newStockList = new ArrayList<>();
+				newStockList.add(stockDto);
+				stock.put(stockDto.getItemCode(), newStockList);
+			}
+		}
+		return stock;
 	}
 
 	@Override
-	public List<StockDto> selectStockByKeyword(Integer storeCode, String keyword) throws Exception {
+	public Map<String, List<StockDto>> selectStockByKeyword(Integer storeCode, String keyword) throws Exception {
 		// keyword가 들어있는 상품명 찾기
-		return stockDslRepository.selectStockByKeyword(storeCode, keyword).stream().map(s->s.toDto()).collect(Collectors.toList());
+		List<StockDto> stockDtoList = stockDslRepository.selectStockByKeyword(storeCode, keyword).stream().map(s->s.toDto()).collect(Collectors.toList());
+		
+Map<String, List<StockDto>> stock = new HashMap<>();
+		
+		List<StockDto> newStockList = new ArrayList<>();
+		
+		for(StockDto stockDto : stockDtoList) {
+			if(stock.containsKey(stockDto.getItemCode())) {
+				newStockList = new ArrayList<>();
+				newStockList = stock.get(stockDto.getItemCode());
+				newStockList.add(stockDto);
+				stock.put(stockDto.getItemCode(), newStockList);
+			} else {
+				newStockList = new ArrayList<>();
+				newStockList.add(stockDto);
+				stock.put(stockDto.getItemCode(), newStockList);
+			}
+		}
+		return stock;
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public class Stock {
 	private Item itemS;
 	
 	public StockDto toDto() {
-		return StockDto.builder()
+		StockDto stockDto = StockDto.builder()
 				.stockNum(stockNum)
 				.stockReceiptDate(stockReceiptDate)
 				.stockExpirationDate(stockExpirationDate)
@@ -58,5 +58,15 @@ public class Stock {
 				.itemStorage(itemS.getItemStorage())
 				.itemFileNum(itemS.getItemImageFile().getFileNum())
 				.build();
+		
+		if(stockReceiptDate!=null) {
+			stockDto.setStockReceiptDateStr(stockReceiptDate.toString());
+		}
+		
+		if(stockExpirationDate!=null) {
+			stockDto.setStockExpirationDateStr(stockExpirationDate.toString());
+		}
+		
+		return stockDto;
 	}
 }

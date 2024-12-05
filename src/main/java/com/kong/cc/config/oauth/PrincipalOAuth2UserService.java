@@ -1,5 +1,8 @@
 package com.kong.cc.config.oauth;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -9,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.kong.cc.config.auth.PrincipalDetails;
 import com.kong.cc.entity.Member;
+import com.kong.cc.entity.Store;
+import com.kong.cc.repository.AlarmDslRepository;
 import com.kong.cc.repository.MemberRepository;
 
 @Service
@@ -16,6 +21,8 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService {
 	
 	@Autowired
 	private MemberRepository memberRepository;
+	@Autowired
+	private AlarmDslRepository alarmDslRepository;
 
 	// 최종 사용자 정보를 userRequest로 받아옴, service 호출 시 자동으로 loadUser함수 호출
 	@Override
@@ -62,6 +69,24 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService {
 							.build();
 			memberRepository.save(nMember);
 		}
+		
+		// member에 대표 storeCode 넣기
+		if(member.getRoles().equals("ROLE_STORE") && member.getStoreCode()!=null) {
+			List<Store> storeList = new ArrayList<>();
+			try {
+				storeList = alarmDslRepository.selectStoreByMemberNum(member.getMemberNum());
+			} catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("가맹점 없음");
+			}
+			if(storeList!=null) {
+				// storeCode 넣기
+				member.setStoreCode(storeList.get(0).getStoreCode());
+				memberRepository.save(member);				
+			}
+			System.out.println("2-1. storeCode " + member.getStoreCode());
+		}
+		
 		return new PrincipalDetails(member, oAuth2User.getAttributes());
 	}	
 }

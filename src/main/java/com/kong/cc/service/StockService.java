@@ -14,9 +14,9 @@ public interface StockService {
 	public Map<String, List<StockDto>> selectStockByStoreCode(Integer storeCode) throws Exception;
 	public String addStock(StockDto stockDto) throws Exception;
 	public String updateStock(StockDto stockDto) throws Exception;
-	public String deleteStock(Integer stockNum) throws Exception;
-	public List<StockDto> selectStockByCategory(Map<String, String> param) throws Exception;
-	public List<StockDto> selectStockByKeyword(Integer storeCode, String keyword) throws Exception;
+	public Integer deleteStock(Integer stockNum) throws Exception;
+	public Map<String, List<StockDto>> selectStockByCategory(Map<String, String> param) throws Exception;
+	public Map<String, List<StockDto>> selectStockByKeyword(Integer storeCode, String keyword) throws Exception;
 	public List<ItemDto> selectItemList() throws Exception;
 	public List<ItemDto> selectItemByName(String itemName) throws Exception;
 	public List<StoreDto> selectStoreByItemCode(String itemCode) throws Exception;
