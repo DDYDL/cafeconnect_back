@@ -29,8 +29,13 @@ public class ShopOrderDto {
 	private String orderDelivery;
 	private String orderPayment;
 
-
 	private Integer storeCode;
+	private String  storeName;
+	private String storeAddress;
+	private String storeAddressNum;
+	private String storePhone;
+	private String ownerName;
+	
 	private String itemCode;
 	private String itemName;
 	private Integer itemPrice;

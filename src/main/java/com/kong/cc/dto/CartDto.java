@@ -20,7 +20,7 @@ public class CartDto {
 	private Integer storeCode;
 	private String itemCode;
 	
-	//cart나order에서 전체 정보까진 필요 없을 것 같아서 수정할 예정...
+
 	private ItemDto item;  // Item toDto 사용
 	private StoreDto store; // Store toDto 사용
 	

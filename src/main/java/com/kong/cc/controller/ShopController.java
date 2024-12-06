@@ -340,21 +340,8 @@ public class ShopController {
 			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	//최신순 주문 내역 조회
-	@GetMapping("/orderList")  // OrderListForStore.js
-	public ResponseEntity<List<ShopOrderDto>>selectAllItemOrderList(@RequestParam Integer storeCode) {
-		try {
-			 //List 내보내고 프론트에서 리스트 형식 처리하기 
-			List<ShopOrderDto>result = shopService.selectAllOrderList(storeCode);
-			return new ResponseEntity<List<ShopOrderDto>>(result,HttpStatus.OK); 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST); 
-		}
-	
-	}
-	//기간 설정 내 주문 내역 조회 (조건 추가 state)
+
+	//가맹점 주문내역 - 전체(한달전~오늘기준),기간설정,주문상태 포함
 	@PostMapping("/orderListForStore") // OrderListForStore.js	
     public ResponseEntity<Map<String,Object>>selectAllItemOrderByPeriod(@RequestParam Integer storeCode,
     																	@RequestParam(name="startDate",required = false)String startDate,
@@ -392,21 +379,18 @@ public class ShopController {
 		}
     }
 	
-	//주문상태 옵션 선택 주문 내역 조회  		
-	@PostMapping("/orderListByOrderState") // OrderListForStore.js	
-	public ResponseEntity<List<ShopOrderDto>>selectAllItemOrderByOrderState(@RequestParam Integer storeCode,@RequestParam String orderState){
+	 
+	@GetMapping("/cancelItemOrder") // OrderListForStore.js
+	public ResponseEntity<String>cancelOrder(@RequestParam Integer storeCode,@RequestParam String orderCode) {
 		try {
-			
-			List<ShopOrderDto>result = shopService.selectAllOrderListByOrderState(storeCode,orderState);
-			return new ResponseEntity<List<ShopOrderDto>>(result,HttpStatus.OK); 
+			Boolean result = shopService.cancelItemOrder(storeCode,orderCode);
+			return new ResponseEntity<String>(String.valueOf(result),HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST); 
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
-	}	
-	//주문 상태가 오직 주문 접수중에만 가능 결제 취소는...? 테이블 없는데.... 
-	//@GetMapping("/deleteOrder") // OrderListForStore.js
-
+	}
+	
 	//주문 상세 내역 
     @PostMapping("/orderDetail") // OrderDetailForStore.js
     public ResponseEntity<List<ShopOrderDto>>selectOrderByOrderCode(@RequestParam Integer storeCode,@RequestParam String orderCode) {
