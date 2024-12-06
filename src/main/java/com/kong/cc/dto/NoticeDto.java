@@ -1,5 +1,6 @@
 package com.kong.cc.dto;
 
+import com.kong.cc.entity.Member;
 import com.kong.cc.entity.Notice;
 import java.sql.Date;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ public class NoticeDto {
 				.noticeTitle(this.noticeTitle)
 				.noticeContent(this.noticeContent)
 				.noticeDate(this.noticeDate)
-//				.memberMain(Member.builder().username(mainStoreId).build())
+				.memberMain(Member.builder().memberNum(mainStoreId).build())
 				.build();
 	}
 }

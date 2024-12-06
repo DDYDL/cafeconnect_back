@@ -60,6 +60,7 @@ public class CommunityMainServiceImpl implements CommunityMainService {
     @Override
     public void noticeWriteMain(NoticeDto noticeDto) {
     	Notice notice = noticeDto.toEntity();
+    	System.out.println(notice);
         noticeRepository.save(notice);
     }
 

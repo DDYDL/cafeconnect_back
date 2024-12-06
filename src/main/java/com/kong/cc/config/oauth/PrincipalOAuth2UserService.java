@@ -60,32 +60,34 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService {
 			member.setUsername(oAuth2UserInfo.getUsername());
 			memberRepository.save(member);
 		} else { // 1-2. 가입되어 있지 않으면 삽입
-			Member nMember = Member.builder()
+			member = Member.builder()
 							// 소셜 로그인 시 username을 이메일로 설정
 							.username(oAuth2UserInfo.getUsername())
 							.roles("ROLE_STORE")
 							.provider(oAuth2UserInfo.getProvider())
 							.providerId(oAuth2UserInfo.getProviderId())
 							.build();
-			memberRepository.save(nMember);
+			memberRepository.save(member);
 		}
 		
+		Member pmember = memberRepository.findByProviderAndProviderId(oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
 		// member에 대표 storeCode 넣기
-		if(member.getRoles().equals("ROLE_STORE") && member.getStoreCode()!=null) {
+		if(pmember!=null && pmember.getStoreCode()!=null && pmember.getRoles().equals("ROLE_STORE")) {
 			List<Store> storeList = new ArrayList<>();
 			try {
-				storeList = alarmDslRepository.selectStoreByMemberNum(member.getMemberNum());
+				storeList = alarmDslRepository.selectStoreByMemberNum(pmember.getMemberNum());
 			} catch(Exception e) {
 				e.printStackTrace();
 				System.out.println("가맹점 없음");
 			}
 			if(storeList!=null) {
 				// storeCode 넣기
-				member.setStoreCode(storeList.get(0).getStoreCode());
-				memberRepository.save(member);				
+				pmember.setStoreCode(storeList.get(0).getStoreCode());
+				memberRepository.save(pmember);
 			}
 			System.out.println("2-1. storeCode " + member.getStoreCode());
 		}
+
 		
 		return new PrincipalDetails(member, oAuth2User.getAttributes());
 	}	

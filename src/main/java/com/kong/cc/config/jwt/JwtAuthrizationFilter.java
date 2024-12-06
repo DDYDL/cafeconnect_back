@@ -44,16 +44,21 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 			throws IOException, ServletException {
 		String uri = request.getRequestURI();
 
+		
+		System.out.println("================================================================");
+		System.out.println(uri);
 		// 로그인(인증)이 필요없는 요청은 그대로 진행
 		// store나 mainstore가 아니면
 		if(!(uri.contains("/store") || uri.contains("/mainstore"))) {
 			chain.doFilter(request, response);
+			System.out.println("############");
 			return;
 		}
 
 		String authentication = request.getHeader(JwtProperties.HEADER_STRING);
 		if(authentication==null) {
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요"); // 인증 오류가 난걸 알려줌
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요1"); // 인증 오류가 난걸 알려줌
+			System.out.println("1");
 			return;
 		}
 
@@ -64,7 +69,8 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 		// accessToken validate check : header로부터 accessToken 가져와 bear check
 		String accessToken = token.get("access_token");
 		if(!accessToken.startsWith(JwtProperties.TOKEN_PREFIX)) { // 토큰 맨 앞에 무언가 붙어있지 않다면
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요");
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요2");
+			System.out.println("2");
 			return;
 		}
 
@@ -83,11 +89,12 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 			System.out.println("3. token ------------");
 			System.out.println(username);
 
+			System.out.println("3");
 			// 1-2. username check
-			if(username==null || username.equals("")) throw new Exception("로그인 필요"); // 사용자가 없을 때
-
+			if(username==null || username.equals("")) throw new Exception("로그인 필요3"); // 사용자가 없을 때
+			
 			Optional<Member> member = memberRepository.findByUsername(username);
-			if(member.get()==null) throw new Exception("로그인 필요"); // 사용자가 DB에 없을 때
+			if(member.get()==null) throw new Exception("로그인 필요4"); // 사용자가 DB에 없을 때
 
 			// roles와 url이 맞는지 체크, 안 맞으면 권한 에러 나도록
 			// 여기까지 왔으면 로그인 인증 성공(user 있음)
@@ -110,7 +117,8 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 				// 2. Refresh Token check : Access Token invalidate일 경우
 				String refreshToken = token.get("refresh_token");
 				if(!refreshToken.startsWith(JwtProperties.TOKEN_PREFIX)) { // 토큰 맨 앞에 무언가 붙어있다면
-					response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요");
+					response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요5");
+					System.out.println("5");
 					return;
 				}
 				refreshToken = refreshToken.replace(JwtProperties.TOKEN_PREFIX, "");
@@ -123,10 +131,17 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 
 				// 2-2. username check
 				System.out.println(username);
-				if(username==null || username.equals("")) throw new Exception("로그인 필요"); // 사용자가 없을 때
+				if(username==null || username.equals("")) throw new Exception("로그인 필요6"); // 사용자가 없을 때
 				Optional<Member> member = memberRepository.findByUsername(username);
-				if(member.get()==null) throw new Exception("로그인 필요"); // 사용자가 DB에 없을 때
+				if(member.isEmpty()) {
+					System.out.println(username);
+					System.out.println(member);
+					throw new Exception("로그인 필요7"); // 사용자가 DB에 없을 때	
+				}
 
+				System.out.println("1");
+				System.out.println("1");
+				System.out.println("1");
 				// accessToken, refreshToken 다시 만들어 보낸다.
 				String reAccessToken = jwtToken.makeAccessToken(username);
 				String reRefreshToken = jwtToken.makeRefreshToken(username);
@@ -134,6 +149,10 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 				map.put("access_token", JwtProperties.TOKEN_PREFIX+reAccessToken);
 				map.put("refresh_token", JwtProperties.TOKEN_PREFIX+reRefreshToken);
 				String reToken = objectMapper.writeValueAsString(map); //map->jsonString
+				
+				System.out.println("1");
+				System.out.println("1");
+				
 				response.addHeader(JwtProperties.HEADER_STRING, reToken);
 				response.setContentType("application/json; charset=utf-8");
 				response.getWriter().print("token"); // token 다시 준 것임을 body에 알려줌
@@ -141,7 +160,7 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 			} catch(Exception e2) {
 				e2.printStackTrace();
 				// accessToken, refreshToken 둘 다 인증 실패, 재로그인 필요
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요");
+				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 필요8");
 			}
 		}
 	}
