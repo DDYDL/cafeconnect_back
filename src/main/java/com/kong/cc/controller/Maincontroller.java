@@ -3,7 +3,9 @@ package com.kong.cc.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,6 +24,7 @@ import com.kong.cc.dto.MenuCategoryDto;
 import com.kong.cc.dto.MenuDto;
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.service.MainService;
+import com.kong.cc.util.PageInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -90,14 +93,19 @@ public class Maincontroller {
 		}
 	}
 	
-	@GetMapping("/complainList") // Complain.js
-	public ResponseEntity<List<ComplainDto>> complainList() {
+	@GetMapping("/complainList/{page}") // Complain.js
+	public ResponseEntity<Map<String,Object>> complainList(@PathVariable Integer page) {
 		try {
-			List<ComplainDto> complainDtoList = mainService.complainList();
-			return new ResponseEntity<List<ComplainDto>>(complainDtoList, HttpStatus.OK);
+			PageInfo pageInfo = new PageInfo();
+			pageInfo.setCurPage(page);
+			List<ComplainDto> complainDtoList = mainService.complainList(pageInfo);
+			Map<String,Object> listInfo = new HashMap<>();
+			listInfo.put("complainList", complainDtoList);
+			listInfo.put("pageInfo", pageInfo);
+			return new ResponseEntity<Map<String,Object>>(listInfo, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<ComplainDto>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	

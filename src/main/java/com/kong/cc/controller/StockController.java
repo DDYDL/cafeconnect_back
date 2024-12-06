@@ -1,6 +1,7 @@
 package com.kong.cc.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -74,48 +74,54 @@ public class StockController {
 	}
 	
 	@PostMapping("/updateStock") // StockManage.js
-	public ResponseEntity<String> updateStock(@RequestBody StockDto stockDto) {
+	public ResponseEntity<Map<String, List<StockDto>>> updateStock(@ModelAttribute StockDto stockDto) {
 		try {
-			stockService.updateStock(stockDto);
-			return new ResponseEntity<String>("true", HttpStatus.OK);
+			String str = stockService.updateStock(stockDto);
+			Map<String, List<StockDto>> stockDtoList = new HashMap<>();
+			if(str.equals("true")) {
+				stockDtoList = stockService.selectStockByStoreCode(stockDto.getStoreCode());
+			}
+			return new ResponseEntity<Map<String, List<StockDto>>>(stockDtoList, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String, List<StockDto>>>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	
 	@GetMapping("/deleteStock/{stockNum}") // StockManage.js
-	public ResponseEntity<String> deleteStock(@PathVariable Integer stockNum) {
+	public ResponseEntity<Map<String, List<StockDto>>> deleteStock(@PathVariable Integer stockNum) {
 		try {
-			stockService.deleteStock(stockNum);
-			return new ResponseEntity<String>("true", HttpStatus.OK);
+			Integer storeCode = stockService.deleteStock(stockNum);
+			Map<String, List<StockDto>> stockDtoList = new HashMap<>();
+			stockDtoList = stockService.selectStockByStoreCode(storeCode);
+			return new ResponseEntity<Map<String, List<StockDto>>>(stockDtoList, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String, List<StockDto>>>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	
 	@PostMapping("/selectStockByCategory") // StockManage.js
-	public ResponseEntity<List<StockDto>> selectStockByCategory(@RequestParam Map<String, String> param) {
+	public ResponseEntity<Map<String, List<StockDto>>> selectStockByCategory(@RequestParam Map<String, String> param) {
 		try {
 			// {"storeCode":12354, "category":"middle", "categoryNum":1, "expirationDate":"true"}
 			System.out.println(param);
-			List<StockDto> stockDtoList = stockService.selectStockByCategory(param);
-			return new ResponseEntity<List<StockDto>>(stockDtoList, HttpStatus.OK);
+			Map<String, List<StockDto>> stockDtoList = stockService.selectStockByCategory(param);
+			return new ResponseEntity<Map<String, List<StockDto>>>(stockDtoList, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<StockDto>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String, List<StockDto>>>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	
 	@GetMapping("/selectStockByKeyword/{storeCode}/{keyword}") // StockManage.js
-	public ResponseEntity<List<StockDto>> selectStockByKeyword(@PathVariable Integer storeCode, @PathVariable String keyword) {
+	public ResponseEntity<Map<String, List<StockDto>>> selectStockByKeyword(@PathVariable Integer storeCode, @PathVariable String keyword) {
 		try {
-			List<StockDto> stockDtoList = stockService.selectStockByKeyword(storeCode, keyword);
-			return new ResponseEntity<List<StockDto>>(stockDtoList, HttpStatus.OK);
+			Map<String, List<StockDto>> stockDtoList = stockService.selectStockByKeyword(storeCode, keyword);
+			return new ResponseEntity<Map<String, List<StockDto>>>(stockDtoList, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<StockDto>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String, List<StockDto>>>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	

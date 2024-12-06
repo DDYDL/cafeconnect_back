@@ -1,7 +1,9 @@
 package com.kong.cc.config.oauth;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -17,12 +19,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kong.cc.config.auth.PrincipalDetails;
 import com.kong.cc.config.jwt.JwtProperties;
 import com.kong.cc.config.jwt.JwtToken;
+import com.kong.cc.entity.Store;
 
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 	//	private static final String URI = "/oauth2/authorization";
 	// react로 바로 redirect로 넘기기
-	private static final String URI = "http://localhost:3000/shopMain";
+	private static final String URI = "http://localhost:3000/socialLogin";
 	private JwtToken jwtToken = new JwtToken();
 	
 	// processOAuth2User에서 return한 
@@ -43,7 +46,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 		
 		String token = objectMapper.writeValueAsString(map); // map을 jsonString으로 바꿔줌
 		System.out.println(token);
-		
 		
 		String redirectUrl = UriComponentsBuilder.fromUriString(URI)
 				.queryParam("token", token)
