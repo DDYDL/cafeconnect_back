@@ -8,7 +8,10 @@ import com.kong.cc.util.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.threeten.bp.LocalTime;
 
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,51 +94,21 @@ public class StoreManageServiceImpl implements StoreManageService {
 		Store oStore = storeRepository.findById(storeDto.getStoreCode()).get();
 		Store mStore = storeDto.toEntity();
 		
-		if(!(mStore.getStoreName()==null)&&!(mStore.getStoreName().equals(oStore.getStoreName()))) {
-			oStore.setStoreName(mStore.getStoreName());
-		}
-		if(!(mStore.getStoreAddress()==null)&&!(mStore.getStoreAddress().equals(oStore.getStoreAddress()))) {
-			oStore.setStoreAddress(mStore.getStoreAddress());
-		}
-		if(!(mStore.getStoreAddressNum()==null)&&!(mStore.getStoreAddressNum().equals(oStore.getStoreAddressNum()))) {
-			oStore.setStoreAddressNum(mStore.getStoreAddressNum());
-		}
-		if(!(mStore.getStorePhone()==null)&&!(mStore.getStorePhone().equals(oStore.getStorePhone()))) {
-			oStore.setStorePhone(mStore.getStorePhone());
-		}
-		if(!(mStore.getStoreOpenTime()==null) && !(mStore.getStoreOpenTime().equals(oStore.getStoreOpenTime()))) {
-			oStore.setStoreOpenTime(mStore.getStoreOpenTime());
-		}
-		if(!(mStore.getStoreCloseTime()==null)&&!(mStore.getStoreCloseTime().equals(oStore.getStoreCloseTime()))) {
-			oStore.setStoreCloseTime(mStore.getStoreCloseTime());
-		}
-		if(!(mStore.getStoreCloseDate()==null)&&!(mStore.getStoreCloseDate().equals(oStore.getStoreCloseDate()))) {
-			oStore.setStoreCloseDate(mStore.getStoreCloseDate());
-		}
-		if(!(mStore.getOwnerName()==null)&&!(mStore.getOwnerName().equals(oStore.getOwnerName()))) {
-			oStore.setOwnerName(mStore.getOwnerName());
-		}
-		if(!(mStore.getOwnerPhone()==null)&&!(mStore.getOwnerPhone().equals(oStore.getOwnerPhone()))) {
-			oStore.setOwnerPhone(mStore.getOwnerPhone());
-		}
-		if(!(mStore.getManagerName()==null)&&!(mStore.getManagerName().equals(oStore.getManagerName()))) {
-			oStore.setManagerName(mStore.getManagerName());
-		}
-		if(!(!(mStore.getManagerPhone()==null)&&mStore.getManagerPhone().equals(oStore.getManagerPhone()))) {
-			oStore.setManagerPhone(mStore.getManagerPhone());
-		}
-		if(!(mStore.getContractPeriodStart()==null)&&!(mStore.getContractPeriodStart().equals(oStore.getContractPeriodStart()))) {
-			oStore.setContractPeriodStart(mStore.getContractPeriodStart());
-		}
-		if(!(mStore.getContractPeriodEnd()==null)&&!(mStore.getContractPeriodEnd().equals(oStore.getContractPeriodEnd()))) {
-			oStore.setContractPeriodEnd(mStore.getContractPeriodEnd());
-		}
-		if(!(mStore.getContractDate()==null)&&!(mStore.getContractDate().equals(oStore.getContractDate()))) {
-			oStore.setContractDate(mStore.getContractDate());
-		}
-		if(!(mStore.getOpeningDate()==null)&&!(mStore.getOpeningDate().equals(oStore.getOpeningDate()))) {
-			oStore.setOpeningDate(mStore.getOpeningDate());
-		}
+		oStore.setStoreName(mStore.getStoreName());
+		oStore.setStoreAddress(mStore.getStoreAddress());
+		oStore.setStoreAddressNum(mStore.getStoreAddressNum());
+		oStore.setStorePhone(mStore.getStorePhone());
+		oStore.setStoreOpenTime(mStore.getStoreOpenTime());
+		oStore.setStoreCloseTime(mStore.getStoreCloseTime());
+		oStore.setStoreCloseDate(mStore.getStoreCloseDate());
+		oStore.setOwnerName(mStore.getOwnerName());
+		oStore.setOwnerPhone(mStore.getOwnerPhone());
+		oStore.setManagerName(mStore.getManagerName());
+		oStore.setManagerPhone(mStore.getManagerPhone());
+		oStore.setContractPeriodStart(mStore.getContractPeriodStart());
+		oStore.setContractPeriodEnd(mStore.getContractPeriodEnd());
+		oStore.setContractDate(mStore.getContractDate());
+		oStore.setOpeningDate(mStore.getOpeningDate());
 
 		storeRepository.save(oStore);		
 		return oStore.getStoreCode();
@@ -172,32 +145,41 @@ public class StoreManageServiceImpl implements StoreManageService {
 		String sStoreCode = "";
 		String storeRegion = storeDto.getStoreRegion();
 		String contractDate = storeDto.getContractDate();
-		System.out.println(contractDate);
+		System.out.println("dtoregion: "+storeRegion);
 		Map<String,String> koRegion = new HashMap<>();
-		koRegion.put("서울", "200");
-		koRegion.put("인천", "320");
-		koRegion.put("대전", "420");
-		koRegion.put("부산", "510");
-		koRegion.put("울산", "520");
-		koRegion.put("대구", "530");
-		koRegion.put("광주", "620");
-		koRegion.put("제주특별자치도", "640");
-		koRegion.put("경기", "310");
-		koRegion.put("강원", "330");
-		koRegion.put("충남", "410");
-		koRegion.put("충북", "430");
-		koRegion.put("경북", "540");
-		koRegion.put("경남", "550");
-		koRegion.put("전남", "610");
-		koRegion.put("전북", "630");
+		koRegion.put("서울", "20");
+		koRegion.put("인천", "32");
+		koRegion.put("대전", "42");
+		koRegion.put("부산", "51");
+		koRegion.put("울산", "52");
+		koRegion.put("대구", "53");
+		koRegion.put("광주", "62");
+		koRegion.put("제주특별자치도", "64");
+		koRegion.put("경기", "31");
+		koRegion.put("강원", "33");
+		koRegion.put("충남", "41");
+		koRegion.put("충북", "43");
+		koRegion.put("경북", "54");
+		koRegion.put("경남", "55");
+		koRegion.put("전남", "61");
+		koRegion.put("전북", "63");
 
-		for(String key : koRegion.keySet()) {
-			if(storeRegion==key) sStoreCode=koRegion.get(key); break;
+		for(String region : koRegion.keySet()) {
+			System.out.println("배열 key: "+ region);
+			if(storeRegion.equals(region)) {
+				sStoreCode=koRegion.get(region);
+				break;
+			}
 		}
-		System.out.println(sStoreCode);
-		sStoreCode = sStoreCode + (String)contractDate.replace("-", "") + new Random().nextInt(100);
+		String subDate = ((((String)contractDate).replace("-", "")).substring(2)).substring(0,4);
+		
+		sStoreCode = sStoreCode + subDate + new Random().nextInt(100);
 		
 		Integer storeCode = Integer.parseInt(sStoreCode);
+		
+//		if(storeRepository.findById(storeCode)!=null) createStoreCode(storeDto);
+		
+		System.out.println(storeCode);
 		return storeCode;
 	}
 
