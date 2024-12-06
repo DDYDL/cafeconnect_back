@@ -42,6 +42,7 @@ public class ShopOrder {
 	
 	private String impUid;  //아임포트 결제 건별 발급되는 고유 식별 번호 (검증,취소,환불처리에 필수)
 	
+	//***참조 NullPointException 주의*** 
 	public ShopOrderDto toDto() {
 
 		return ShopOrderDto.builder()
@@ -56,14 +57,14 @@ public class ShopOrder {
 				.itemCode(itemO.getItemCode())
 				.itemPrice(itemO.getItemPrice())
 				.itemName(itemO.getItemName())
-				.itemMajorCategoryName(itemO.getItemMajorCategory().getItemCategoryName())
-				.itemMiddleCategoryName(itemO.getItemMiddleCategory().getItemCategoryName())
-				.itemSubCategoryName(itemO.getItemSubCategory().getItemCategoryName())
+			    .itemMajorCategoryName(itemO.getItemMajorCategory() != null ? itemO.getItemMajorCategory().getItemCategoryName() : null)
+			    .itemMiddleCategoryName(itemO.getItemMiddleCategory() != null ? itemO.getItemMiddleCategory().getItemCategoryName() : null)
+			    .itemSubCategoryName(itemO.getItemSubCategory() != null ? itemO.getItemSubCategory().getItemCategoryName() : null)
 				.itemCapacity(itemO.getItemCapacity())
 				.itemUnitQuantity(itemO.getItemUnitQuantity())
 				.itemUnit(itemO.getItemUnit())
 				.itemStorage(itemO.getItemStorage())
-				.itemFileNum(itemO.getItemImageFile().getFileNum())
+				.itemFileNum(itemO.getItemImageFile()!= null ? itemO.getItemImageFile().getFileNum() : null)
 				.orderDateStr(orderDate.toString())
 				.impUid(impUid)
 				.build();

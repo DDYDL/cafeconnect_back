@@ -1,5 +1,7 @@
 package com.kong.cc.service;
 
+
+
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.ItemExpenseDto;
+import com.kong.cc.dto.OrderItemGroupByCodeDto;
 import com.kong.cc.dto.PaymentRequestDto;
 import com.kong.cc.dto.PaymentResponseDto;
 import com.kong.cc.dto.ShopOrderDto;
@@ -342,13 +345,26 @@ public class ShopServiceImpl implements ShopService {
 	public List<ShopOrderDto> createOrder(String merchantUid, String impUid,String paymentMethod, Integer storeCode, List<Integer> cartNums)
 			throws Exception {
 		try {
+			
+			System.out.println("결제 정보: merchantUid=" + merchantUid + ", impUid=" + impUid + ", paymentMethod=" + paymentMethod);
+			System.out.println("카트 정보: storeCode=" + storeCode + ", cartNums=" + cartNums);
+		    if (merchantUid == null || impUid == null || paymentMethod == null) {
+		        throw new IllegalArgumentException("결제 정보가 누락되었습니다");
+		    }
+
+		    if (cartNums == null || cartNums.isEmpty()) {
+		        throw new IllegalArgumentException("장바구니 정보가 없습니다");
+		    }
+
 			// 1. 장바구니 상품 조회
-			List<Cart> carts = shopDslRepo.findCartsByCartNums(cartNums);
-			if (carts.isEmpty()) {
+			if (cartNums.isEmpty()) {
 				throw new Exception("주문할 상품이 없습니다.");
 			}
-
-			// 주문 생성
+			List<Cart> carts = shopDslRepo.findCartsByCartNums(cartNums);
+			 if (carts.isEmpty()) {
+		            throw new Exception("주문할 상품이 없습니다.");
+		     }
+			// 주문 생성 카트정보가지고 만듦
 			List<ShopOrder> orders = carts.stream()
 					.map(cart -> ShopOrder.builder()
 							.orderCode(merchantUid) //생성한 주문번호  
@@ -372,6 +388,7 @@ public class ShopServiceImpl implements ShopService {
 			return savedOrders.stream().map(ShopOrder::toDto).collect(Collectors.toList());
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new Exception("주문 생성 중 오류가 발생했습니다: " + e.getMessage());
 		}
 	}
@@ -384,12 +401,41 @@ public class ShopServiceImpl implements ShopService {
 		return shopDslRepo.selectAllShopOrderList(storeCode);
 	}
 
-	//기간 설정 주문 내역 조회
+	//조건에 따라 주문내역 조회 
 	@Override
-	public List<ShopOrderDto> selectAllOrderListByPeriod(Integer storeCode, Date startDate, Date endDate)
+	public Map<String,Object> selectAllOrderListForStore(Integer storeCode, Date startDate, Date endDate,String orderState)
 			throws Exception {
+		Map<String,Object> result = new HashMap<>();
+		//주문 번호를 그룹화 하기 
+		Map<String, OrderItemGroupByCodeDto> groupedOrders = new HashMap<>();	
+		//주문 번호로 그룹화하기 전 조회한 주문내역
+		List<ShopOrderDto> orderList = shopDslRepo.selectAllShopOrderListForStore(storeCode,startDate,endDate,orderState);
 		
-		return shopDslRepo.selectAllShopOrderListByPeriod(storeCode,startDate,endDate);
+		
+		for(ShopOrderDto order : orderList) {
+		       // 만들어둔 Map에 해당 주문코드의 그룹이 없으면 새로운 그룹 생성
+		       if(!groupedOrders.containsKey(order.getOrderCode())) {
+		           OrderItemGroupByCodeDto group = OrderItemGroupByCodeDto.builder()
+		               .orderCode(order.getOrderCode())
+		               .orderDate(order.getOrderDate()) 
+		               .orderState(order.getOrderState())
+		               .orderItems(new ArrayList<>())// 주문상품 리스트 초기화
+		               .totalAmount(0)// // 총액 초기화
+		               .build();
+		           groupedOrders.put(order.getOrderCode(), group);//주문번호를 key로 그롭화한 맵 생성 및 초기화 
+		       }
+		       
+		       //해당 주문코드인 그룹을 가져와서 
+		       OrderItemGroupByCodeDto group = groupedOrders.get(order.getOrderCode());
+		       group.getOrderItems().add(order);// 그 그룹에 해당하는 상품정보 넣기 
+		       group.setTotalAmount(group.getTotalAmount() + (order.getOrderCount() * order.getItemPrice()));
+		   }
+
+		   result.put("orderList", new ArrayList<>(groupedOrders.values())); //Map의 value만 가지고 List로 변환  (그룹화 하기 쉬우려고 Map만들었던거임)
+		   result.put("totalCount", groupedOrders.size());
+		   
+		   return result;
+
 	}
 	//주문 상태 주문 내역 조회
 	@Override

@@ -45,7 +45,7 @@ public class PrincipalDetailsService implements UserDetailsService {
 			
 			// storeCode 넣기
 
-			member.get().setStoreCode(storeList.get(4).getStoreCode());
+			member.get().setStoreCode(storeList.get(0).getStoreCode());
 
 			memberRepository.save(member.get());
 			System.out.println("2. storeCode " + member.get().getStoreCode());
