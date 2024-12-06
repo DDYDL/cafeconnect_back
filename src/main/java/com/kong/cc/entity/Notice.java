@@ -47,7 +47,7 @@ public class Notice {
     			.noticeTitle(noticeTitle)
     			.noticeContent(noticeContent)
     			.noticeDate(noticeDate)
-//    			.mainStoreId(memberMain.getMemberNum())
+    			.mainStoreId(memberMain.getMemberNum())
     			.build();
     }
 }

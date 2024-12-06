@@ -3,6 +3,7 @@ package com.kong.cc.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kong.cc.dto.AlarmDto;
@@ -23,6 +24,8 @@ public class MypageServiceImpl implements MypageService {
 	private final AlarmDslRepository alarmDslRepository;
 	private final StoreRepository storeRepository;
 	private final MemberRepository memberRepository;
+	
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	@Override
 	public List<AlarmDto> selectAlarmList(Integer storeCode) throws Exception {
@@ -50,9 +53,10 @@ public class MypageServiceImpl implements MypageService {
 	@Override
 	public String updateStore(StoreDto storeDto) throws Exception {
 		String str = null;
-		
 		StoreDto storeDtos = storeRepository.findById(storeDto.getStoreCode()).orElseThrow(()->new Exception("해당 가맹점 없음")).toDto();
+		System.out.println(storeDtos);
 		MemberDto memberDtos = memberRepository.findById(storeDtos.getMemberNum()).orElseThrow(()->new Exception("해당 사용자 없음")).toDto();
+		System.out.println(memberDtos);
 		
 		storeDtos.setStorePhone(storeDto.getStorePhone());
 		storeDtos.setStoreOpenTime(storeDto.getStoreOpenTime());
@@ -66,10 +70,8 @@ public class MypageServiceImpl implements MypageService {
 		
 		memberDtos.setUsername(storeDto.getUsername());
 		
-		System.out.println(storeDto.getPassword());
-		
 		if(!storeDto.getPassword().equals("********")) { // 비밀번호 수정 시
-			memberDtos.setPassword(storeDto.getPassword()); // 암호화 한 후 저장			
+			memberDtos.setPassword(bCryptPasswordEncoder.encode(storeDto.getPassword())); // 암호화 한 후 저장			
 			str = "changePassword";
 		} else {
 			str = "notPassword";

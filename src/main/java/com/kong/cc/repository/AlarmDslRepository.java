@@ -61,6 +61,7 @@ public class AlarmDslRepository {
 
 		return jpaQueryFactory.selectFrom(store)
 				.where(store.member.memberNum.eq(memberNum))
+				.orderBy(store.contractDate.asc())
 				.fetch();
 	}
 

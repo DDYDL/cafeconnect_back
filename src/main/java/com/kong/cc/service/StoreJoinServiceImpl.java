@@ -12,6 +12,8 @@ import com.kong.cc.repository.StoreRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +26,8 @@ public class StoreJoinServiceImpl implements StoreJoinService {
     private final StoreRepository storeRepository;
     private final ComplainRepository complainRepository;
     private final MemberRepository memberRepository;
+    
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 //    @Override
 //    public void joinStore(StoreJoinDto storeJoinDto) throws Exception {
@@ -43,23 +47,22 @@ public class StoreJoinServiceImpl implements StoreJoinService {
         Member savedMember = memberRepository.save(
                 Member.builder()
                         .username(storeJoinDto.getUsername())
-                        .password(storeJoinDto.getPassword())
+                        .password(bCryptPasswordEncoder.encode(storeJoinDto.getPassword()))
                         .storeCode(storeJoinDto.getStoreCode())
+                        .roles("ROLE_STORE")
                         .build()
         );
 
-        // 2. 저장된 Member에서 memberNum 가져오기
-//        Integer memberNum = savedMember.getMemberNum();
+//         2. 저장된 Member에서 memberNum 가져오기
+        Integer memberNum = savedMember.getMemberNum();
 
-        // 3. StoreCode와 일치하는 Store 조회
-//        Store store = storeRepository.findByStoreCode(storeJoinDto.getStoreCode())
-//                .orElseThrow(() -> new Exception("해당 StoreCode를 찾을 수 없습니다."));
-//
-//        Store saveMemberNum = new Store();
-//        saveMemberNum.setMember(store.getMember());
-//        storeRepository.save(saveMemberNum);
-//
-//        System.out.println("saveMemberNum" + saveMemberNum);
+//         3. StoreCode와 일치하는 Store 조회
+        StoreDto storeDto = storeRepository.findByStoreCode(storeJoinDto.getStoreCode())
+                .orElseThrow(() -> new Exception("해당 가맹점을 찾을 수 없습니다.")).toDto();
+
+        storeDto.setMemberNum(memberNum);
+        storeDto.setStoreStatus("active");
+        storeRepository.save(storeDto.toEntity());
 
     }
 
