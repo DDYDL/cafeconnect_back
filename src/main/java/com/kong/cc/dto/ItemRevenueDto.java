@@ -17,25 +17,35 @@ import lombok.NoArgsConstructor;
 public class ItemRevenueDto {
 	private String itemCode;
 	private String itemName;
-	private Integer itemPrice;
-	private String itemCapacity;
-	private Integer itemUnitQuantity;
-	private String itemUnit;
-	private String itemStandard;
-	private String itemStorage;
-	private String itemCountryOrigin;
+	private Integer itemPrice; // 상품 금액
+	private String itemCapacity; // 용량(1kg)
+	private Integer itemUnitQuantity; // 1박스 당 수량
+	private String itemUnit; // ea,box
+	private String itemStandard; //  상품 단가
+	private String itemStorage; // 상온,냉동
+	private String itemCountryOrigin; // 국가
 
-	private Integer itemMajorCategoryNum;
-	private String  itemMajorCategoryName;
-	
-	private Integer itemMiddleCategoryNum;
-	private String  itemMiddleCategoryName;
-	
-	private Integer itemSubCategoryNum;
-	private String 	itemSubCategoryName;
-	private Integer itemFileNum;
+	private Integer orderCount; // 주문 수량
 
-	private Integer wishItemNum;
+	private Integer itemMajorCategoryNum; //대분류 번호
+	private String  itemMajorCategoryName; // 대분류 이름 (커피)
+	
+	private Integer itemMiddleCategoryNum; // 중분류 번호
+	private String  itemMiddleCategoryName; // 중분류 이름
+	
+	private Integer itemSubCategoryNum; // 소분류 번호
+	private String 	itemSubCategoryName; // 소분류 이름
+
+	private String itemMajorCategoryCountSum; // 대분류 총 수량
+	private String itemMajorCategoryPriceSum; // 대분류 총 금액
+
+	private String itemMiddleCategoryCountSum; // 중분류 총 수량
+	private String itemMiddleCategoryPriceSum; // 중분류 총 금액
+
+	private String itemSubCategoryCountSum; // 소분류 총 수량
+	private String itemSubCategoryPriceSum; // 소분류 총 금액
+
+
 	
 	public Item toEntity() {
 		return Item.builder()
@@ -51,7 +61,7 @@ public class ItemRevenueDto {
 				.itemMajorCategory(ItemMajorCategory.builder().itemCategoryNum(itemMajorCategoryNum).build())
 				.itemMiddleCategory(ItemMiddleCategory.builder().itemCategoryNum(itemMiddleCategoryNum).build())
 				.itemSubCategory(ItemSubCategory.builder().itemCategoryNum(itemSubCategoryNum).build())
-				.itemImageFile(ImageFile.builder().fileNum(itemFileNum).build())
+				.itemImageFile(ImageFile.builder().build())
 				.build();
 	}
 }

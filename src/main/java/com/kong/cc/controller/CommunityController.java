@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import retrofit2.http.Path;
 
 // 커뮤니티(가맹점)
 @RestController
@@ -24,10 +25,10 @@ public class CommunityController {
 
 
     //공지사항 리스트
-    @GetMapping("/noticeList") // NoticeList.js
-    public ResponseEntity<List<NoticeDto>> noticeList() {
+    @GetMapping("/noticeList/{storeCode}") // NoticeList.js
+    public ResponseEntity<List<NoticeDto>> noticeList(@PathVariable Integer storeCode) {
         try {
-            List<NoticeDto> noticeDtoList = communityService.noticeList();
+            List<NoticeDto> noticeDtoList = communityService.noticeList(storeCode);
             return new ResponseEntity<>(noticeDtoList, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,7 +62,7 @@ public class CommunityController {
     }
 
     //1:1 문의 리스트
-    @GetMapping("/askListStore/{storeCode}") // AskList.js
+    @GetMapping("/askList/{storeCode}") // AskList.js
     public ResponseEntity<List<AskDto>> askList(@PathVariable Integer storeCode) {
         try {
             List<AskDto> askList = this.communityService.askList(storeCode);

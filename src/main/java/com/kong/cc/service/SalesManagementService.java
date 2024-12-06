@@ -1,9 +1,8 @@
 package com.kong.cc.service;
 
 import com.kong.cc.dto.*;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 public interface SalesManagementService {
@@ -11,13 +10,13 @@ public interface SalesManagementService {
     List<MenuDto> menuList() throws Exception;
     void salesWrite(Date salesDate, Integer storeCode, List<SalesDto> salsList) throws Exception;
 
-    List<SalesMenuDto> salesAnalysis(Integer storeCode,
-//                                     String periodType,
-                                     Integer categoryId) throws Exception;
     List<SalesDto> salesTemp(Date salesDate, Integer storeCode) throws Exception;
-//    SalesDto anualSales(Integer itemCategoryNum) throws Exception;
-//    SalesDto quarterlySales(Integer itemCategoryNum) throws Exception;
-//    SalesDto monthlySales(Integer itemCategoryNum) throws Exception;
-//    SalesDto customSales(Integer itemCategoryNum) throws Exception;
 
+    List<SalesAnnualDto> annualSAnalysis(Integer storeCode) throws Exception;
+
+    List<SalesQuarterlyDto> quarterlyAnalysis(Integer storeCode) throws Exception;
+
+    List<SalesMonthlyDto> monthlyAnalysis(Integer storeCode) throws Exception;
+
+    List<SalesCustomDto> customAnalysis(Integer storeCode, Date startDate, Date endDate) throws Exception;
 }
