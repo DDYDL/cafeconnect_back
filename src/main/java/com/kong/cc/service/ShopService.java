@@ -47,10 +47,10 @@ public interface ShopService {
 	//주문 끝
 
 
-	List<ShopOrderDto> selectAllOrderList(Integer storeCode) throws Exception;
+	//주문내역
 	Map<String,Object> selectAllOrderListForStore(Integer storeCode,Date startDate,Date endDate,String orderState) throws Exception;
-	List<ShopOrderDto> selectAllOrderListByOrderState(Integer storeCode,String orderState) throws Exception;
 	List<ShopOrderDto> selectOrderByOrderCode(Integer storeCode,String orderCode) throws Exception;
+	Boolean cancelItemOrder(Integer storeCode,String orderCode) throws Exception;
 	//지출 내역
 	Map<String,Object> selectExpenseItemList(Integer storeCode,Date startDate,Date endDate) throws Exception; 
 	

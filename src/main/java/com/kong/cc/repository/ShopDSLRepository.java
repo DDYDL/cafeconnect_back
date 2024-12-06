@@ -24,6 +24,7 @@ import com.kong.cc.entity.QItemSubCategory;
 import com.kong.cc.entity.QShopOrder;
 import com.kong.cc.entity.QStore;
 import com.kong.cc.entity.QWishItem;
+import com.kong.cc.entity.ShopOrder;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.ConstantImpl;
@@ -359,34 +360,8 @@ public class ShopDSLRepository {
 				 		.fetch();
 	}
 
-	// 최신순 정렬 주문내역 조회
-	public List<ShopOrderDto> selectAllShopOrderList(Integer storeCode) {
-	    QShopOrder order = QShopOrder.shopOrder;
-	    QItem item = QItem.item;
-	    QStore store = QStore.store;
 
-	    return jpaQueryFactory
-	        .select(Projections.bean(ShopOrderDto.class,
-	            order.orderNum,
-	            order.orderCode,
-	            order.orderCount,
-	            order.orderDate,
-	            order.orderState,
-	            order.orderDelivery,
-	            order.orderPayment,
-	            store.storeCode,
-	            item.itemCode,
-	            item.itemPrice,
-	            item.itemPrice.multiply(order.orderCount).as("orderPrice")
-	            ))
-	        .from(order)
-	        .join(order.itemO, item)
-	        .join(order.storeO, store)
-	        .where(store.storeCode.eq(storeCode))
-	        .orderBy(order.orderDate.desc())
-	        .fetch();
-	}
-	//동적 쿼리 사용 전체 조건에 따라 조회됨 (날짜,주문상태에따라 조회)
+	//가맹점 주문내역- 전체 및 날짜,주문 상태에따라 동적으로 조회
 	public List<ShopOrderDto> selectAllShopOrderListForStore(Integer storeCode,Date startDate,Date endDate,String orderState){
 		 QShopOrder order = QShopOrder.shopOrder;
 		   QItem item = QItem.item;
@@ -420,11 +395,69 @@ public class ShopDSLRepository {
 						       .join(order.itemO, item)
 						       .join(order.storeO, store)
 						       .where(builder)
-						       .orderBy(order.orderDate.desc())
+						       .orderBy(order.orderDate.desc()) //최신순 
 						       .fetch();
 		}
 	
 	
+
+	//주문 취소 전 접수상태 확인
+	public List<ShopOrder> checkedListForCancelOrder(Integer storeCode, String orderCode) {
+		QShopOrder order = QShopOrder.shopOrder;
+		return jpaQueryFactory
+		        .select(order)
+		        .from(order)
+		        .where(order.storeO.storeCode.eq(storeCode)
+		        .and(order.orderCode.eq(orderCode))
+		        .and(order.orderState.eq("주문접수"))).fetch();	       
+	}
+	
+	
+	//주문 상세 보기 
+	public List<ShopOrderDto> selectOneShopOrderByOrderCode(Integer storeCode, String orderCode) {
+	    QShopOrder order = QShopOrder.shopOrder;
+	    QItem item = QItem.item;
+	    QStore store = QStore.store;
+	    
+
+	    return	jpaQueryFactory
+    	        .select(Projections.bean(ShopOrderDto.class,
+    		            order.orderNum,
+    		            order.orderCode,
+    		            order.orderCount,
+    		            order.orderDate,
+    		            order.orderState,
+    		            order.orderDelivery,
+    		            order.orderPayment,
+    		            store.storeCode,
+    		            store.storeName,
+    		            store.storeAddressNum,
+    		            store.storeAddress,
+    		            store.storePhone,
+    		            store.ownerName,
+    		            item.itemCode,
+    		            item.itemName,
+    		            item.itemStorage,
+    		            item.itemImageFile.fileNum.as("itemFileNum"),
+    		            item.itemMajorCategory.itemCategoryName.as("itemMajorCategoryName"),
+    		            item.itemMiddleCategory.itemCategoryName.as("itemMiddleCategoryName"),
+    		            item.itemSubCategory.itemCategoryName.as("itemSubCategoryName"),
+    		            item.itemPrice,
+    		            item.itemPrice.multiply(order.orderCount)
+    		            .as("orderPrice")
+    	        		))
+    		        .from(order)
+    		        .leftJoin(order.itemO, item)
+    		        .leftJoin(order.storeO, store)
+			        .leftJoin(item.itemMajorCategory)
+			        .leftJoin(item.itemMiddleCategory)
+			        .leftJoin(item.itemSubCategory) // 소분류없는 상품의 경우가 있음, 따라서 crossjoin되면 안돼서 임의적으로 추가해줌
+    		        .where(order.storeO.storeCode.eq(storeCode).and(order.orderCode.eq(orderCode)))
+    		        .orderBy(order.orderDate.desc())
+    		        .fetch();
+
+	}
+	//지출내역 시작
 	//기간 선택 주문 총 수 
 	public Long countOrders(Integer storeCode, Date startDate, Date endDate) {
 	    QShopOrder order = QShopOrder.shopOrder;
@@ -436,66 +469,6 @@ public class ShopDSLRepository {
 	            .and(order.orderDate.between(startDate, endDate)))
 	        .fetchOne();
 	}
-	
-	public List<ShopOrderDto> selectAllShopOrderListByOrderState(Integer storeCode,String orderState) {
-	    QShopOrder order = QShopOrder.shopOrder;
-	    QItem item = QItem.item;
-	    QStore store = QStore.store;
-	    
-	    return	jpaQueryFactory
-    	        .select(Projections.fields(ShopOrderDto.class,
-    		            order.orderNum,
-    		            order.orderCode,
-    		            order.orderCount,
-    		            order.orderDate,
-    		            order.orderState,
-    		            order.orderDelivery,
-    		            order.orderPayment,
-    		            store.storeCode,
-    		            item.itemCode,
-    		            item.itemPrice,
-    		            item.itemPrice.multiply(order.orderCount)
-    		            .as("orderPrice")
-    	        		))	
-    	        .from(order)
-    		        .join(order.itemO, item)
-    		        .join(order.storeO, store)
-    		        .where(order.storeO.storeCode.eq(storeCode).and(order.orderState.eq(orderState)))
-    		        .orderBy(order.orderDate.desc())
-    		        .fetch();
-	    
-	}
-	//상세 보기 
-	public List<ShopOrderDto> selectOneShopOrderByOrderCode(Integer storeCode, String orderCode) {
-	    QShopOrder order = QShopOrder.shopOrder;
-	    QItem item = QItem.item;
-	    QStore store = QStore.store;
-	    
-
-	    return	jpaQueryFactory
-    	        .select(Projections.fields(ShopOrderDto.class,
-    		            order.orderNum,
-    		            order.orderCode,
-    		            order.orderCount,
-    		            order.orderDate,
-    		            order.orderState,
-    		            order.orderDelivery,
-    		            order.orderPayment,
-    		            store.storeCode,
-    		            item.itemCode,
-    		            item.itemPrice,
-    		            item.itemPrice.multiply(order.orderCount)
-    		            .as("orderPrice")
-    	        		))
-    		        .from(order)
-    		        .join(order.itemO, item)
-    		        .join(order.storeO, store)
-    		        .where(order.storeO.storeCode.eq(storeCode).and(order.orderCode.eq(orderCode)))
-    		        .orderBy(order.orderDate.desc())
-    		        .fetch();
-
-	}
-	//지출내역 시작
 	// 기간 내 총 상품 주문 상품 통계 -단가,총 주문 개수 및 금액
 	public List<ItemExpenseDto> selectExpnseItemList(Integer storeCode,Date startDate,Date endDate){
 	    QShopOrder order = QShopOrder.shopOrder;

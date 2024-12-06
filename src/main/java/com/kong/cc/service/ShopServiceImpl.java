@@ -373,7 +373,7 @@ public class ShopServiceImpl implements ShopService {
 							.orderDate(new Date(System.currentTimeMillis()))
 							.orderState("주문접수")
 							.orderPayment(paymentMethod)
-							.orderDelivery(cart.getItemCa().getItemStorage()) // 상품 보관 타입에 따른 배송
+							.orderDelivery(cart.getItemCa().getItemStorage()=="냉동"||cart.getItemCa().getItemStorage()=="신선"?"업체배송":"일반배송") // 상품 보관 타입에 따른 배송
 							.storeO(cart.getStoreCa())
 							.itemO(cart.getItemCa())
 							.build())
@@ -394,14 +394,7 @@ public class ShopServiceImpl implements ShopService {
 	}
 
 	
-	//전체 주문 내역 조회 (최신일 기준,기본)
-	@Override
-	public List<ShopOrderDto> selectAllOrderList(Integer storeCode) throws Exception {
-
-		return shopDslRepo.selectAllShopOrderList(storeCode);
-	}
-
-	//조건에 따라 주문내역 조회 
+	//주문내역조회(전체 및  조건별 포함)  
 	@Override
 	public Map<String,Object> selectAllOrderListForStore(Integer storeCode, Date startDate, Date endDate,String orderState)
 			throws Exception {
@@ -437,21 +430,31 @@ public class ShopServiceImpl implements ShopService {
 		   return result;
 
 	}
-	//주문 상태 주문 내역 조회
-	@Override
-	public List<ShopOrderDto> selectAllOrderListByOrderState(Integer storeCode, String orderState) throws Exception {
-		
-		return shopDslRepo.selectAllShopOrderListByOrderState(storeCode,orderState);
-	}
 
-	// 주문 상세 내역 - 같은 주문번호 인 주문 출력
+	// 주문 상세 내역 - 같은 주문번호인 주문 출력
 	@Override
 	public List<ShopOrderDto> selectOrderByOrderCode(Integer storeCode, String orderCode) throws Exception {
 		
 		return shopDslRepo.selectOneShopOrderByOrderCode(storeCode,orderCode);
 	}
 
-	// 기간 설정 주문 상품 별 통계 -상품 별, 대분류,중분류,소분류 통합 별
+	//주문 취소 - 주문 접수만  취소 가능
+	@Transactional
+	@Override
+	public Boolean cancelItemOrder(Integer storeCode, String orderCode) throws Exception {
+		
+		// 주문 접수 상태인지 확인 하고 해당 리스트 저장 
+		List<ShopOrder> checkedList = shopDslRepo.checkedListForCancelOrder(storeCode, orderCode);
+		if(checkedList.size()==0) throw new Exception("주문 상태를 확인해 주세요");
+		//상태 변경 (접수->주문취소 )
+		checkedList.forEach(order->order.setOrderState("주문취소"));
+			
+		return !(shopOrderRepo.saveAll(checkedList).isEmpty()); // true return;
+	}
+	
+	
+
+	//지출내역통계- 기간 설정 주문 상품 별 통계 -상품 별, 대분류,중분류,소분류 통합 별
 	@Transactional
 	@Override
 	public Map<String,Object> selectExpenseItemList(Integer storeCode, Date startDate, Date endDate) throws Exception {
@@ -475,6 +478,7 @@ public class ShopServiceImpl implements ShopService {
 			cnt +=i.getTotalOrderCount();
 			price+=i.getTotalOrderPrice();
 		}
+		//총 주문건 수 
 		Integer orderCnt = shopDslRepo.countOrders(storeCode, startDate, endDate).intValue();
 		
 		result.put("itemOrderTotalCnt", cnt); //기간내 주문한 총 제품개수
@@ -489,8 +493,6 @@ public class ShopServiceImpl implements ShopService {
 
 	
 	}
-
-
 
 }
 
