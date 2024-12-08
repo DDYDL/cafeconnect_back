@@ -343,7 +343,7 @@ public class ShopController {
 
 	//가맹점 주문내역 - 전체(한달전~오늘기준),기간설정,주문상태 포함
 	@PostMapping("/orderListForStore") // OrderListForStore.js	
-    public ResponseEntity<Map<String,Object>>selectAllItemOrderByPeriod(@RequestParam Integer storeCode,
+    public ResponseEntity<Map<String,Object>>selectAllItemOrderListForStore(@RequestParam Integer storeCode,
     																	@RequestParam(name="startDate",required = false)String startDate,
     																	@RequestParam(name="endDate",required = false)String endDate,
     																	@RequestParam(name="orderState",required = false) String orderState){
@@ -393,13 +393,13 @@ public class ShopController {
 	
 	//주문 상세 내역 
     @PostMapping("/orderDetail") // OrderDetailForStore.js
-    public ResponseEntity<List<ShopOrderDto>>selectOrderByOrderCode(@RequestParam Integer storeCode,@RequestParam String orderCode) {
+    public ResponseEntity<Map<String,Object>>selectOrderByOrderCode(@RequestParam Integer storeCode,@RequestParam String orderCode) {
     	try {
-    		List<ShopOrderDto> result = shopService.selectOrderByOrderCode(storeCode,orderCode);
-			return new ResponseEntity<List<ShopOrderDto>>(result,HttpStatus.OK); 
+    		Map<String,Object> result = shopService.selectOrderByOrderCode(storeCode,orderCode);
+			return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK); 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<ShopOrderDto>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
 		}
     }
     
@@ -440,11 +440,75 @@ public class ShopController {
 		}
     }
 
-//본사
-//  @PostMapping("/mainStoreOrderList) // OrderListForMainStore.js	
-//  @PostMapping("/mainStoreOrderListByDate") // OrderListForMainStore.js	
-//  @PostMapping("/mainStoreOrderListByKeyWord") // OrderListForMainStore.js	
-//  @PostMapping("/changeOrderStatus") // OrderListForMainStore.js
-//	@GetMapping("/mainStoreOrderDetail") // OrderDetailForMainStore.js
+//본사 주문내역 
+  @PostMapping("/mainStoreOrderList") // OrderListForMainStore.js
+  public ResponseEntity<Map<String,Object>>selectMainStoreOrderList( @RequestParam(name="startDate",required = false) String startDate,
+        															 @RequestParam(name="endDate",required = false) String endDate,
+        															 @RequestParam(name="searchType",required = false) String searchType,
+															 		 @RequestParam(name="keyword",required = false) String keyword) {
 
+
+	  try {
+
+		  Date sqlStartDate =null;	
+		  Date sqlEndDate =null;
+
+		  //파라미터 없음 default 기간설정 (오늘날짜~30일 기준 startDate:30일전,endDate:오늘)
+		  if(startDate==null &&endDate==null ) {
+			  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+			  Calendar now = Calendar.getInstance();
+			  Calendar amonthAgo = Calendar.getInstance();
+			  amonthAgo.add(Calendar.MONTH, -1);    // 한달 전
+
+			  endDate = sdf.format(now.getTime()); // 오늘 날짜로   
+			  startDate = sdf.format(amonthAgo.getTime()); // 한달 전
+
+		  }
+		  // 파라미터 있음
+		  sqlStartDate = Date.valueOf(startDate);	
+		  sqlEndDate = Date.valueOf(endDate);
+
+		  Map<String,Object> result = shopService.selectAllOrderListForMainStore(
+		            sqlStartDate, sqlEndDate, searchType, keyword);
+
+		  return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK); 
+
+	  } catch (Exception e) {
+		  e.printStackTrace();
+		  return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
+	  }
+  }
+
+  //주문 상태 변경
+  @PostMapping("/updateOrderStatus")
+  public ResponseEntity<String> updateOrderStatus(
+		  @RequestParam String orderCode,
+		  @RequestParam String orderState) {
+
+
+	  try {
+		  Boolean result = shopService.updateOrderStatus(orderCode, orderState);
+		  
+		  return new ResponseEntity<String>(String.valueOf(result), HttpStatus.OK);
+	  } catch (Exception e) {
+		  e.printStackTrace();
+		  return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
+	  }
+  }
+
+  //본사 주문 상세 조회
+  @GetMapping("/mainStoreOrderDetail/{orderCode}")
+  public ResponseEntity<Map<String,Object>> selectMainStoreOrderDetail(
+		  @PathVariable String orderCode,
+		  @PathVariable(required = false) Integer storeCode
+		  ) {
+
+	  try {
+		  Map<String,Object> result = shopService.selectOrderByOrderCode(storeCode,orderCode);
+		  return new ResponseEntity<Map<String,Object>>(result, HttpStatus.OK);
+	  } catch (Exception e) {
+		  e.printStackTrace();
+		  return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
+	  }
+  }
 }

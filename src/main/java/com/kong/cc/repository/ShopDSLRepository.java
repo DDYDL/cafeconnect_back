@@ -320,7 +320,7 @@ public class ShopDSLRepository {
 	}
 	
 	
-	
+	//장바구니 찾기
 	public List<Cart> findCartsByCartNums(List<Integer> cartNums) {
 	    QCart cart = QCart.cart;
 	    QItem item = QItem.item;
@@ -342,7 +342,22 @@ public class ShopDSLRepository {
 	              .and(cart.cartNum.in(cartNums)))
 	        .execute();  
 	}
+	//스케줄링 -당일 구매건 오휴 6 주문접수->주문 확인으로 바꾸기 
+	public void confirmOrderState() {
+		QShopOrder order = QShopOrder.shopOrder;
+		
+		// 당일 날짜로 설정
+        Date today = new Date(System.currentTimeMillis());
 
+        // 당일 주문 접수 건 주문확인으로 변경
+        long updatedCount = jpaQueryFactory.update(order)
+            .set(order.orderState, "주문확인")
+            .where(order.orderState.eq("주문접수")
+                .and(order.orderDate.eq(today)))
+            .execute();
+	}
+	
+	
 	//최근 주문 날짜 10개 받아오기
 	public List<String> selectPreOrderedDate(Integer storeCode) {
 		 QShopOrder order = QShopOrder.shopOrder;
@@ -422,7 +437,8 @@ public class ShopDSLRepository {
 
 	    return	jpaQueryFactory
     	        .select(Projections.bean(ShopOrderDto.class,
-    		            order.orderNum,
+    		            order.impUid,
+    	        		order.orderNum,
     		            order.orderCode,
     		            order.orderCount,
     		            order.orderDate,
@@ -457,6 +473,118 @@ public class ShopDSLRepository {
     		        .fetch();
 
 	}
+	//본사 주문내역- 전체가맹점,검색,기간 조회 포함 (동적쿼리 사용)
+	public List<ShopOrderDto> selectMainStoreOrderList(Date startDate, Date endDate, String searchType, String keyword) {
+		    
+		    QShopOrder order = QShopOrder.shopOrder;
+		    QItem item = QItem.item;
+		    QStore store = QStore.store;
+		    
+		    BooleanBuilder builder = new BooleanBuilder();
+		    
+		    // 기간
+		    if(startDate != null && endDate != null) {
+		        builder.and(order.orderDate.between(startDate, endDate));
+		    }
+		    
+		    // 검색어
+		    if(searchType != null && keyword != null && !keyword.trim().isEmpty()) {
+		        switch(searchType) {
+		            case "storeName": //가맹점이름
+		                builder.and(store.storeName.contains(keyword));
+		                break;
+		            case "orderState": //주문상태
+		                builder.and(order.orderCode.contains(keyword));
+		                break;
+		            case "itemName": //상풍명
+		                builder.and(item.itemName.contains(keyword));
+		                break;
+		        }
+		    }
+			
+		    return jpaQueryFactory
+		        .select(Projections.bean(ShopOrderDto.class,
+		            order.orderNum,
+		            order.orderCode,
+		            order.orderCount,
+		            order.orderDate,
+		            order.orderState,
+		            order.orderDelivery,
+		            order.orderPayment,
+		            store.storeCode,
+		            store.storeName,
+		            store.storeAddress,
+		            store.storePhone,
+		            item.itemCode,
+		            item.itemName,
+		            item.itemPrice,
+		            item.itemStorage,
+		            order.impUid
+		        ))
+		        .from(order)
+		        .join(order.itemO, item)
+		        .join(order.storeO, store)
+		        .where(builder)
+		        .orderBy(order.orderDate.desc())
+		        .fetch();
+		}
+	
+	// 주문 상태 변경 
+	public int updateOrderStatus(String orderCode, String orderState) {
+	    QShopOrder order = QShopOrder.shopOrder;
+	    
+	    return (int) jpaQueryFactory
+	        .update(order)
+	        .set(order.orderState, orderState)
+	        .where(order.orderCode.eq(orderCode))
+	        .execute();
+	}
+	public List<ShopOrderDto> selectOrderByOrderCode(String orderCode) {
+		 QShopOrder order = QShopOrder.shopOrder;
+		    QItem item = QItem.item;
+		    QStore store = QStore.store;
+		    
+
+		    return	jpaQueryFactory
+	    	        .select(Projections.bean(ShopOrderDto.class,
+	    		            order.impUid,
+	    	        		order.orderNum,
+	    		            order.orderCode,
+	    		            order.orderCount,
+	    		            order.orderDate,
+	    		            order.orderState,
+	    		            order.orderDelivery,
+	    		            order.orderPayment,
+	    		            store.storeCode,
+	    		            store.storeName,
+	    		            store.storeAddressNum,
+	    		            store.storeAddress,
+	    		            store.storePhone,
+	    		            store.ownerName,
+	    		            item.itemCode,
+	    		            item.itemName,
+	    		            item.itemStorage,
+	    		            item.itemImageFile.fileNum.as("itemFileNum"),
+	    		            item.itemMajorCategory.itemCategoryName.as("itemMajorCategoryName"),
+	    		            item.itemMiddleCategory.itemCategoryName.as("itemMiddleCategoryName"),
+	    		            item.itemSubCategory.itemCategoryName.as("itemSubCategoryName"),
+	    		            item.itemPrice,
+	    		            item.itemPrice.multiply(order.orderCount)
+	    		            .as("orderPrice")
+	    	        		))
+		    	        .from(order)
+		    	        .leftJoin(order.itemO, item)
+		    	        .leftJoin(order.storeO, store)
+				        .leftJoin(item.itemMajorCategory)
+				        .leftJoin(item.itemMiddleCategory)
+				        .leftJoin(item.itemSubCategory) // 소분류없는 상품의 경우가 있음, 따라서 crossjoin되면 안돼서 임의적으로 추가해줌
+				        .where(order.orderCode.eq(orderCode))
+				        .orderBy(order.orderDate.desc())
+				        .fetch();
+		
+	}
+	
+	
 	//지출내역 시작
 	//기간 선택 주문 총 수 
 	public Long countOrders(Integer storeCode, Date startDate, Date endDate) {

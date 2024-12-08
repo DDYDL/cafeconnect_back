@@ -15,6 +15,7 @@ import com.kong.cc.dto.StoreDto;
 import com.kong.cc.entity.Item;
 import com.kong.cc.repository.AlarmDslRepository;
 import com.kong.cc.repository.AlarmRepository;
+import com.kong.cc.repository.ShopDSLRepository;
 import com.kong.cc.repository.StockDslRepository;
 import com.kong.cc.repository.StoreRepository;
 
@@ -32,6 +33,9 @@ public class Scheduler {
 	private AlarmDslRepository alarmDslRepository;
 	@Autowired
 	private StoreRepository storeRepository;
+	
+	@Autowired 
+	private ShopDSLRepository shopDslRepository;
 	
 	@Scheduled(cron = "0 30 14 * * *") // 매일 오전 01시에 실행
 	public void run() {
@@ -123,4 +127,17 @@ public class Scheduler {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	 @Scheduled(cron = "0 0 18 * * *") //매일 오후 6시 주문 접수 건->주문 확인으로 상태 변경(주문 접수에서만 취소 가능하도록 ) 
+	 public void updateOrderState() {
+		   try {
+	            // 주문 상태 업데이트 로직
+			   shopDslRepository.confirmOrderState();
+	            System.out.println("금일 주문 접수건이 업데이트 됐습니다.");
+	            log.info("금일 주문 접수건이 주문확인으로 변경되었습니다.");
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	 }
 }
