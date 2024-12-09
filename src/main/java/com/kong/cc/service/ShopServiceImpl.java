@@ -2,16 +2,20 @@ package com.kong.cc.service;
 
 
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.kong.cc.dto.CartDto;
@@ -33,6 +37,10 @@ import com.kong.cc.repository.ShopOrderRepository;
 import com.kong.cc.repository.StoreRepository;
 import com.kong.cc.repository.WishItemRepository;
 import com.kong.cc.util.PageInfo;
+import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.request.CancelData;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,6 +55,19 @@ public class ShopServiceImpl implements ShopService {
 	private final CartRepository cartRepo;
 	private final ShopOrderRepository shopOrderRepo;
 	
+	 private IamportClient iamportClient; //IamPortClient SDK(토큰관리를대신해줌)
+	
+	@Value("${imp.api.key}")
+	private String apiKey;
+	
+	@Value("${imp.api.secretkey}")
+	private String apiSecret;
+	
+	//아임포트API사용위한 클라이언트 객체 
+	@PostConstruct
+	public void init() {
+		this.iamportClient = new IamportClient(apiKey, apiSecret);
+	}
 	
 	
 	//쇼핑몰 메인 - 주문량이 많은 순 (주문량 없어도 리스트에 개수 맞추어 출력)
@@ -398,9 +419,9 @@ public class ShopServiceImpl implements ShopService {
 	@Override
 	public Map<String,Object> selectAllOrderListForStore(Integer storeCode, Date startDate, Date endDate,String orderState)
 			throws Exception {
-		Map<String,Object> result = new HashMap<>();
+		Map<String,Object> result = new LinkedHashMap<>(); 
 		//주문 번호를 그룹화 하기 
-		Map<String, OrderItemGroupByCodeDto> groupedOrders = new HashMap<>();	
+		Map<String, OrderItemGroupByCodeDto> groupedOrders = new LinkedHashMap<>();	//정렬 순서가 보장되려면 LinkedHashMap으로 선언 해야함
 		//주문 번호로 그룹화하기 전 조회한 주문내역
 		List<ShopOrderDto> orderList = shopDslRepo.selectAllShopOrderListForStore(storeCode,startDate,endDate,orderState);
 		
@@ -431,27 +452,155 @@ public class ShopServiceImpl implements ShopService {
 
 	}
 
-	// 주문 상세 내역 - 같은 주문번호인 주문 출력
+	// 주문 상세 내역 - 같은 주문번호인 주문 출력 + 결제API로 결제정보 가져오기 
 	@Override
-	public List<ShopOrderDto> selectOrderByOrderCode(Integer storeCode, String orderCode) throws Exception {
+	public Map<String,Object> selectOrderByOrderCode(Integer storeCode, String orderCode) throws Exception {
+		Map<String,Object> orderDetail = new HashMap<>();
 		
-		return shopDslRepo.selectOneShopOrderByOrderCode(storeCode,orderCode);
+		 // 본사인 경우 storeCode가 null이어도 조회 가능하도록 수정
+		//db 저장된 주문 정보 가져오기 
+	    List<ShopOrderDto> oneOrderDetail = storeCode == null ? 
+	        shopDslRepo.selectOrderByOrderCode(orderCode) :  // 본사용 (모든 매장의 주문 조회 가능)
+	        shopDslRepo.selectOneShopOrderByOrderCode(storeCode,orderCode); //가맹점용 
+		orderDetail.put("orderDetail", oneOrderDetail);
+		
+		try {
+			//impUid로 필요한 결제 정보 가져오기 
+			String impUid = oneOrderDetail.get(0).getImpUid();
+			IamportResponse<Payment> paymentInfo = iamportClient.paymentByImpUid(impUid);
+			PaymentResponseDto payment = new PaymentResponseDto();
+			payment.setPaymentMethod(paymentInfo.getResponse().getPayMethod());
+			payment.setCancelReason(paymentInfo.getResponse().getCancelReason());
+			payment.setCancelAmount(paymentInfo.getResponse().getCancelAmount().intValue());
+			payment.setCancelDate(paymentInfo.getResponse().getCancelledAt());
+			payment.setCardName(paymentInfo.getResponse().getCardName());
+			payment.setCardNumber(paymentInfo.getResponse().getCardNumber());
+			payment.setBankName(paymentInfo.getResponse().getBankName());
+			payment.setPaymentStatus(paymentInfo.getResponse().getStatus());
+			payment.setReceiptUrl(paymentInfo.getResponse().getReceiptUrl());
+			
+			orderDetail.put("paymentInfo", paymentInfo);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			//db정보는 반환 될 수 있도록 함
+			orderDetail.put("paymentInfoErr", "결제 정보 조회 실패");
+		}
+		
+		return orderDetail;
 	}
 
-	//주문 취소 - 주문 접수만  취소 가능
+	//주문 취소 - 주문 접수만  취소 가능(아임포트와 연결하여 취소)
 	@Transactional
 	@Override
 	public Boolean cancelItemOrder(Integer storeCode, String orderCode) throws Exception {
 		
 		// 주문 접수 상태인지 확인 하고 해당 리스트 저장 
 		List<ShopOrder> checkedList = shopDslRepo.checkedListForCancelOrder(storeCode, orderCode);
-		if(checkedList.size()==0) throw new Exception("주문 상태를 확인해 주세요");
-		//상태 변경 (접수->주문취소 )
-		checkedList.forEach(order->order.setOrderState("주문취소"));
+		if(checkedList.size()==0) throw new Exception("주문 상태를 확인해 주세요,취소 가능한 주문이 없습니다. ");
+		
+		try {
+			//결제 취소API호출 impUid로 결제내역 취소 
+			ShopOrder order= checkedList.get(0);
+			String impUid = order.getImpUid();
 			
-		return !(shopOrderRepo.saveAll(checkedList).isEmpty()); // true return;
+			//impUid 확인
+			 if(impUid == null || impUid.trim().isEmpty()) {
+		            throw new Exception("유효하지 않은 결제 정보입니다.");
+		    }
+			
+			IamportResponse<Payment> paymentInfo = iamportClient.paymentByImpUid(impUid);
+			 System.out.println("Payment info: " + paymentInfo.getResponse());
+			 Payment payment = paymentInfo.getResponse();
+		        // 결제 정보 상세 출력
+		        System.out.println("Payment status: " + payment.getStatus());
+		        System.out.println("Payment amount: " + payment.getAmount());
+		        
+		  
+
+	    	CancelData cancelData = new CancelData(impUid,true); //true : 전체 취소
+			cancelData.setReason("가맹점 주문 취소");// 취소 사유 추가 
+			IamportResponse<Payment> response = iamportClient.cancelPaymentByImpUid(cancelData);
+			
+			// 이미 API에서 자동 취소된 경우(기 취소 상태 Code:-1) DB만 업데이트
+			// paid 상태이면서 취소 요청 시 -1 코드가 온 경우
+	        if(payment.getStatus().equals("paid") && response.getCode() == -1) {
+	            System.out.println("이미 취소 처리된 거래. DB 상태를 업데이트합니다.");
+	            checkedList.forEach(o -> o.setOrderState("주문취소"));
+	            return !shopOrderRepo.saveAll(checkedList).isEmpty();
+	        }   
+				
+			if(response.getCode()== 0) {// 서버 취소 완료
+				//상태 변경 (접수->주문취소 )
+				checkedList.forEach(o->o.setOrderState("주문취소"));
+					
+				return !(shopOrderRepo.saveAll(checkedList).isEmpty()); // true return;
+			}
+			throw new Exception("결제 취소 실패");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("취소 처리 오류 :" +e.getMessage());
+		}
 	}
 	
+	//주문내역 - 본사 
+	@Override
+	public Map<String, Object> selectAllOrderListForMainStore(Date startDate, Date endDate, String searchType,
+			String keyword) throws Exception {
+		Map<String,Object> result = new LinkedHashMap<>();
+	    
+	    // 주문 번호별 그룹화를 위한 맵
+	    Map<String, OrderItemGroupByCodeDto> groupedOrders = new LinkedHashMap<>();
+	    
+	    // 검색 조건에 따른 주문 목록 조회
+	    List<ShopOrderDto> orderList = shopDslRepo.selectMainStoreOrderList(
+	        startDate, endDate, searchType, keyword);
+	    
+	    // 주문 코드별로 그룹화
+	    for(ShopOrderDto order : orderList) {
+	        if(!groupedOrders.containsKey(order.getOrderCode())) {
+	            OrderItemGroupByCodeDto group = OrderItemGroupByCodeDto.builder()
+	                .orderCode(order.getOrderCode())
+	                .orderDate(order.getOrderDate())
+	                .orderState(order.getOrderState())
+	                .storeName(order.getStoreName())
+	                .storeCode(order.getStoreCode())
+	                .orderItems(new ArrayList<>())
+	                .totalAmount(0)
+	                .totalCount(0)
+	                .build();
+	            groupedOrders.put(order.getOrderCode(), group);
+	        }
+	        
+	        OrderItemGroupByCodeDto group = groupedOrders.get(order.getOrderCode());
+	        group.getOrderItems().add(order);
+	        group.setTotalAmount(group.getTotalAmount() + 
+	            (order.getOrderCount() * order.getItemPrice()));
+	        group.setTotalCount(group.getTotalCount() + order.getOrderCount());
+	    }
+	    
+	    result.put("orderList", new ArrayList<>(groupedOrders.values()));
+	    result.put("totalCount", groupedOrders.size()); // 그릅화된 주문내역 총 개수(주문내역 수 )
+	    
+	    return result;
+	}
+	
+	
+	//가맹점 주문 상태 변경 -본사  
+	@Override
+	@Transactional
+	public Boolean updateOrderStatus(String orderCode, String orderState) throws Exception {
+
+		try {
+			// 주문 상태 업데이트
+			int updatedCount = shopDslRepo.updateOrderStatus(orderCode, orderState);
+			return updatedCount > 0;
+		} catch(Exception e) {
+			e.printStackTrace();
+			throw new Exception("주문 상태 변경 실패: " + e.getMessage());
+		}
+	}
+
 	
 
 	//지출내역통계- 기간 설정 주문 상품 별 통계 -상품 별, 대분류,중분류,소분류 통합 별
@@ -493,6 +642,10 @@ public class ShopServiceImpl implements ShopService {
 
 	
 	}
+
+
+
+
 
 }
 

@@ -57,8 +57,6 @@ public class ShopOrderDto {
 	public String makeOrderCode () {
 		//241127(주문날짜)+랜덤숫자문자(4자리)+결제시간(시분초) 조합 
 		
-		//210101135046 (날짜시분초 가져와서 자르기)
-
 		String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));  
 		String orderDate = date.substring(0, 6);
 		String orderTime = date.substring(6);

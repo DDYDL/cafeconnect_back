@@ -47,10 +47,15 @@ public interface ShopService {
 	//주문 끝
 
 
-	//주문내역
+	//주문내역-가맹점 
 	Map<String,Object> selectAllOrderListForStore(Integer storeCode,Date startDate,Date endDate,String orderState) throws Exception;
-	List<ShopOrderDto> selectOrderByOrderCode(Integer storeCode,String orderCode) throws Exception;
+	Map<String,Object> selectOrderByOrderCode(Integer storeCode,String orderCode) throws Exception;
 	Boolean cancelItemOrder(Integer storeCode,String orderCode) throws Exception;
+	
+	//주문내역 -본사 
+	Map<String,Object> selectAllOrderListForMainStore(Date startDate,Date endDate,String searchType,String keyword)throws Exception;
+	Boolean updateOrderStatus(String orderCode, String orderState) throws Exception;
+
 	//지출 내역
 	Map<String,Object> selectExpenseItemList(Integer storeCode,Date startDate,Date endDate) throws Exception; 
 	
