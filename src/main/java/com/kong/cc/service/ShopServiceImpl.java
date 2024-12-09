@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.kong.cc.dto.CartDto;
@@ -103,25 +104,48 @@ public class ShopServiceImpl implements ShopService {
 		    return result;
 	}
 
-	// 카테고리 별 아이템 리스트 (검색X)
+	// 카테고리 별 아이템 리스트 (검색X) +페이징
 	@Override
-	public List<ItemDto> selectItemsByCategroy(Integer majorNum,Integer middleNum,Integer subNum) throws Exception {
-			
-		return shopDslRepo.selectItemsByCategories(majorNum, middleNum, subNum).stream().map(item->item.toDto()).collect(Collectors.toList());
+	public List<ItemDto> selectItemsByCategroy(Integer majorNum,Integer middleNum,Integer subNum,PageInfo pageInfo) throws Exception {
+		
+		PageRequest pageRequest = PageRequest.of(pageInfo.getCurPage() - 1, 8); //8개씩
+		List<ItemDto> categroyItemList =shopDslRepo.selectItemsByCategories(majorNum, middleNum, subNum,pageRequest).stream().map(item->item.toDto()).collect(Collectors.toList());;
+		Long allCnt =shopDslRepo.selectCountItemsByCategories(majorNum,middleNum,subNum);
+	
+		Integer allPage = (int) (Math.ceil(allCnt.doubleValue() / pageRequest.getPageSize()));
+		Integer startPage = (pageInfo.getCurPage() - 1) / 8 * 8 + 1;
+		Integer endPage = Math.min(startPage + 8 - 1, allPage);
+		pageInfo.setAllPage(allPage);
+		pageInfo.setStartPage(startPage);
+		pageInfo.setEndPage(endPage);
+		
+		return categroyItemList;
 	}
 
-	//검색된 아이템 리스트 
+	//검색된 아이템 리스트 +페이징
 	@Override
-	public List<ItemDto> selectItemsByKeyword(String keyword) throws Exception {
-
+	public List<ItemDto> selectItemsByKeyword(String keyword,PageInfo pageInfo) throws Exception {
+		
+		PageRequest pageRequest = PageRequest.of(pageInfo.getCurPage() - 1, 8); //8개씩
 		List<ItemDto> itemList = null;
+		Long allCnt = 0L;
+		
 		// null이면 전체 조회
 		if (keyword == null || keyword.trim().equals("")) {
-			itemList = shopDslRepo.selectAllItems().stream().map(i -> i.toDto()).collect(Collectors.toList());
+			itemList = shopDslRepo.selectAllItems(pageRequest).stream().map(i -> i.toDto()).collect(Collectors.toList());
+			allCnt = shopDslRepo.selectAllCountItem();
 		} else {
 			// keyword가 있는 경우 상품명
-			itemList = shopDslRepo.selectItemsByKeyWord(keyword).stream().map(i->i.toDto()).collect(Collectors.toList());
+			itemList = shopDslRepo.selectItemsByKeyWord(keyword,pageRequest).stream().map(i->i.toDto()).collect(Collectors.toList());
+			allCnt = shopDslRepo.selectAllCountItemsByKeyWord(keyword);
 		}
+		Integer allPage = (int) (Math.ceil(allCnt.doubleValue() / pageRequest.getPageSize()));
+		Integer startPage = (pageInfo.getCurPage() - 1) / 8 * 8 + 1;
+		Integer endPage = Math.min(startPage + 8 - 1, allPage);
+		pageInfo.setAllPage(allPage);
+		pageInfo.setStartPage(startPage);
+		pageInfo.setEndPage(endPage);
+		
 		return itemList;
 	}
 
