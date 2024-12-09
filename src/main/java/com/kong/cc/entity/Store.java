@@ -129,6 +129,7 @@ public class Store {
 		 	}
 		 	// && storeDto.getStoreStatus()=="inactive"
 		 	if(member!=null) {
+		 		System.out.println(member.toDto());
 				storeDto.setMemberNum(member.getMemberNum());
 				storeDto.setUsername(member.getUsername());
 				storeDto.setPassword(member.getPassword());

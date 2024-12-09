@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kong.cc.dto.ComplainDto;
+import com.kong.cc.dto.MemberDto;
 import com.kong.cc.dto.MenuCategoryDto;
 import com.kong.cc.dto.MenuDto;
 import com.kong.cc.dto.StoreDto;
@@ -140,6 +141,18 @@ public class Maincontroller {
 			ins.close();
 		} catch(Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	@GetMapping("/checkUsername/{username}") // FindPassword.js
+	public ResponseEntity<MemberDto> checkUsername(@PathVariable String username) {
+		try {
+			System.out.println(username);
+			MemberDto memberDto = mainService.checkUsername(username);
+			return new ResponseEntity<MemberDto>(memberDto, HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<MemberDto>(HttpStatus.BAD_REQUEST);
 		}
 	}
 }

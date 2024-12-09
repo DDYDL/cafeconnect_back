@@ -1,12 +1,13 @@
 package com.kong.cc.service;
 
+import java.util.List;
+
 import com.kong.cc.dto.ComplainDto;
+import com.kong.cc.dto.MemberDto;
 import com.kong.cc.dto.MenuCategoryDto;
 import com.kong.cc.dto.MenuDto;
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.util.PageInfo;
-
-import java.util.List;
 
 public interface MainService {
 	public List<MenuDto> selectMenu() throws Exception;
@@ -17,4 +18,5 @@ public interface MainService {
 	public List<ComplainDto> complainList(PageInfo pageInfo) throws Exception;
 	public String complainWrite(ComplainDto complainDto) throws Exception;
 	public List<StoreDto> allStoreList() throws Exception;
+	public MemberDto checkUsername(String username) throws Exception;
 }

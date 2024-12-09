@@ -37,7 +37,7 @@ public class Scheduler {
 	@Autowired 
 	private ShopDSLRepository shopDslRepository;
 	
-	@Scheduled(cron = "0 30 14 * * *") // 매일 오전 01시에 실행
+	@Scheduled(cron = "0 0 1 * * *") // 매일 오전 01시에 실행
 	public void run() {
 		// 데이터베이스 처리
 		// 1. 유통기한 3일 이하인 stock 알림 생성
