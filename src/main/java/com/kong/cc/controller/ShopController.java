@@ -68,32 +68,47 @@ public class ShopController {
 
 	// 카테고리 선택 별 아이템 리스트
 	@PostMapping("/categoryItemList") // CategoryItemList.js
-	public ResponseEntity<List<ItemDto>> selectItemByCategory(
+	public ResponseEntity<Map<String,Object>> selectItemByCategory(
+			@RequestParam(name="page", required = false, defaultValue = "1") Integer page,
 			@RequestParam(name = "majorNum", required = false) Integer majorNum,
 			@RequestParam(name = "middleNum", required = false) Integer middleNum,
 			@RequestParam(name = "subNum", required = false) Integer subNum) {
 
+		Map<String,Object> result = new HashMap<>();
 		try {
-			List<ItemDto> items = shopService.selectItemsByCategroy(majorNum, middleNum, subNum);
-
-			return new ResponseEntity<List<ItemDto>>(items, HttpStatus.OK);
+			
+    		PageInfo pageInfo = new PageInfo();
+    		pageInfo.setCurPage(page);
+			
+			List<ItemDto> items = shopService.selectItemsByCategroy(majorNum, middleNum, subNum,pageInfo);
+			result.put("items", items);
+            result.put("pageInfo", pageInfo);
+			
+			return new ResponseEntity<Map<String,Object>>(result, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<ItemDto>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
 		}
 	}
 
 	// 검색 결과 아이템 리스트
 	@PostMapping("/categoryItemSearch") // CategoryItemList.js
-	public ResponseEntity<List<ItemDto>> selectItemByKeyWord(
+	public ResponseEntity<Map<String,Object>> selectItemByKeyWord(
+			@RequestParam(name="page", required = false, defaultValue = "1") Integer page,
 			@RequestParam(name = "keyword", required = false) String keyword) {
+			Map<String, Object> result = new HashMap<>();
 		try {
-			List<ItemDto> items = shopService.selectItemsByKeyword(keyword);
-
-			return new ResponseEntity<List<ItemDto>>(items, HttpStatus.OK);
+			PageInfo pageInfo = new PageInfo();
+    		pageInfo.setCurPage(page);
+			
+			List<ItemDto> items = shopService.selectItemsByKeyword(keyword,pageInfo);
+			result.put("items", items);
+            result.put("pageInfo", pageInfo);
+            
+			return new ResponseEntity<Map<String,Object>>(result, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<ItemDto>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -497,12 +512,8 @@ public class ShopController {
   }
 
   //본사 주문 상세 조회
-  @GetMapping("/mainStoreOrderDetail/{orderCode}")
-  public ResponseEntity<Map<String,Object>> selectMainStoreOrderDetail(
-		  @PathVariable String orderCode,
-		  @PathVariable(required = false) Integer storeCode
-		  ) {
-
+  @PostMapping("/mainStoreOrderDetail")
+  public ResponseEntity<Map<String,Object>> selectMainStoreOrderDetail(@RequestParam(required = false) Integer storeCode,@RequestParam String orderCode) {
 	  try {
 		  Map<String,Object> result = shopService.selectOrderByOrderCode(storeCode,orderCode);
 		  return new ResponseEntity<Map<String,Object>>(result, HttpStatus.OK);

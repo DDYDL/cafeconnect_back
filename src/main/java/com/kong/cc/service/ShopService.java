@@ -15,8 +15,8 @@ import com.kong.cc.util.PageInfo;
 public interface ShopService {
 	
 	Map<String, List<ItemDto>> getshopMainItems() throws Exception;
-	List<ItemDto> selectItemsByCategroy(Integer majorNum,Integer middleNum,Integer subNum) throws Exception;
-	List<ItemDto> selectItemsByKeyword(String Keyword) throws Exception;
+	List<ItemDto> selectItemsByCategroy(Integer majorNum,Integer middleNum,Integer subNum,PageInfo pageInfo) throws Exception;
+	List<ItemDto> selectItemsByKeyword(String Keyword,PageInfo pageInfo) throws Exception;
 	ItemDto selectItem(String itemCode) throws Exception;
 	
 	//관심상품 시작
