@@ -31,7 +31,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final ComplainRepository complainRepository;
 
     @Override
-    public List<NoticeDto> noticeList(Integer storeCode) throws Exception {
+    public List<NoticeDto> noticeList() throws Exception {
         List<Notice> noticeList = this.noticeRepository.findAll();
         List<NoticeDto> noticeDtoList = noticeList.stream().map(Notice::toDto).collect(Collectors.toList());
         ;

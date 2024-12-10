@@ -9,7 +9,7 @@ import java.util.List;
 public interface CommunityService {
 
 
-    List<NoticeDto> noticeList(Integer storeCode) throws Exception;
+    List<NoticeDto> noticeList() throws Exception;
 
     NoticeDto noticeDetail(Integer noticeNum) throws Exception;
 
