@@ -25,10 +25,10 @@ public class CommunityController {
 
 
     //공지사항 리스트
-    @GetMapping("/noticeList/{storeCode}") // NoticeList.js
-    public ResponseEntity<List<NoticeDto>> noticeList(@PathVariable Integer storeCode) {
+    @GetMapping("/noticeList") // NoticeList.js
+    public ResponseEntity<List<NoticeDto>> noticeList() {
         try {
-            List<NoticeDto> noticeDtoList = communityService.noticeList(storeCode);
+            List<NoticeDto> noticeDtoList = communityService.noticeList();
             return new ResponseEntity<>(noticeDtoList, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
