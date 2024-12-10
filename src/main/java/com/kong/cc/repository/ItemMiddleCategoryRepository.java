@@ -25,4 +25,6 @@ public interface ItemMiddleCategoryRepository extends JpaRepository<ItemMiddleCa
     List<CategoryResponseCopy> findAllMiddleCategoryCopy(String categoryName);
     @Query("select new com.kong.cc.dto.CategoryResponseCopy(m.itemCategoryNum,m.itemCategoryName,m.itemCategoryName) from ItemMiddleCategory m ")
     List<CategoryResponseCopy> findAllMiddleCategoryCopy();
+    @Query("select m from ItemMiddleCategory m where m.itemCategoryName = :categoryName")
+    ItemMiddleCategory checkMiddleCategory(@Param("categoryName") String categoryName);
 }
