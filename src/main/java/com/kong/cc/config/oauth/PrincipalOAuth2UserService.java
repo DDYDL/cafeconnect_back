@@ -70,20 +70,20 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService {
 			memberRepository.save(member);
 		}
 		
-		Member pmember = memberRepository.findByProviderAndProviderId(oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
+		
 		// member에 대표 storeCode 넣기
-		if(pmember!=null && pmember.getStoreCode()!=null && pmember.getRoles().equals("ROLE_STORE")) {
+		if(member!=null && member.getRoles().equals("ROLE_STORE")) {
 			List<Store> storeList = new ArrayList<>();
 			try {
-				storeList = alarmDslRepository.selectStoreByMemberNum(pmember.getMemberNum());
+				storeList = alarmDslRepository.selectStoreByMemberNum(member.getMemberNum());
 			} catch(Exception e) {
 				e.printStackTrace();
 				System.out.println("가맹점 없음");
 			}
 			if(storeList!=null) {
 				// storeCode 넣기
-				pmember.setStoreCode(storeList.get(0).getStoreCode());
-				memberRepository.save(pmember);
+				member.setStoreCode(storeList.get(0).getStoreCode());
+				memberRepository.save(member);
 			}
 			System.out.println("2-1. storeCode " + member.getStoreCode());
 		}

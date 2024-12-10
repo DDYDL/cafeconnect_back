@@ -88,6 +88,7 @@ public class Item {
 	            .itemSubCategoryNum(itemSubCategory != null ? itemSubCategory.getItemCategoryNum() : null)
 	            .itemSubCategoryName(itemSubCategory != null ? itemSubCategory.getItemCategoryName() : null)
 	            .itemFileNum(itemImageFile != null ? itemImageFile.getFileNum() : null)
+	            .itemFileName(itemImageFile != null ? itemImageFile.getFileName() : null)
 	            .build();
 	}
 

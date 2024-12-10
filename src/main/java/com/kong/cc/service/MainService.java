@@ -19,4 +19,5 @@ public interface MainService {
 	public String complainWrite(ComplainDto complainDto) throws Exception;
 	public List<StoreDto> allStoreList() throws Exception;
 	public MemberDto checkUsername(String username) throws Exception;
+	public String changePassword(MemberDto memberDto) throws Exception;
 }

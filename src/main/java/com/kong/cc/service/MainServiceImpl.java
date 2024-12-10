@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kong.cc.dto.ComplainDto;
@@ -33,6 +34,8 @@ public class MainServiceImpl implements MainService {
 	private final ComplainDslRepository comlainDslRepository;
 	private final AlarmDslRepository alarmDslRepository;
 	private final MemberRepository memberRepository;
+	
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Override
 	public List<MenuDto> selectMenu() throws Exception {
@@ -97,5 +100,13 @@ public class MainServiceImpl implements MainService {
 	@Override
 	public MemberDto checkUsername(String username) throws Exception {
 		return memberRepository.findByUsername(username).get().toDto();
+	}
+
+	@Override
+	public String changePassword(MemberDto memberDto) throws Exception {
+		MemberDto memberBefore = memberRepository.findByUsername(memberDto.getUsername()).get().toDto();
+		memberBefore.setPassword(bCryptPasswordEncoder.encode(memberDto.getPassword()));
+		memberRepository.save(memberBefore.toEntity());
+		return "true";
 	}
 }

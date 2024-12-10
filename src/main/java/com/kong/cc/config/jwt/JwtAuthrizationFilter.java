@@ -49,7 +49,7 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 		System.out.println(uri);
 		// 로그인(인증)이 필요없는 요청은 그대로 진행
 		// store나 mainstore가 아니면
-		if(!(uri.contains("/store") || uri.contains("/mainstore"))) {
+		if(uri.contains("/selectCategory") || uri.contains("/selectMenuCategory") || uri.contains("/selectMenu") || uri.contains("/fcmToken")) {
 			chain.doFilter(request, response);
 			System.out.println("############");
 			return;
@@ -139,9 +139,7 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 					throw new Exception("로그인 필요7"); // 사용자가 DB에 없을 때	
 				}
 
-				System.out.println("1");
-				System.out.println("1");
-				System.out.println("1");
+
 				// accessToken, refreshToken 다시 만들어 보낸다.
 				String reAccessToken = jwtToken.makeAccessToken(username);
 				String reRefreshToken = jwtToken.makeRefreshToken(username);
@@ -153,9 +151,15 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 				System.out.println("1");
 				System.out.println("1");
 				
+				PrincipalDetails principalDetails = new PrincipalDetails(member.get());
+				UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(principalDetails,
+						null, principalDetails.getAuthorities()); // user를 principalDetails로 싸아놓고, 권한도 줘서
+				SecurityContextHolder.getContext().setAuthentication(auth); // Authentication으로 만듬
+				
 				response.addHeader(JwtProperties.HEADER_STRING, reToken);
 				response.setContentType("application/json; charset=utf-8");
-				response.getWriter().print("token"); // token 다시 준 것임을 body에 알려줌
+//				response.getWriter().print("token"); // token 다시 준 것임을 body에 알려줌
+				chain.doFilter(request, response);
 
 			} catch(Exception e2) {
 				e2.printStackTrace();
