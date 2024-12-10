@@ -178,9 +178,10 @@ public class StoreManageServiceImpl implements StoreManageService {
 		
 		Integer storeCode = Integer.parseInt(sStoreCode);
 		
-//		if(storeRepository.findById(storeCode)!=null) createStoreCode(storeDto);
+		while(storeRepository.findById(storeCode).isPresent()){
+			storeCode = createStoreCode(storeDto);
+		}
 		
-		System.out.println(storeCode);
 		return storeCode;
 	}
 
