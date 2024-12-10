@@ -14,7 +14,8 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
     List<Menu> findMenuListByKeyword(@Param("keyword") String keyword);
 
     Menu findByMenuCode(String menuCode);
-    List<Menu> findByMenuStatusIsNotNull();
+    List<Menu> findByMenuStatusIsNotNull() throws Exception;
+    List<Menu> findByMenuStatusNot(String menuStatus) throws Exception;
 
     Optional<Menu> findByMenuName(String menuName); // 상민 (salesWrite에서 사용 중)
 

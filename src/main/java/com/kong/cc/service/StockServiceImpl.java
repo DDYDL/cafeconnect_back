@@ -110,11 +110,17 @@ public class StockServiceImpl implements StockService {
 		Stock stock = stockRepository.findById(stockDto.getStockNum()).get();
 		System.out.println("stock : " + stock);
 		// 유통기한 수정
-		stock.setStockExpirationDate(stockDto.getStockExpirationDate());
+		if(stockDto.getStockExpirationDate()!=null) {
+			stock.setStockExpirationDate(stockDto.getStockExpirationDate());			
+		}
 		// 입고날짜 수정
-		stock.setStockReceiptDate(stockDto.getStockReceiptDate());
+		if(stockDto.getStockReceiptDate()!=null) {
+			stock.setStockReceiptDate(stockDto.getStockReceiptDate());
+		}
 		// 수량 수정
-		stock.setStockCount(stockDto.getStockCount());
+		if(stockDto.getStockCount()!=0) {
+			stock.setStockCount(stockDto.getStockCount());			
+		}
 		stockRepository.save(stock);
 		return "true";
 	}

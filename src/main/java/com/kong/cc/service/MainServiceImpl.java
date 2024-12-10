@@ -7,12 +7,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.kong.cc.dto.ComplainDto;
+import com.kong.cc.dto.MemberDto;
 import com.kong.cc.dto.MenuCategoryDto;
 import com.kong.cc.dto.MenuDto;
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.repository.AlarmDslRepository;
 import com.kong.cc.repository.ComplainDslRepository;
 import com.kong.cc.repository.ComplainRepository;
+import com.kong.cc.repository.MemberRepository;
 import com.kong.cc.repository.MenuCategoryRepository;
 import com.kong.cc.repository.MenuRepository;
 import com.kong.cc.repository.StoreRepository;
@@ -30,10 +32,12 @@ public class MainServiceImpl implements MainService {
 	private final ComplainRepository comlainRepository;
 	private final ComplainDslRepository comlainDslRepository;
 	private final AlarmDslRepository alarmDslRepository;
+	private final MemberRepository memberRepository;
 
 	@Override
 	public List<MenuDto> selectMenu() throws Exception {
-		return menuRepository.findByMenuStatusIsNotNull().stream().map(m->m.toDto()).collect(Collectors.toList());
+//		return menuRepository.findByMenuStatusIsNotNull().stream().map(m->m.toDto()).collect(Collectors.toList());
+		return menuRepository.findByMenuStatusNot("normal").stream().map(m->m.toDto()).collect(Collectors.toList());
 	}
 
 	@Override
@@ -88,5 +92,10 @@ public class MainServiceImpl implements MainService {
 	@Override
 	public List<StoreDto> allStoreList() throws Exception {
 		return storeRepository.findByStoreStatus("active").stream().map(s->s.toDto()).collect(Collectors.toList());
+	}
+
+	@Override
+	public MemberDto checkUsername(String username) throws Exception {
+		return memberRepository.findByUsername(username).get().toDto();
 	}
 }
