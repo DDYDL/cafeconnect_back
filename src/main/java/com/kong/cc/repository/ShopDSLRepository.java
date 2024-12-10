@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.ItemExpenseDto;
-import com.kong.cc.dto.OrderItemGroupByCodeDto;
 import com.kong.cc.dto.ShopOrderDto;
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.entity.Cart;
@@ -26,7 +26,6 @@ import com.kong.cc.entity.QStore;
 import com.kong.cc.entity.QWishItem;
 import com.kong.cc.entity.ShopOrder;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
@@ -60,8 +59,8 @@ public class ShopDSLRepository {
 		        .fetch();
 	}
 	
-	//카테고리 선택 별 상품조회
-	public List<Item> selectItemsByCategories(Integer majorNum,Integer middleNum,Integer subNum) {
+	//카테고리 선택 별 상품조회 +페이징
+	public List<Item> selectItemsByCategories(Integer majorNum,Integer middleNum,Integer subNum,PageRequest pageRequest) {
 		QItem item = QItem.item;
 
 		//**orderby 추가해야함**
@@ -70,21 +69,50 @@ public class ShopDSLRepository {
 		if(subNum!=null) {
 			resultList= jpaQueryFactory.selectFrom(item)
 					.where(item.itemSubCategory.itemCategoryNum.eq(subNum))
+					.offset(pageRequest.getOffset())
+					.limit(pageRequest.getPageSize())
 					.fetch();
 		}
 		if(middleNum !=null) {
 			resultList= jpaQueryFactory.selectFrom(item)
 					.where(item.itemMiddleCategory.itemCategoryNum.eq(middleNum))
+					.offset(pageRequest.getOffset())
+					.limit(pageRequest.getPageSize())
 					.fetch();
 		}
 		if(majorNum != null) {
 			resultList= jpaQueryFactory.selectFrom(item)
 					.where(item.itemMajorCategory.itemCategoryNum.eq(majorNum))
+					.offset(pageRequest.getOffset())
+					.limit(pageRequest.getPageSize())
 					.fetch();
 		}
 	
 		return resultList;
 	}
+	//카테고리 선택 별 총 개수 
+	public Long selectCountItemsByCategories(Integer majorNum,Integer middleNum,Integer subNum) {
+		QItem item = QItem.item;
+		Long count = null;
+		
+		if(subNum!=null) {
+			count= jpaQueryFactory.select(item.count()).from(item)
+					.where(item.itemSubCategory.itemCategoryNum.eq(subNum))
+					.fetchOne();
+		}
+		if(middleNum !=null) {
+			count= jpaQueryFactory.select(item.count()).from(item)
+					.where(item.itemMiddleCategory.itemCategoryNum.eq(middleNum))
+					.fetchOne();
+		}
+		if(majorNum != null) {
+			count= jpaQueryFactory.select(item.count()).from(item)
+					.where(item.itemMajorCategory.itemCategoryNum.eq(majorNum))
+					.fetchOne();
+		}
+		return count;
+	}
+	
 	// 카테고리 별 상품조회 + 주문 수량 정렬 
 	public List<Item> selectItemsByCategoriesWithSort(Integer majorNum,Integer middleNum,Integer subNum) {
 		QItem item = QItem.item;
@@ -111,20 +139,37 @@ public class ShopDSLRepository {
 	}
 
 	//키워드,카테고리 선택 없는 전체 상품 조회
-	public List<Item> selectAllItems() {
+	public List<Item> selectAllItems(PageRequest pageRequest) {
 		QItem item = QItem.item;
-		return jpaQueryFactory.selectFrom(item).fetch();
+		return jpaQueryFactory.selectFrom(item)
+				.offset(pageRequest.getOffset())
+				.limit(pageRequest.getPageSize())
+				.fetch();
+	}
+	//키워드,카테고리 선택 없는 전체 상품 총 개수 
+	public Long selectAllCountItem() {
+		QItem item = QItem.item;
+		return jpaQueryFactory.select(item.count()).from(item).fetchOne();
 	}
 	//키워드 검색 상품 조회
-	public List<Item>selectItemsByKeyWord(String keyWord)  { 
+	public List<Item>selectItemsByKeyWord(String keyWord,PageRequest pageRequest)  { 
 		QItem item = QItem.item; 
 		
 		return jpaQueryFactory.selectFrom(item)
 				.where(item.itemName.contains(keyWord))
+				.offset(pageRequest.getOffset())
+				.limit(pageRequest.getPageSize())
 				.fetch();
-		
 	}
-
+	//키워드 검색 상품 총 개수
+	public  Long selectAllCountItemsByKeyWord(String keyWord)  { 
+		QItem item = QItem.item; 
+		
+		return jpaQueryFactory.select(item.count()).from(item)
+				.where(item.itemName.contains(keyWord))
+				.fetchOne();
+	}
+	
 	//상세페이지 관심 상품등록된 상품 여부 확인
 	public Integer checkIsWishedItem (String itemCode,Integer storeCode) {
 
@@ -154,6 +199,9 @@ public class ShopDSLRepository {
 				.from(item)
 				.leftJoin(wishItem)
 				.on(item.itemCode.eq(wishItem.itemW.itemCode))
+			    .leftJoin(item.itemMajorCategory)
+			    .leftJoin(item.itemMiddleCategory)
+			    .leftJoin(item.itemSubCategory) // 소분류없는 상품의 경우가 있음, 따라서 crossjoin되면 안돼서 임의적으로 추가해줌
 				.where(wishItem.storeW.storeCode.eq(storeCode))
 				.fetch();
 	}	
@@ -179,6 +227,9 @@ public class ShopDSLRepository {
 					.from(item)
 					.leftJoin(wishItem)
 					.on(item.itemCode.eq(wishItem.itemW.itemCode))
+				    .leftJoin(item.itemMajorCategory)
+				    .leftJoin(item.itemMiddleCategory)
+				    .leftJoin(item.itemSubCategory) // 소분류없는 상품의 경우가 있음, 따라서 crossjoin되면 안돼서 임의적으로 추가해줌
 					.where(wishItem.storeW.storeCode.eq(storeCode).and(item.itemSubCategory.itemCategoryNum.eq(subNum)))	
 					.fetch();
 		}
@@ -197,6 +248,9 @@ public class ShopDSLRepository {
 					.from(item)
 					.leftJoin(wishItem)
 					.on(item.itemCode.eq(wishItem.itemW.itemCode))
+				    .leftJoin(item.itemMajorCategory)
+				    .leftJoin(item.itemMiddleCategory)
+				    .leftJoin(item.itemSubCategory) // 소분류없는 상품의 경우가 있음, 따라서 crossjoin되면 안돼서 임의적으로 추가해줌
 					.where(wishItem.storeW.storeCode.eq(storeCode).and(item.itemMiddleCategory.itemCategoryNum.eq(middleNum)))	
 					.fetch();
 		}
@@ -214,6 +268,9 @@ public class ShopDSLRepository {
 					.from(item)
 					.leftJoin(wishItem)
 					.on(item.itemCode.eq(wishItem.itemW.itemCode))
+				    .leftJoin(item.itemMajorCategory)
+				    .leftJoin(item.itemMiddleCategory)
+				    .leftJoin(item.itemSubCategory) // 소분류없는 상품의 경우가 있음, 따라서 crossjoin되면 안돼서 임의적으로 추가해줌
 					.where(wishItem.storeW.storeCode.eq(storeCode).and(item.itemMajorCategory.itemCategoryNum.eq(majorNum)))	
 					.fetch();
 		}
@@ -436,9 +493,9 @@ public class ShopDSLRepository {
 	    
 
 	    return	jpaQueryFactory
-    	        .select(Projections.bean(ShopOrderDto.class,
-    		            order.impUid,
-    	        		order.orderNum,
+    	        		.select(Projections.bean(ShopOrderDto.class,
+    		    		order.impUid,
+    		    		order.orderNum,
     		            order.orderCode,
     		            order.orderCount,
     		            order.orderDate,
@@ -494,7 +551,7 @@ public class ShopDSLRepository {
 		                builder.and(store.storeName.contains(keyword));
 		                break;
 		            case "orderState": //주문상태
-		                builder.and(order.orderCode.contains(keyword));
+		                builder.and(order.orderState.contains(keyword));
 		                break;
 		            case "itemName": //상풍명
 		                builder.and(item.itemName.contains(keyword));
