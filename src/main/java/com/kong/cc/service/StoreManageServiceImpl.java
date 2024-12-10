@@ -128,7 +128,8 @@ public class StoreManageServiceImpl implements StoreManageService {
 	public Integer restoreStore(Integer storeCode) throws Exception {
 		Store store = storeRepository.findById(storeCode).orElseThrow(()->new Exception("가맹점 코드 오류"));
 		if(store!=null) {
-			store.setStoreStatus("active");
+			if(store.getMember()==null) store.setStoreStatus("inactive");
+			else store.setStoreStatus("active");
 		}
 		storeRepository.save(store);		
 		return store.getStoreCode();
@@ -156,13 +157,13 @@ public class StoreManageServiceImpl implements StoreManageService {
 		koRegion.put("광주", "62");
 		koRegion.put("제주특별자치도", "64");
 		koRegion.put("경기", "31");
-		koRegion.put("강원", "33");
+		koRegion.put("강원특별자치도", "33");
 		koRegion.put("충남", "41");
 		koRegion.put("충북", "43");
 		koRegion.put("경북", "54");
 		koRegion.put("경남", "55");
 		koRegion.put("전남", "61");
-		koRegion.put("전북", "63");
+		koRegion.put("전북특별자치도", "63");
 
 		for(String region : koRegion.keySet()) {
 			System.out.println("배열 key: "+ region);
