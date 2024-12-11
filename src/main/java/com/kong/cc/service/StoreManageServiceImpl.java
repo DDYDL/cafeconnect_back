@@ -129,8 +129,8 @@ public class StoreManageServiceImpl implements StoreManageService {
 	public Integer restoreStore(Integer storeCode) throws Exception {
 		Store store = storeRepository.findById(storeCode).orElseThrow(()->new Exception("가맹점 코드 오류"));
 		if(store!=null) {
-			if(store.getMember()==null) store.setStoreStatus("inactive");
-			else store.setStoreStatus("active");
+			if(store.getMember()!=null) store.setMember(null);
+			else store.setStoreStatus("inactive");
 		}
 		storeRepository.save(store);		
 		return store.getStoreCode();
