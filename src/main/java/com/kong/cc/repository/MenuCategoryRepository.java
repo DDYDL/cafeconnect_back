@@ -5,6 +5,7 @@ import com.kong.cc.dto.MenuCategoryResponse;
 import com.kong.cc.entity.MenuCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -16,4 +17,7 @@ public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Inte
     List<MenuCategoryResponse> findMenuCategoryResponse();
     @Query("select new com.kong.cc.dto.MenuCategoryResponseCopy(m.menuCategoryNum,m.menuCategoryName,m.menuCategoryName) from MenuCategory m")
     List<MenuCategoryResponseCopy> findMenuCategoryResponseCopy();
+
+    @Query("select m from MenuCategory m where m.menuCategoryName = :categoryName")
+    MenuCategory checkMenuCategory(@Param("categoryName") String categoryName);
 }

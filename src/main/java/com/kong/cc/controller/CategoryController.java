@@ -294,5 +294,50 @@ public class CategoryController {
         }
     }
 
+    @GetMapping("/checkMajorCategory")
+    public ResponseEntity<Object> checkMajorCategory(@RequestParam String categoryName){
+        try{
+         String code = categoryService.checkMajorCategory(categoryName);
+            Map<String, String> body = Map.of("code", code);
+            return new ResponseEntity<>(body,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/checkMiddleCategory")
+    public ResponseEntity<Object> checkMiddleCategory(@RequestParam String categoryName){
+        try{
+            String code = categoryService.checkMiddleCategory(categoryName);
+            Map<String, String> body = Map.of("code", code);
+            return new ResponseEntity<>(body,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/checkSubCategory")
+    public ResponseEntity<Object> checkSubCategory(@RequestParam String categoryName){
+        try{
+            String code = categoryService.checkSubCategory(categoryName);
+            Map<String, String> body = Map.of("code", code);
+            return new ResponseEntity<>(body,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/checkMenuCategory")
+    public ResponseEntity<Object> checkMenuCategory(@RequestParam String categoryName){
+        try{
+            String code = categoryService.checkMenuCategory(categoryName);
+            Map<String, String> body = Map.of("code", code);
+            return new ResponseEntity<>(body,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Exception",e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

@@ -31,6 +31,7 @@ public interface ShopService {
 	//장바구니 시작 
 	CartDto addItemToCart(CartDto cartDto) throws Exception;
 	List<CartDto>selectAllCartItems(Integer sotreCode) throws Exception;
+	Integer selectAllCountCartItem(Integer storeCode) throws Exception;
 	CartDto updateCartItemCount(Integer cartNum,Integer count) throws Exception;
 	Boolean deleteCartItem(Integer storeCode,Integer cartNum) throws Exception;
 	Map<String,Object>selectPreOrderedDate(Integer storeCode) throws Exception;
@@ -48,7 +49,7 @@ public interface ShopService {
 
 
 	//주문내역-가맹점 
-	Map<String,Object> selectAllOrderListForStore(Integer storeCode,Date startDate,Date endDate,String orderState) throws Exception;
+	Map<String,Object> selectAllOrderListForStore(Integer storeCode,Date startDate,Date endDate,String orderState,PageInfo pageInfo) throws Exception;
 	Map<String,Object> selectOrderByOrderCode(Integer storeCode,String orderCode) throws Exception;
 	Boolean cancelItemOrder(Integer storeCode,String orderCode) throws Exception;
 	

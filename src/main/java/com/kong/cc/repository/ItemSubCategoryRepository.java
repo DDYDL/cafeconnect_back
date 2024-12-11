@@ -25,4 +25,6 @@ public interface ItemSubCategoryRepository extends JpaRepository<ItemSubCategory
     List<CategoryResponseCopy> findAllSubCategoryCopy(String categoryName);
     @Query("select new com.kong.cc.dto.CategoryResponseCopy(m.itemCategoryNum,m.itemCategoryName,m.itemCategoryName) from ItemSubCategory m ")
     List<CategoryResponseCopy> findAllSubCategoryCopy();
+    @Query("select m from ItemSubCategory m where m.itemCategoryName = :categoryName")
+    ItemSubCategory checkSubCategory(@Param("categoryName") String categoryName);
 }
