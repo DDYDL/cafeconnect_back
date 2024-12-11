@@ -477,10 +477,13 @@ public class ShopController {
   public ResponseEntity<Map<String,Object>>selectMainStoreOrderList( @RequestParam(name="startDate",required = false) String startDate,
         															 @RequestParam(name="endDate",required = false) String endDate,
         															 @RequestParam(name="searchType",required = false) String searchType,
-															 		 @RequestParam(name="keyword",required = false) String keyword) {
+															 		 @RequestParam(name="keyword",required = false) String keyword,
+															 		 @RequestParam(name="page", required = false, defaultValue = "1") Integer page) {
 
 
 	  try {
+		  PageInfo pageInfo = new PageInfo();
+  		  pageInfo.setCurPage(page);
 
 		  Date sqlStartDate =null;	
 		  Date sqlEndDate =null;
@@ -501,7 +504,7 @@ public class ShopController {
 		  sqlEndDate = Date.valueOf(endDate);
 
 		  Map<String,Object> result = shopService.selectAllOrderListForMainStore(
-		            sqlStartDate, sqlEndDate, searchType, keyword);
+		            sqlStartDate, sqlEndDate, searchType, keyword,pageInfo);
 
 		  return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK); 
 

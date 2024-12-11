@@ -2,6 +2,7 @@ package com.kong.cc.dto;
 
 import com.kong.cc.entity.Menu;
 import com.kong.cc.entity.Sales;
+import com.kong.cc.entity.Store;
 import java.sql.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
