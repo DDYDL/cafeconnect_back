@@ -79,6 +79,7 @@ public class CommunityMainServiceImpl implements CommunityMainService {
 		page.setAllPage(allPage);
 		page.setStartPage(startPage);
 		page.setEndPage(endPage);
+		page.setAllCnt(allCnt);
 
 		return askDtoList;
 	}
@@ -94,7 +95,7 @@ public class CommunityMainServiceImpl implements CommunityMainService {
 //		Ask ask = askRepository.findById(askNum).orElseThrow(()->new Exception("문의 번호 오류"));
 		Ask ask = askDto.toEntity();
 		ask.setAskAnswerDate(new Date(System.currentTimeMillis()));
-		ask.setAskStatus("answered");
+		ask.setAskStatus("1");
 		askRepository.save(ask);
 		return ask.getAskNum();
 	}
@@ -114,6 +115,7 @@ public class CommunityMainServiceImpl implements CommunityMainService {
 		page.setAllPage(allPage);
 		page.setStartPage(startPage);
 		page.setEndPage(endPage);
+		page.setAllCnt(allCnt);
 
 		return complainDtoList;
 	}
