@@ -211,6 +211,19 @@ public class ShopController {
 			return new ResponseEntity<List<CartDto>>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	//장바구니 담긴 상품 수 카운트 (헤더용)
+	@GetMapping("/cartAllCount")
+	public ResponseEntity<Integer>selectCountAllCartItem(@RequestParam Integer storeCode){
+		try {
+			Integer count = shopService.selectAllCountCartItem(storeCode);
+			System.out.println("======================================================");
+			System.out.println("count="+count);
+			return new ResponseEntity<Integer>(count,HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Integer>(HttpStatus.BAD_REQUEST);
+		}
+	}
 	//장바구니 상품 수량 변경
 	@PostMapping("/updateCartItemQuantity") //CartList.js
 	public ResponseEntity<CartDto> updateCartItemQuantity(@RequestParam Integer cartNum,@RequestParam Integer count) {
@@ -361,9 +374,13 @@ public class ShopController {
     public ResponseEntity<Map<String,Object>>selectAllItemOrderListForStore(@RequestParam Integer storeCode,
     																	@RequestParam(name="startDate",required = false)String startDate,
     																	@RequestParam(name="endDate",required = false)String endDate,
-    																	@RequestParam(name="orderState",required = false) String orderState){
+    																	@RequestParam(name="orderState",required = false) String orderState,
+    																	@RequestParam(name="page", required = false, defaultValue = "1") Integer page
+    																																		){
     
     	try {
+    		PageInfo pageInfo = new PageInfo();
+    		pageInfo.setCurPage(page);
    
     		Date sqlStartDate =null;	
     		Date sqlEndDate =null;
@@ -384,7 +401,7 @@ public class ShopController {
     		 sqlStartDate = Date.valueOf(startDate);	
     		 sqlEndDate = Date.valueOf(endDate);
     		
-    		Map<String,Object>result = shopService.selectAllOrderListForStore(storeCode,sqlStartDate,sqlEndDate,orderState);
+    		Map<String,Object>result = shopService.selectAllOrderListForStore(storeCode,sqlStartDate,sqlEndDate,orderState,pageInfo);
     		
     		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK); 
     		
