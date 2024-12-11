@@ -9,10 +9,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.kong.cc.dto.AlarmDto;
-import com.kong.cc.dto.NoticeDto;
-import com.kong.cc.dto.StockDto;
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.entity.Item;
+import com.kong.cc.entity.Notice;
+import com.kong.cc.entity.Stock;
+import com.kong.cc.entity.Store;
 import com.kong.cc.repository.AlarmDslRepository;
 import com.kong.cc.repository.AlarmRepository;
 import com.kong.cc.repository.ShopDSLRepository;
@@ -37,22 +38,22 @@ public class Scheduler {
 	@Autowired 
 	private ShopDSLRepository shopDslRepository;
 	
-	@Scheduled(cron = "0 0 1 * * *") // 매일 오전 01시에 실행
+	@Scheduled(cron = "0 42 17 * * *") // 매일 오전 01시에 실행
 	public void run() {
 		// 데이터베이스 처리
 		// 1. 유통기한 3일 이하인 stock 알림 생성
 		try {
 			// 유통기한이 3일 이하 남은 stock 모두 가져오기
-			List<StockDto> stockList = stockDslRepository.selectStockByExpirationDate("true").stream().map(s->s.toDto()).collect(Collectors.toList());
+			List<Stock> stockList = stockDslRepository.selectStockByExpirationDate("true");
 			
 			if(stockList!=null) {
 				// 각각의 알람 저장
-				for(StockDto stock: stockList) {
+				for(Stock stock: stockList) {
 					System.out.println(stock.toString());
-					Item item = alarmDslRepository.selectItemByItemCode(stock.getItemCode());
+					Item item = alarmDslRepository.selectItemByItemCode(stock.getItemS().getItemCode());
 					
 					AlarmDto alarmDto = AlarmDto.builder()
-							.storeCode(stock.getStoreCode())
+							.storeCode(stock.getStoreSt().getStoreCode())
 							.alarmType("유통기한")
 							.alarmDate(new Date(System.currentTimeMillis())) // 현재 시간
 							.alarmContent(stock.getStockReceiptDate() + "에 들어온 [ " + item.getItemName()+ " ] 이(가) 유통기한이 3일 이하로 남았습니다.")
@@ -70,16 +71,16 @@ public class Scheduler {
 		// 2. 재고가 3개 이하인 stock 알림 생성
 		try {
 			// 재고가 3개 이하 남은 stock 모두 가져오기
-			List<StockDto> stockList = stockDslRepository.selectStockByStockCount(3).stream().map(s->s.toDto()).collect(Collectors.toList());
+			List<Stock> stockList = stockDslRepository.selectStockByStockCount(3);
 			
 			if(stockList!=null) {
 				// 각각의 알람 저장
-				for(StockDto stock: stockList) {
+				for(Stock stock: stockList) {
 					System.out.println(stock.toString());
-					Item item = alarmDslRepository.selectItemByItemCode(stock.getItemCode());
+					Item item = alarmDslRepository.selectItemByItemCode(stock.getItemS().getItemCode());
 					
 					AlarmDto alarmDto = AlarmDto.builder()
-							.storeCode(stock.getStoreCode())
+							.storeCode(stock.getStoreSt().getStoreCode())
 							.alarmType("재고")
 							.alarmDate(new Date(System.currentTimeMillis())) // 현재 시간
 							.alarmContent(stock.getStockReceiptDate() + "에 들어온 [ " + item.getItemName()+ " ] 이(가) 재고가 3개 이하로 남았습니다.")
@@ -97,17 +98,17 @@ public class Scheduler {
 		// 3. 주요 공지사항이 올라오면 알림 생성
 		try {
 			// 알람 생성 기준일 전날 올라온 주요 공지사항만 가져오기
-			List<NoticeDto> noticeList = alarmDslRepository.selectNoticeByNoticeTypeAndNoticeDate("주요").stream().map(n->n.toDto()).collect(Collectors.toList());
+			List<Notice> noticeList = alarmDslRepository.selectNoticeByNoticeTypeAndNoticeDate("주요");
 			// 활성화 되어 있는 모든 가맹점 가져오기(삭제 신청, 삭제된 가맹점 제외)
-			List<StoreDto> storeList = storeRepository.findByStoreStatus("active").stream().map(s->s.toDto()).collect(Collectors.toList());
+			List<Store> storeList = storeRepository.findByStoreStatus("active");
 			
 			System.out.println(noticeList.toString());
 			System.out.println(storeList.toString());
 			
 			if(noticeList!=null && storeList!=null ) {
 				// 가져온 모든 가맹점에 공지사항 알람 생성하기 
-				for(StoreDto store: storeList) {
-					for(NoticeDto notice: noticeList) {
+				for(Store store: storeList) {
+					for(Notice notice: noticeList) {
 						System.out.println(notice.toString());
 						
 						AlarmDto alarmDto = AlarmDto.builder()
