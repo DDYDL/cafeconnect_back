@@ -244,6 +244,40 @@ public class CategoryService {
     public List<CategoryResponseCopy> subCategoryCopy2() {
         return itemSubCategoryRepository.findAllSubCategoryCopy();
     }
+
+    public String checkMajorCategory(String categoryName) {
+        ItemMajorCategory itemMajorCategory = itemMajorCategoryRepository.checkMajorCategory(categoryName);
+        if(itemMajorCategory == null){
+            return "fail";
+        }
+        return "success";
+    }
+
+    public String checkMiddleCategory(String categoryName) {
+        ItemMiddleCategory itemMiddleCategory = itemMiddleCategoryRepository.checkMiddleCategory(categoryName);
+        if(itemMiddleCategory == null){
+            return "fail";
+        }
+        return "success";
+    }
+
+    public String checkSubCategory(String categoryName) {
+        ItemSubCategory itemSubCategory = itemSubCategoryRepository.checkSubCategory(categoryName);
+        if(itemSubCategory == null){
+            return "fail";
+        }
+
+
+        return "success";
+    }
+
+    public String checkMenuCategory(String categoryName) {
+        MenuCategory menuCategory = menuCategoryRepository.checkMenuCategory(categoryName);
+        if(menuCategory == null){
+            return "fail";
+        }
+        return "success";
+    }
 //
 //    	List<ItemMajorCategoryForm> result = new ArrayList<>();
 //
