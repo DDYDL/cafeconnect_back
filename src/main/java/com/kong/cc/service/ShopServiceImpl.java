@@ -476,35 +476,6 @@ public class ShopServiceImpl implements ShopService {
 		   result.put("pageInfo", pageInfo);
 
 		   return result;
-		//주문 번호를 그룹화 하기 
-		//Map<String, OrderItemGroupByCodeDto> groupedOrders = new LinkedHashMap<>();	//정렬 순서가 보장되려면 LinkedHashMap으로 선언 해야함
-		//주문 번호로 그룹화하기 전 조회한 주문내역
-//		List<ShopOrderDto> orderList = shopDslRepo.selectAllShopOrderListForStore(storeCode,startDate,endDate,orderState);
-//		
-//		
-//		for(ShopOrderDto order : orderList) {
-//		       // 만들어둔 Map에 해당 주문코드의 그룹이 없으면 새로운 그룹 생성
-//		       if(!groupedOrders.containsKey(order.getOrderCode())) {
-//		           OrderItemGroupByCodeDto group = OrderItemGroupByCodeDto.builder()
-//		               .orderCode(order.getOrderCode())
-//		               .orderDate(order.getOrderDate()) 
-//		               .orderState(order.getOrderState())
-//		               .orderItems(new ArrayList<>())// 주문상품 리스트 초기화
-//		               .totalAmount(0)// // 총액 초기화
-//		               .build();
-//		           groupedOrders.put(order.getOrderCode(), group);//주문번호를 key로 그롭화한 맵 생성 및 초기화 
-//		       }
-//		       
-//		       //해당 주문코드인 그룹을 가져와서 
-//		       OrderItemGroupByCodeDto group = groupedOrders.get(order.getOrderCode());
-//		       group.getOrderItems().add(order);// 그 그룹에 해당하는 상품정보 넣기 
-//		       group.setTotalAmount(group.getTotalAmount() + (order.getOrderCount() * order.getItemPrice()));
-//		   }
-//
-//		   result.put("orderList", new ArrayList<>(groupedOrders.values())); //Map의 value만 가지고 List로 변환  (그룹화 하기 쉬우려고 Map만들었던거임)
-//		   result.put("totalCount", groupedOrders.size());
-		   
-//		   return result;
 
 	}
 
@@ -602,43 +573,37 @@ public class ShopServiceImpl implements ShopService {
 	//주문내역 - 본사 
 	@Override
 	public Map<String, Object> selectAllOrderListForMainStore(Date startDate, Date endDate, String searchType,
-			String keyword) throws Exception {
+			String keyword,PageInfo pageInfo) throws Exception {
+		
 		Map<String,Object> result = new LinkedHashMap<>();
 	    
-	    // 주문 번호별 그룹화를 위한 맵
-	    Map<String, OrderItemGroupByCodeDto> groupedOrders = new LinkedHashMap<>();
-	    
-	    // 검색 조건에 따른 주문 목록 조회
-	    List<ShopOrderDto> orderList = shopDslRepo.selectMainStoreOrderList(
-	        startDate, endDate, searchType, keyword);
-	    
-	    // 주문 코드별로 그룹화
-	    for(ShopOrderDto order : orderList) {
-	        if(!groupedOrders.containsKey(order.getOrderCode())) {
-	            OrderItemGroupByCodeDto group = OrderItemGroupByCodeDto.builder()
-	                .orderCode(order.getOrderCode())
-	                .orderDate(order.getOrderDate())
-	                .orderState(order.getOrderState())
-	                .storeName(order.getStoreName())
-	                .storeCode(order.getStoreCode())
-	                .orderItems(new ArrayList<>())
-	                .totalAmount(0)
-	                .totalCount(0)
-	                .build();
-	            groupedOrders.put(order.getOrderCode(), group);
-	        }
-	        
-	        OrderItemGroupByCodeDto group = groupedOrders.get(order.getOrderCode());
-	        group.getOrderItems().add(order);
-	        group.setTotalAmount(group.getTotalAmount() + 
-	            (order.getOrderCount() * order.getItemPrice()));
-	        group.setTotalCount(group.getTotalCount() + order.getOrderCount());
-	    }
-	    
-	    result.put("orderList", new ArrayList<>(groupedOrders.values()));
-	    result.put("totalCount", groupedOrders.size()); // 그릅화된 주문내역 총 개수(주문내역 수 )
-	    
-	    return result;
+		
+		 // 페이지 처리
+		PageRequest pageRequest = PageRequest.of(pageInfo.getCurPage() - 1,10); 
+		
+		 // Repository 호출하여 페이징된 주문 목록 조회 (검색 조건에 따른 조회)
+		   Map<String, Object> orderData = shopDslRepo.selectMainStoreOrderList(
+				   startDate, endDate, searchType, keyword,pageRequest
+		   );
+		
+		// 페이지 정보 계산
+		   Long totalCount = (Long) orderData.get("totalCount");
+		   Integer allPage = (int) Math.ceil(totalCount.doubleValue() / pageRequest.getPageSize());
+		   Integer startPage = (pageInfo.getCurPage() - 1) / 10 * 10 + 1; 
+		   Integer endPage = Math.min(startPage + 10 - 1, allPage);
+
+		   pageInfo.setAllPage(allPage);
+		   pageInfo.setStartPage(startPage);
+		   pageInfo.setEndPage(endPage);
+
+		   // 최종 결과 생성
+		
+		   result.put("orderList", orderData.get("orders")); 
+		   result.put("totalCount", totalCount);
+		   result.put("pageInfo", pageInfo);
+
+		   return result;
+
 	}
 	
 	

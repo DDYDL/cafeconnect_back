@@ -43,6 +43,7 @@ public class ShopOrderDto {
 	
 	private String orderDateStr;
 	private Integer itemFileNum;
+	private String itemFileName;
 	private String itemMajorCategoryName;
 	private String itemMiddleCategoryName;
 	private String itemSubCategoryName;
