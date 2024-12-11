@@ -15,10 +15,6 @@ public interface CommunityService {
 
     List<AskDto> askList(Integer storeCode) throws Exception;
 
-    void saveAnswer(Integer askNum, AskDto askDto) throws Exception;
-
-    void deleteAnswer(Integer askNum) throws Exception;
-
     void askWrite(AskDto askDto) throws Exception;
 
     List<ComplainDto> complainList(Integer storeCode) throws Exception;

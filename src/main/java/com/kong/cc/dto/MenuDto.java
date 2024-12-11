@@ -29,9 +29,10 @@ public class MenuDto {
 	private String menuStatus;
 	
 	private Integer menuCategoryNum;
+	private String menuCategoryName;
 	private Integer menuFileNum;
 	private String menuFileName;
-	
+
 	public Menu toEntity() {
 		   return Menu.builder()
 				   .menuCode(menuCode)

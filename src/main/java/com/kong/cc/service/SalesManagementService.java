@@ -1,9 +1,12 @@
 package com.kong.cc.service;
 
-import com.kong.cc.dto.*;
-
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
+
+import com.kong.cc.dto.MenuDto;
+import com.kong.cc.dto.MenuSalesDto;
+import com.kong.cc.dto.SalesDto;
 
 public interface SalesManagementService {
 
@@ -11,12 +14,6 @@ public interface SalesManagementService {
     void salesWrite(Date salesDate, Integer storeCode, List<SalesDto> salsList) throws Exception;
 
     List<SalesDto> salesTemp(Date salesDate, Integer storeCode) throws Exception;
-
-    List<SalesAnnualDto> annualSAnalysis(Integer storeCode) throws Exception;
-
-    List<SalesQuarterlyDto> quarterlyAnalysis(Integer storeCode) throws Exception;
-
-    List<SalesMonthlyDto> monthlyAnalysis(Integer storeCode) throws Exception;
-
-    List<SalesCustomDto> customAnalysis(Integer storeCode, Date startDate, Date endDate) throws Exception;
+    List<MenuSalesDto> salesAnalisisByBetween(Integer storeCode, Date start, Date end) throws Exception;
+    Map<String,List<MenuSalesDto>> salesAnalysis(Integer storeCode, String period)throws Exception;
 }

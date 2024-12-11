@@ -28,7 +28,6 @@ public class Sales {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer salesNum;
 
-	@CreationTimestamp
 	private Date salesDate;
 	private Integer salesCount;
 	private Integer salesStatus;
