@@ -85,7 +85,6 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public AskDto askAnswer(Integer storeCode, Integer askNum) throws Exception {
-        // storeCode와 askNum으로 데이터 조회
         Ask askInfo = this.askRepository.findByStoreCodeAndAskNum(storeCode, askNum)
                 .orElseThrow(() -> new Exception("storeCode 또는 askNum이 일치하는 정보가 없습니다."));
         askRepository.save(askInfo);
