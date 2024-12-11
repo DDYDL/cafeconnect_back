@@ -72,11 +72,12 @@ public class StoreManageServiceImpl implements StoreManageService {
 		}
 		Integer allPage = (int)(Math.ceil(allCnt.doubleValue()/pageRequest.getPageSize()));
 		Integer startPage = (page.getCurPage()-1)/10*10+1;
-		Integer endPage = Math.min(startPage+10-1, allPage);		
+		Integer endPage = Math.min(startPage+10-1, allPage);	
 		
 		page.setAllPage(allPage);
 		page.setStartPage(startPage);
 		page.setEndPage(endPage);
+		page.setAllCnt(allCnt);
 		return storeDtoList;
 	}
 

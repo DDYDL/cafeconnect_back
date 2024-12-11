@@ -6,6 +6,8 @@ public class PageInfo {
 	private Integer startPage;
 	private Integer endPage;
 	
+	private Long allCnt;
+	
 	public Integer getCurPage() {
 		return curPage;
 	}
@@ -29,5 +31,11 @@ public class PageInfo {
 	}
 	public void setEndPage(Integer endPage) {
 		this.endPage = endPage;
+	}
+	public Long getAllCnt() {
+		return allCnt;
+	}
+	public void setAllCnt(Long allCnt) {
+		this.allCnt = allCnt;
 	}
 }
