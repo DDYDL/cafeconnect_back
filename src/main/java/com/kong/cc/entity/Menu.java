@@ -69,6 +69,7 @@ public class Menu {
                 .menuStatus(menuStatus)
                 .menuCategoryNum(menuCategory.getMenuCategoryNum())
                 .menuCategoryName(menuCategory.getMenuCategoryName())
+                .menuFileNum(menuImageFile.getFileNum())
                 .build();
     }
 }
