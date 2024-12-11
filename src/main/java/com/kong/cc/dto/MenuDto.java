@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MenuDto {
 	private String menuCode;
-
+	
 	private String menuName;
 	private Integer menuPrice;
 	private String menuCapacity;
@@ -27,27 +27,28 @@ public class MenuDto {
 	private String fat;
 	private String protein;
 	private String menuStatus;
-
+	
 	private Integer menuCategoryNum;
 	private String menuCategoryName;
 	private Integer menuFileNum;
+	private String menuFileName;
 
 	public Menu toEntity() {
-		return Menu.builder()
-				.menuCode(menuCode)
-				.menuName(menuName)
-				.menuPrice(menuPrice)
-				.menuCapacity(menuCapacity)
-				.caffeine(caffeine)
-				.calories(calories)
-				.carbohydrate(carbohydrate)
-				.sugar(sugar)
-				.natrium(natrium)
-				.fat(fat)
-				.protein(protein)
-				.menuStatus(menuStatus)
-				.menuCategory(MenuCategory.builder().menuCategoryNum(menuCategoryNum).build())
-				.menuImageFile(ImageFile.builder().fileNum(menuFileNum).build())
-				.build();
-	}
+		   return Menu.builder()
+				   .menuCode(menuCode)
+				   .menuName(menuName)
+				   .menuPrice(menuPrice)
+				   .menuCapacity(menuCapacity)
+				   .caffeine(caffeine)
+				   .calories(calories)
+				   .carbohydrate(carbohydrate)
+				   .sugar(sugar)
+				   .natrium(natrium)
+				   .fat(fat)
+				   .protein(protein)
+				   .menuStatus(menuStatus)
+				   .menuCategory(MenuCategory.builder().menuCategoryNum(menuCategoryNum).build())
+				   .menuImageFile(ImageFile.builder().fileNum(menuFileNum).build())
+				   .build();
+	   }
 }

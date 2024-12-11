@@ -155,4 +155,16 @@ public class Maincontroller {
 			return new ResponseEntity<MemberDto>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PostMapping("/changePassword") // FindPassword.js
+	public ResponseEntity<String> changePassword(@ModelAttribute MemberDto memberDto) {
+		try {
+			System.out.println(memberDto);
+			String str = mainService.changePassword(memberDto);
+			return new ResponseEntity<String>(str, HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+	}
 }

@@ -472,7 +472,7 @@ public class ShopDSLRepository {
 		   }
 
 		   
-		   // 페이징된 orderCode 목록 조회
+		   // 페이징된 orderCode 목록 조회(그룹화에 사용)
 		    List<String> orderCodes = jpaQueryFactory
 		        .select(order.orderCode)
 		        .from(order)
@@ -526,25 +526,6 @@ public class ShopDSLRepository {
 		    result.put("totalCount", totalCount);
 		    
 		    return result;
-//		   return jpaQueryFactory.select(Projections.bean(ShopOrderDto.class,
-//						           order.orderNum,
-//						           order.orderCode,
-//						           order.orderCount, 
-//						           order.orderDate,
-//						           order.orderState,
-//						           order.orderDelivery,
-//						           order.orderPayment,
-//						           store.storeCode,
-//						           item.itemCode,
-//						           item.itemName,
-//						           item.itemPrice
-//						           ))
-//						       .from(order)
-//						       .join(order.itemO, item)
-//						       .join(order.storeO, store)
-//						       .where(builder)
-//						       .orderBy(order.orderDate.desc()) //최신순 
-//						       .fetch();
 		}
 	
 	
@@ -608,7 +589,7 @@ public class ShopDSLRepository {
 
 	}
 	//본사 주문내역- 전체가맹점,검색,기간 조회 포함 (동적쿼리 사용)
-	public List<ShopOrderDto> selectMainStoreOrderList(Date startDate, Date endDate, String searchType, String keyword) {
+	public Map<String, Object> selectMainStoreOrderList(Date startDate, Date endDate, String searchType, String keyword,PageRequest pageRequest) {
 		    
 		    QShopOrder order = QShopOrder.shopOrder;
 		    QItem item = QItem.item;
@@ -635,32 +616,64 @@ public class ShopDSLRepository {
 		                break;
 		        }
 		    }
+		    
+		 // 페이징된 orderCode 목록 조회(그룹화에 사용)
+		    List<String> orderCodes = jpaQueryFactory
+		        .select(order.orderCode)
+		        .from(order)
+		        .join(order.storeO, store)
+		        .where(builder)
+		        .groupBy(order.orderCode)
+		        .orderBy(order.orderDate.desc())
+		        .offset(pageRequest.getOffset())
+		        .limit(pageRequest.getPageSize())
+		        .fetch();
 			
-		    return jpaQueryFactory
-		        .select(Projections.bean(ShopOrderDto.class,
-		            order.orderNum,
+		    // 선택된 주문의 상세 정보와 상품 목록 조회
+		    List<OrderItemGroupByCodeDto> orders = jpaQueryFactory
+		        .select(Projections.bean(OrderItemGroupByCodeDto.class,
 		            order.orderCode,
-		            order.orderCount,
 		            order.orderDate,
 		            order.orderState,
-		            order.orderDelivery,
-		            order.orderPayment,
-		            store.storeCode,
-		            store.storeName,
-		            store.storeAddress,
-		            store.storePhone,
-		            item.itemCode,
-		            item.itemName,
-		            item.itemPrice,
-		            item.itemStorage,
-		            order.impUid
+		            order.storeO.storeName.as("storeName"),
+		            order.storeO.storeCode.as("storeCode"),
+		            order.orderCount.sum().as("totalCount"),
+		            item.itemPrice.multiply(order.orderCount).sum().as("totalAmount")
 		        ))
 		        .from(order)
 		        .join(order.itemO, item)
 		        .join(order.storeO, store)
-		        .where(builder)
+		        .where(order.orderCode.in(orderCodes))
+		        .groupBy(order.orderCode)
 		        .orderBy(order.orderDate.desc())
 		        .fetch();
+		    
+		    // 각 주문별 상품명 목록 조회 (상품명만 따로 출력하면 됨)
+		    for (OrderItemGroupByCodeDto orderGroup : orders) {
+		        List<String> itemNames = jpaQueryFactory
+		            .select(item.itemName)
+		            .from(order)
+		            .join(order.itemO, item)
+		            .where(order.orderCode.eq(orderGroup.getOrderCode()))
+		            .fetch();
+		        orderGroup.setItemNames(itemNames); //dto에 생성한 List<String> itemName 설정 
+		    }
+		    
+		    // 전체 주문 수
+		    Long totalCount = jpaQueryFactory
+		        .select(order.orderCode.countDistinct())
+		        .from(order)
+		        .join(order.storeO, store)
+		        .where(builder)
+		        .fetchOne();
+		    
+		    
+		    Map<String, Object> result = new HashMap<>();
+		    result.put("orders", orders);
+		    result.put("totalCount", totalCount);
+		    
+		    return result;
+
 		}
 	
 	// 주문 상태 변경 

@@ -72,8 +72,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		http.addFilter(new JwtAuthrizationFilter(authenticationManager(), memberRepository))
 			.authorizeRequests()
+			.antMatchers(
+					"/complainList/**",
+					"/allStoreList/**",
+					"/checkUsername/**",
+					"/selectMenu/**",
+					"/image/**",
+					"/login/**",
+					"/fcmToken/**",
+					"/selectMenuByCategory/**",
+					"/changePassword/**",
+					"/allStoreList/**",
+					"/selectStoreByName/**",
+					"/selectCategory/**"
+					).permitAll()
 			.antMatchers("/store/**").authenticated() // 로그인 필수
-			.antMatchers("/mainstore/**").access("hasRole('ROLE_MAINSTORE')")
-			.anyRequest().permitAll();
+			.antMatchers("/mainstore/**").access("hasRole('ROLE_MAINSTORE')");
+//			.anyRequest().permitAll();
 	}
 }

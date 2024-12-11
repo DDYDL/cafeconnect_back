@@ -133,7 +133,7 @@ public class RepairController {
     public ResponseEntity<List<Map<String, Object>>>selectAllMachineList(){
         try {
 			List<Map<String, Object>> result = repairService.selectAllMachineList();
-        	System.out.println(result.toString());
+        	
 			return new ResponseEntity<List<Map<String, Object>>>(result,HttpStatus.OK);	
 			
         } catch (Exception e) {
