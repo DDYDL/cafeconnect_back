@@ -65,6 +65,7 @@ public class ShopOrder {
 				.itemUnit(itemO.getItemUnit())
 				.itemStorage(itemO.getItemStorage())
 				.itemFileNum(itemO.getItemImageFile()!= null ? itemO.getItemImageFile().getFileNum() : null)
+				.itemFileName(itemO.getItemImageFile()!= null ? itemO.getItemImageFile().getFileName() : null)
 				.orderDateStr(orderDate.toString())
 				.impUid(impUid)
 				.storeName(storeO.getStoreName())

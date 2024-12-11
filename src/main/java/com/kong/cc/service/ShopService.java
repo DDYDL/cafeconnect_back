@@ -54,7 +54,7 @@ public interface ShopService {
 	Boolean cancelItemOrder(Integer storeCode,String orderCode) throws Exception;
 	
 	//주문내역 -본사 
-	Map<String,Object> selectAllOrderListForMainStore(Date startDate,Date endDate,String searchType,String keyword)throws Exception;
+	Map<String,Object> selectAllOrderListForMainStore(Date startDate,Date endDate,String searchType,String keyword,PageInfo pageInfo)throws Exception;
 	Boolean updateOrderStatus(String orderCode, String orderState) throws Exception;
 
 	//지출 내역
