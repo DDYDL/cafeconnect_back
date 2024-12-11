@@ -48,10 +48,18 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 		System.out.println("================================================================");
 		System.out.println(uri);
 		// 로그인(인증)이 필요없는 요청은 그대로 진행
-		// store나 mainstore가 아니면
-		if(uri.contains("/selectCategory") || uri.contains("/selectMenuCategory") || uri.contains("/selectMenu") || uri.contains("/fcmToken")) {
+		if(uri.contains("/complainList") || uri.contains("/allStoreList") || uri.contains("/checkUsername") || uri.contains("/selectMenu") || uri.contains("/complainWrite")) {
 			chain.doFilter(request, response);
-			System.out.println("############");
+			return;
+		}
+		
+		if(uri.contains("/image") || uri.contains("/login") || uri.contains("/fcmToken") || uri.contains("/selectMenuByCategory")) {
+			chain.doFilter(request, response);
+			return;
+		}
+		
+		if(uri.contains("/changePassword") || uri.contains("/allStoreList") || uri.contains("/selectStoreByName") || uri.contains("/selectCategory")) {
+			chain.doFilter(request, response);
 			return;
 		}
 
@@ -75,7 +83,6 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 		}
 
 		accessToken = accessToken.replace(JwtProperties.TOKEN_PREFIX, ""); // 앞에 붙은 bearer 떼기
-		
 		System.out.println(accessToken);
 		
 		try {
@@ -139,7 +146,6 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 					throw new Exception("로그인 필요7"); // 사용자가 DB에 없을 때	
 				}
 
-
 				// accessToken, refreshToken 다시 만들어 보낸다.
 				String reAccessToken = jwtToken.makeAccessToken(username);
 				String reRefreshToken = jwtToken.makeRefreshToken(username);
@@ -147,9 +153,6 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 				map.put("access_token", JwtProperties.TOKEN_PREFIX+reAccessToken);
 				map.put("refresh_token", JwtProperties.TOKEN_PREFIX+reRefreshToken);
 				String reToken = objectMapper.writeValueAsString(map); //map->jsonString
-				
-				System.out.println("1");
-				System.out.println("1");
 				
 				PrincipalDetails principalDetails = new PrincipalDetails(member.get());
 				UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(principalDetails,
