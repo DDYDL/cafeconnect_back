@@ -1,30 +1,23 @@
 package com.kong.cc.controller;
 
-
-import com.kong.cc.dto.SalesAnalysisResDto;
-import com.kong.cc.dto.SalesAnnualDto;
-import com.kong.cc.dto.SalesCustomDto;
-import com.kong.cc.dto.SalesMonthlyDto;
-import com.kong.cc.dto.SalesQuarterlyDto;
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kong.cc.dto.MenuDto;
+import com.kong.cc.dto.MenuSalesDto;
 import com.kong.cc.dto.SalesDto;
 import com.kong.cc.dto.SalesWriteDto;
 import com.kong.cc.service.SalesManagementService;
 
 import lombok.RequiredArgsConstructor;
-
 
 //재무 관리 - 매출 입력(가맹점)
 @RestController
@@ -70,74 +63,33 @@ public class SalesManagementController {
             e.printStackTrace();
             return new ResponseEntity<List<SalesDto>>(HttpStatus.BAD_REQUEST);
         }
-
     }
 
-
-    // 매출 분석(기본 페이지)
-    @GetMapping("/salesAnalysis/{storeCode}")
-    public ResponseEntity<String> salesAnalysis(
-            @PathVariable Integer storeCode
-    ) {
+    @PostMapping("/sales")
+    public ResponseEntity<Map<String,List<MenuSalesDto>>> storeSales(@RequestBody Map<String, String> param) {
+        System.out.println(param);
         try {
-            // storeCode로 특정 데이터를 조회하는 로직
-            String data = "Data for store " + storeCode; // 예시 데이터 처리
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception e) {
+            Map<String,List<MenuSalesDto>> salesDtoList = salesManagementService.salesAnalysis(
+                    Integer.parseInt(param.get("storeCode")), param.get("period"));
+            return new ResponseEntity<>(salesDtoList, HttpStatus.OK);
+        } catch(Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    //매출 분석 (연간)
-    @GetMapping("/annualAnalysis/{storeCode}") // SalesAnalysis.js
-    public ResponseEntity<List<SalesAnnualDto>> annualSAnalysis(@PathVariable Integer storeCode) {
+    @PostMapping("/salesCustom")
+    public ResponseEntity<List<MenuSalesDto>> storeSalesCustmoer(@RequestBody Map<String, String> param) {
+        System.out.println(param);
         try {
-            List<SalesAnnualDto> salesTempList = salesManagementService.annualSAnalysis(storeCode);
-            return new ResponseEntity<>(salesTempList, HttpStatus.OK);
-        } catch (Exception e) {
+            List<MenuSalesDto> salesDtoList = salesManagementService.salesAnalisisByBetween(
+                    Integer.parseInt(param.get("storeCode")),Date.valueOf(param.get("start")), Date.valueOf(param.get("end")));
+            System.out.println(salesDtoList);
+
+            return new ResponseEntity<>(salesDtoList, HttpStatus.OK);
+        } catch(Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
-    @GetMapping("/quarterlyAnalysis/{storeCode}") // SalesAnalysis.js
-    public ResponseEntity<List<SalesQuarterlyDto>> quarterlyAnalysis(@PathVariable Integer storeCode) {
-        try {
-            List<SalesQuarterlyDto> salesTempList = salesManagementService.quarterlyAnalysis(storeCode);
-            return new ResponseEntity<>(salesTempList, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/monthlyAnalysis/{storeCode}") // SalesAnalysis.js
-    public ResponseEntity<List<SalesMonthlyDto>> monthlyAnalysis(@PathVariable Integer storeCode) {
-        try {
-            List<SalesMonthlyDto> salesTempList = salesManagementService.monthlyAnalysis(storeCode);
-            return new ResponseEntity<>(salesTempList, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/customAnalysis/{storeCode}") // SalesAnalysis.js
-        public ResponseEntity<List<SalesCustomDto>> customAnalysis(@PathVariable Integer storeCode,
-                                                                   @RequestParam Date startDate,
-                                                                   @RequestParam Date endDate) {
-        try {
-            List<SalesCustomDto> salesTempList = salesManagementService.customAnalysis(storeCode, startDate, endDate);
-            return new ResponseEntity<>(salesTempList, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }}
-
-
-
-
-
-
+}

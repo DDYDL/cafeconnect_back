@@ -20,7 +20,6 @@ public interface SalesRepository extends JpaRepository<Sales, Integer> {
     List<Sales> findByDates(@Param("firstDate") Date firstDate, @Param("secondDate")Date secondDate);
     List<Sales> findBySalesDateAndStoreSa_StoreCode(Date salesDate, Integer storeCode);
     void deleteBySalesDateAndStoreSa_StoreCode(Date salesDate, Integer storeCode);
-//    List<Sales> findByMenuList(List<Menu> menuList);
 
 
 }

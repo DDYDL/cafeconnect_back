@@ -64,34 +64,6 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public void saveAnswer(Integer askNum, AskDto askDto) throws Exception {
-
-        LocalDate now = LocalDate.now();
-        // DB에 변경 사항 저장
-        askRepository.save(Ask.builder().askAnswer(askDto.getAskAnswer()).askStatus("1").askAnswerDate(Date.valueOf(now)).askNum(askNum).build());
-    }
-
-
-    @Override
-    public void deleteAnswer(Integer askNum) throws Exception {
-
-        LocalDate now = LocalDate.now();
-        Ask ask = askRepository.findByAskNum(askNum);
-
-        if (ask != null) {
-            // 답변 상태를 '0'으로 설정 (삭제된 상태)
-            ask.setAskStatus("0"); // 0을 삭제 상태로 가정
-//            ask.setAskAnswer(""); // 답변 내용도 초기화
-            ask.setAskAnswerDate(Date.valueOf(now)); // 답변 날짜 초기화
-
-            // DB에 변경 사항 저장
-            askRepository.save(ask);
-        } else {
-            throw new Exception("해당 문의가 존재하지 않습니다.");
-        }
-    }
-
-    @Override
     public void askWrite(AskDto askDto) throws Exception {
 
         // storeCode를 기반으로 Store 엔티티 조회
@@ -105,7 +77,7 @@ public class CommunityServiceImpl implements CommunityService {
                 .askType(askDto.getAskType())
                 .askTitle(askDto.getAskTitle())
                 .askContent(askDto.getAskContent())
-                .askStatus("1")
+                .askStatus("0")
                 .storeCode(storeCode)
                 .build()
                 .toEntity());

@@ -51,7 +51,7 @@ public class Ask {
                 .askTitle(askTitle)
                 .askContent(askContent)
                 .askDate(askDate)
-                .askStatus(askStatus)
+                .askStatus("1")
                 .askAnswer(askAnswer)
                 .askAnswerDate(askAnswerDate)
                 .storeCode(storeAs != null ? storeAs.getStoreCode() : null)  // 연관된 storeAs의 storeCode를 추출
