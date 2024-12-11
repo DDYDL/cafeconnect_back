@@ -78,7 +78,7 @@ public class StockServiceImpl implements StockService {
 	public Map<String, List<StockDto>> selectStockByStoreCode(Integer storeCode) throws Exception {
 		List<StockDto> stockDtoList = stockDslRepository.selectStockByStoreCode(storeCode).stream().map(s->s.toDto()).collect(Collectors.toList()); 
 		Map<String, List<StockDto>> stock = new HashMap<>();
-		
+		System.out.println(stockDtoList);
 		List<StockDto> newStockList = new ArrayList<>();
 		
 		for(StockDto stockDto : stockDtoList) {
@@ -94,6 +94,8 @@ public class StockServiceImpl implements StockService {
 				stock.put(stockDto.getItemCode(), newStockList);
 			}
 		}
+		System.out.println(")))))))))))))");
+		System.out.println(newStockList);
 		
 		return stock;
 	}
