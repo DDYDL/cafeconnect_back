@@ -49,16 +49,23 @@ public class Stock {
 				.storeCode(storeSt.getStoreCode())
 				.itemCode(itemS.getItemCode())
 				.itemMajorCategoryName(itemS.getItemMajorCategory().getItemCategoryName())
-				.itemMiddleCategoryName(itemS.getItemMiddleCategory().getItemCategoryName())
-				.itemSubCategoryName(itemS.getItemSubCategory().getItemCategoryName())
 				.itemName(itemS.getItemName())
 				.itemCapacity(itemS.getItemCapacity())
 				.itemUnitQuantity(itemS.getItemUnitQuantity())
 				.itemUnit(itemS.getItemUnit())
 				.itemStorage(itemS.getItemStorage())
 				.itemFileNum(itemS.getItemImageFile().getFileNum())
+				.itemFileName(itemS.getItemImageFile().getFileName())
 				.build();
 		
+		if(itemS.getItemMiddleCategory()!=null) {
+			stockDto.setItemMiddleCategoryName(itemS.getItemMiddleCategory().getItemCategoryName());
+			
+		}
+		if(itemS.getItemSubCategory()!=null) {
+			stockDto.setItemSubCategoryName(itemS.getItemSubCategory().getItemCategoryName());
+		}
+
 		if(stockReceiptDate!=null) {
 			stockDto.setStockReceiptDateStr(stockReceiptDate.toString());
 		}
