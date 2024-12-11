@@ -17,9 +17,9 @@ public class CorsConfig {
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
 		// origin 접속을 시도하는 곳을 의미
-		//config.addAllowedOrigin("http://localhost:3000");
+		config.addAllowedOrigin("http://localhost:3000");
 		// pattern을 주고 그걸 다 허용함
-		config.addAllowedOriginPattern("*"); // 전부 접속 허용
+//		config.addAllowedOriginPattern("*"); // 전부 접속 허용
 		// token은 보통 header에 가져감
 		config.addAllowedHeader("*"); // Access-Control-Allow-Headers 이게 있어야 프론트에서 뭔가 붙일 때 허용함.
 		config.addAllowedMethod("*"); // Access-Control-Allow-Method

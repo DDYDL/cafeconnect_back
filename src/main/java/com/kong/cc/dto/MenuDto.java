@@ -30,6 +30,7 @@ public class MenuDto {
 	
 	private Integer menuCategoryNum;
 	private Integer menuFileNum;
+	private String menuFileName;
 	
 	public Menu toEntity() {
 		   return Menu.builder()
