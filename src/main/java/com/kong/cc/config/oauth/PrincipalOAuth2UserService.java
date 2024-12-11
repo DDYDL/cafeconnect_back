@@ -80,7 +80,7 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService {
 				e.printStackTrace();
 				System.out.println("가맹점 없음");
 			}
-			if(storeList!=null) {
+			if(storeList.size() != 0) {
 				// storeCode 넣기
 				member.setStoreCode(storeList.get(0).getStoreCode());
 				memberRepository.save(member);

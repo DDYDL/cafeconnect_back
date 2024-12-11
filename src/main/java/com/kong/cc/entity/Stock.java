@@ -55,6 +55,7 @@ public class Stock {
 				.itemUnit(itemS.getItemUnit())
 				.itemStorage(itemS.getItemStorage())
 				.itemFileNum(itemS.getItemImageFile().getFileNum())
+				.itemFileName(itemS.getItemImageFile().getFileName())
 				.build();
 		
 		if(itemS.getItemMiddleCategory()!=null) {

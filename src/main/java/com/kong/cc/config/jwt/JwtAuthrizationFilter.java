@@ -53,7 +53,7 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 			return;
 		}
 		
-		if(uri.contains("/image") || uri.contains("/login") || uri.contains("/fcmToken") || uri.contains("/selectMenuByCategory")) {
+		if(uri.contains("/image") || uri.contains("/login") || uri.contains("/fcmToken") || uri.contains("/selectMenuByCategory") || uri.contains("/oauth2/authorization") || uri.contains("/favicon")) {
 			chain.doFilter(request, response);
 			return;
 		}
