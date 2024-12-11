@@ -1,7 +1,9 @@
 package com.kong.cc.repository;
 
 import java.sql.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
 import com.kong.cc.dto.ItemExpenseDto;
+import com.kong.cc.dto.OrderItemGroupByCodeDto;
 import com.kong.cc.dto.ShopOrderDto;
 import com.kong.cc.dto.StoreDto;
 import com.kong.cc.entity.Cart;
@@ -132,7 +135,7 @@ public class ShopDSLRepository {
 		   return jpaQueryFactory
 		       .selectFrom(item)
 		       .leftJoin(order).on(order.itemO.eq(item))
-		       .where(builder)
+		       .where(builder) // 동적쿼리 
 		       .groupBy(item)
 		       .orderBy(order.orderCount.sum().coalesce(0).desc()) //coalesce 만약에 주문량이 없으면 0으로 함 
 		       .fetch();
@@ -141,7 +144,9 @@ public class ShopDSLRepository {
 	//키워드,카테고리 선택 없는 전체 상품 조회
 	public List<Item> selectAllItems(PageRequest pageRequest) {
 		QItem item = QItem.item;
-		return jpaQueryFactory.selectFrom(item)
+		return jpaQueryFactory
+				//.select(item,item.itemImageFile.fileName)
+				.selectFrom(item)
 				.offset(pageRequest.getOffset())
 				.limit(pageRequest.getPageSize())
 				.fetch();
@@ -193,9 +198,11 @@ public class ShopDSLRepository {
 				item.itemMiddleCategory,
 				item.itemSubCategory,
 				item.itemPrice,
-				item.itemImageFile.fileNum,
+				item.itemImageFile.fileNum.as("itemFileNum"),
+				item.itemImageFile.fileName.as("itemFileName"),
 				item.itemStorage,
-				wishItem.wishItemNum))
+				wishItem.wishItemNum
+				))
 				.from(item)
 				.leftJoin(wishItem)
 				.on(item.itemCode.eq(wishItem.itemW.itemCode))
@@ -221,7 +228,8 @@ public class ShopDSLRepository {
 					item.itemMiddleCategory,
 					item.itemSubCategory,
 					item.itemPrice,
-					item.itemImageFile.fileNum,
+					item.itemImageFile.fileNum.as("itemFileNum"),
+					item.itemImageFile.fileName.as("itemFileName"),
 					item.itemStorage,
 					wishItem.wishItemNum))
 					.from(item)
@@ -242,7 +250,8 @@ public class ShopDSLRepository {
 					item.itemMiddleCategory,
 					item.itemSubCategory,
 					item.itemPrice,
-					item.itemImageFile.fileNum,
+					item.itemImageFile.fileNum.as("itemFileNum"),
+					item.itemImageFile.fileName.as("itemFileName"),
 					item.itemStorage,
 					wishItem.wishItemNum))
 					.from(item)
@@ -262,7 +271,8 @@ public class ShopDSLRepository {
 					item.itemMiddleCategory,
 					item.itemSubCategory,
 					item.itemPrice,
-					item.itemImageFile.fileNum,
+					item.itemImageFile.fileNum.as("itemFileNum"),
+					item.itemImageFile.fileName.as("itemFileName"),
 					item.itemStorage,
 					wishItem.wishItemNum))
 					.from(item)
@@ -327,6 +337,16 @@ public class ShopDSLRepository {
 							.execute(); // 제대로 수행된 행의 개수 반환
 					
 	}
+	//장바구니 리스트 카운트
+	public Long selectCountCartList(Integer storeCode) {
+		QCart cart = QCart.cart;
+		return 	jpaQueryFactory.select(cart.count())
+				.from(cart)
+				.where(cart.storeCa.storeCode.eq(storeCode))
+				.fetchOne();
+		
+	}
+	
 	
 	// 그룹화해도 테이블 구조상 주문자 정보는 같이 반복되서 출력됨,Map형태로 주문자와 orderItem따로 분리시킬 예정
 	//장바구니 선택 아이템 주문서 출력
@@ -354,7 +374,8 @@ public class ShopDSLRepository {
 			                item.itemMiddleCategory.itemCategoryName.as("itemMiddleCategoryName"),
 			                item.itemSubCategory.itemCategoryNum.as("itemSubCategoryNum"),
 			                item.itemSubCategory.itemCategoryName.as("itemSubCategoryName"),
-			                item.itemImageFile.fileNum.as("itemFileNum")
+			                item.itemImageFile.fileNum.as("itemFileNum"),
+			                item.itemImageFile.fileName.as("itemFileName")
 			            ).as("item"),
 			            Projections.bean(StoreDto.class,
 			                store.storeCode,
@@ -434,7 +455,7 @@ public class ShopDSLRepository {
 
 
 	//가맹점 주문내역- 전체 및 날짜,주문 상태에따라 동적으로 조회
-	public List<ShopOrderDto> selectAllShopOrderListForStore(Integer storeCode,Date startDate,Date endDate,String orderState){
+	public Map<String,Object> selectAllShopOrderListForStore(Integer storeCode,Date startDate,Date endDate,String orderState,PageRequest pageRequest){
 		 QShopOrder order = QShopOrder.shopOrder;
 		   QItem item = QItem.item;
 		   QStore store = QStore.store;
@@ -450,25 +471,80 @@ public class ShopDSLRepository {
 		       builder.and(order.orderState.eq(orderState));
 		   }
 
-		   return jpaQueryFactory.select(Projections.bean(ShopOrderDto.class,
-						           order.orderNum,
-						           order.orderCode,
-						           order.orderCount, 
-						           order.orderDate,
-						           order.orderState,
-						           order.orderDelivery,
-						           order.orderPayment,
-						           store.storeCode,
-						           item.itemCode,
-						           item.itemName,
-						           item.itemPrice
-						           ))
-						       .from(order)
-						       .join(order.itemO, item)
-						       .join(order.storeO, store)
-						       .where(builder)
-						       .orderBy(order.orderDate.desc()) //최신순 
-						       .fetch();
+		   
+		   // 페이징된 orderCode 목록 조회
+		    List<String> orderCodes = jpaQueryFactory
+		        .select(order.orderCode)
+		        .from(order)
+		        .join(order.storeO, store)
+		        .where(builder)
+		        .groupBy(order.orderCode)
+		        .orderBy(order.orderDate.desc())
+		        .offset(pageRequest.getOffset())
+		        .limit(pageRequest.getPageSize())
+		        .fetch();
+		    
+		    // 선택된 주문의 상세 정보와 상품 목록 조회
+		    List<OrderItemGroupByCodeDto> orders = jpaQueryFactory
+		        .select(Projections.bean(OrderItemGroupByCodeDto.class,
+		            order.orderCode,
+		            order.orderDate,
+		            order.orderState,
+		            order.orderCount.sum().as("totalCount"),
+		            item.itemPrice.multiply(order.orderCount).sum().as("totalAmount")
+		        ))
+		        .from(order)
+		        .join(order.itemO, item)
+		        .join(order.storeO, store)
+		        .where(order.orderCode.in(orderCodes))
+		        .groupBy(order.orderCode)
+		        .orderBy(order.orderDate.desc())
+		        .fetch();
+		    
+		    // 각 주문별 상품명 목록 조회 (상품명만 따로 출력하면 됨)
+		    for (OrderItemGroupByCodeDto orderGroup : orders) {
+		        List<String> itemNames = jpaQueryFactory
+		            .select(item.itemName)
+		            .from(order)
+		            .join(order.itemO, item)
+		            .where(order.orderCode.eq(orderGroup.getOrderCode()))
+		            .fetch();
+		        orderGroup.setItemNames(itemNames); //dto에 생성한 List<String> itemName 설정 
+		    }
+		    
+		 // 전체 주문 수
+		    Long totalCount = jpaQueryFactory
+		        .select(order.orderCode.countDistinct())
+		        .from(order)
+		        .join(order.storeO, store)
+		        .where(builder)
+		        .fetchOne();
+		    
+		    
+		    Map<String, Object> result = new HashMap<>();
+		    result.put("orders", orders);
+		    result.put("totalCount", totalCount);
+		    
+		    return result;
+//		   return jpaQueryFactory.select(Projections.bean(ShopOrderDto.class,
+//						           order.orderNum,
+//						           order.orderCode,
+//						           order.orderCount, 
+//						           order.orderDate,
+//						           order.orderState,
+//						           order.orderDelivery,
+//						           order.orderPayment,
+//						           store.storeCode,
+//						           item.itemCode,
+//						           item.itemName,
+//						           item.itemPrice
+//						           ))
+//						       .from(order)
+//						       .join(order.itemO, item)
+//						       .join(order.storeO, store)
+//						       .where(builder)
+//						       .orderBy(order.orderDate.desc()) //최신순 
+//						       .fetch();
 		}
 	
 	
@@ -512,6 +588,7 @@ public class ShopDSLRepository {
     		            item.itemName,
     		            item.itemStorage,
     		            item.itemImageFile.fileNum.as("itemFileNum"),
+		                item.itemImageFile.fileName.as("itemFileName"),
     		            item.itemMajorCategory.itemCategoryName.as("itemMajorCategoryName"),
     		            item.itemMiddleCategory.itemCategoryName.as("itemMiddleCategoryName"),
     		            item.itemSubCategory.itemCategoryName.as("itemSubCategoryName"),
@@ -622,6 +699,7 @@ public class ShopDSLRepository {
 	    		            item.itemName,
 	    		            item.itemStorage,
 	    		            item.itemImageFile.fileNum.as("itemFileNum"),
+			                item.itemImageFile.fileName.as("itemFileName"),
 	    		            item.itemMajorCategory.itemCategoryName.as("itemMajorCategoryName"),
 	    		            item.itemMiddleCategory.itemCategoryName.as("itemMiddleCategoryName"),
 	    		            item.itemSubCategory.itemCategoryName.as("itemSubCategoryName"),

@@ -30,6 +30,7 @@ public class ItemDto {
 	private Integer itemSubCategoryNum;
 	private String 	itemSubCategoryName;
 	private Integer itemFileNum;
+	private String  itemFileName;
 
 	private Integer wishItemNum;
 	private Integer orderCount;
