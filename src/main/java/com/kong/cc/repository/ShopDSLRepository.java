@@ -1,6 +1,7 @@
 package com.kong.cc.repository;
 
 import java.sql.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kong.cc.dto.CartDto;
 import com.kong.cc.dto.ItemDto;
@@ -420,18 +422,30 @@ public class ShopDSLRepository {
 	              .and(cart.cartNum.in(cartNums)))
 	        .execute();  
 	}
-	//스케줄링 -당일 구매건 오휴 6 주문접수->주문 확인으로 바꾸기 
+	//스케줄링 -당일 구매건 오휴 6 주문접수->주문 확인으로 바꾸기
+	@Transactional
 	public void confirmOrderState() {
 		QShopOrder order = QShopOrder.shopOrder;
 		
 		// 당일 날짜로 설정
-        Date today = new Date(System.currentTimeMillis());
+        //Date today = new Date(System.currentTimeMillis());
+		 // 오늘 날짜의 시작(00:00:00)과 끝(23:59:59) 설정
+	    Calendar cal = Calendar.getInstance();
+	    cal.set(Calendar.HOUR_OF_DAY, 0);
+	    cal.set(Calendar.MINUTE, 0);
+	    cal.set(Calendar.SECOND, 0);
+	    Date startOfDay = new Date(cal.getTimeInMillis());
+	    
+	    cal.set(Calendar.HOUR_OF_DAY, 23);
+	    cal.set(Calendar.MINUTE, 59);
+	    cal.set(Calendar.SECOND, 59);
+	    Date endOfDay = new Date(cal.getTimeInMillis());
 
         // 당일 주문 접수 건 주문확인으로 변경
         long updatedCount = jpaQueryFactory.update(order)
             .set(order.orderState, "주문확인")
             .where(order.orderState.eq("주문접수")
-                .and(order.orderDate.eq(today)))
+            		.and(order.orderDate.between(startOfDay, endOfDay)))
             .execute();
 	}
 	
@@ -445,7 +459,7 @@ public class ShopDSLRepository {
 		 return jpaQueryFactory.select(Expressions.stringTemplate("DATE_FORMAT({0}, {1})",order.orderDate,ConstantImpl.create("%Y-%m-%d")))
 				 		.from(order)
 				 		.join(order.storeO,store)
-				 		.where(store.storeCode.eq(storeCode))
+				 		.where(store.storeCode.eq(storeCode).and(order.orderState.ne("주문취소")))
 				 		.groupBy(order.orderDate)
 				 		.limit(10)
 				 		.offset(0)
@@ -611,9 +625,9 @@ public class ShopDSLRepository {
 		            case "orderState": //주문상태
 		                builder.and(order.orderState.contains(keyword));
 		                break;
-		            case "itemName": //상풍명
-		                builder.and(item.itemName.contains(keyword));
-		                break;
+//		            case "itemName": //상풍명
+//		                builder.and(item.itemName.contains(keyword));
+//		                break;
 		        }
 		    }
 		    
@@ -768,10 +782,12 @@ public class ShopDSLRepository {
 				            item.itemPrice.multiply(order.orderCount).sum().as("totalOrderPrice") // 구매 상품 총 금액(개수*단가)
 				            ))
 	    					.from(order)
-		    		        .leftJoin(order.itemO, item) 
+		    		        .leftJoin(order.itemO, item)
+		    		        .leftJoin(item.itemMajorCategory)
+					        .leftJoin(item.itemMiddleCategory)
 		    		        .leftJoin(item.itemSubCategory,subCategory) // leftJoin으로 Null이 포함되도록 함 (소분류 없는 상품 존재함, 대,중분류는 Null없) 
 		    		        .join(order.storeO,store)
-		    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
+		    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
 		    		        .groupBy(item.itemCode)
 		    		        .fetch();
 	   
@@ -795,7 +811,10 @@ public class ShopDSLRepository {
     		        .from(order)
     		        .join(order.itemO, item)
     		        .join(order.storeO, store)
-    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
+    		        .leftJoin(item.itemMajorCategory)
+			        .leftJoin(item.itemMiddleCategory)
+    		        .leftJoin(item.itemSubCategory) //대,중분류는 Null없음,소분류 없는 상품이 있으니 leftJoin으로 Null이 포함되도록 함 
+    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
     		        .groupBy(item.itemMajorCategory.itemCategoryNum)
     		        .fetch();   
 	    }
@@ -820,7 +839,10 @@ public class ShopDSLRepository {
     		        .from(order)
     		        .join(order.itemO, item)
     		        .join(order.storeO, store)
-    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
+    		        .leftJoin(item.itemMajorCategory)
+			        .leftJoin(item.itemMiddleCategory)
+    		        .leftJoin(item.itemSubCategory) //대,중분류는 Null없음,소분류 없는 상품이 있으니 leftJoin으로 Null이 포함되도록 함 
+    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
     		        .groupBy(item.itemMiddleCategory.itemCategoryNum)
     		        .fetch();   
 	    }
@@ -846,9 +868,11 @@ public class ShopDSLRepository {
     		        item.itemCode.countDistinct().as("rowspanCount")))  //rowspan counts
     		        .from(order)
     		        .leftJoin(order.itemO, item) 
+    		        .leftJoin(item.itemMajorCategory)
+			        .leftJoin(item.itemMiddleCategory)
     		        .leftJoin(item.itemSubCategory,subCategory) //대,중분류는 Null없음,소분류 없는 상품이 있으니 leftJoin으로 Null이 포함되도록 함 
     		        .join(order.storeO, store)
-    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate)))
+    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
     		        .groupBy(item.itemSubCategory.itemCategoryNum)
     		        .fetch();   
 	    }

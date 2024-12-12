@@ -62,6 +62,7 @@ public class Repair {
 				.storeCode(storeR !=null?storeR.getStoreCode():null)
 				.storeName(storeR !=null?storeR.getStoreName():null)
 				.itemCode(itemR !=null?itemR.getItemCode():null)
+				.itemFileName(itemR !=null?itemR.getItemImageFile().getFileName():null)
 				.build();
 	}
 }

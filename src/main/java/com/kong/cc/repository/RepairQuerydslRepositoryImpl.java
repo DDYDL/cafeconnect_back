@@ -155,7 +155,8 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
     			                   repair.repairAnswer,
     			                   repair.repairAnswerDate,
     			                   repair.itemR.itemCode.as("itemCode"),
-    			                   repair.itemR.itemName,  
+    			                   repair.itemR.itemName,
+    			                   repair.itemR.itemImageFile.fileName.as(("itemFileName")),
     			                   repair.itemR.itemMajorCategory.itemCategoryName.as("itemCategoryMajorName"),
     			                   repair.itemR.itemMiddleCategory.itemCategoryName.as("itemCategoryMiddleName"),
     			                   repair.itemR.itemSubCategory.itemCategoryName.as("itemCategorySubName")
@@ -168,6 +169,7 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
     			.where(repair.storeR.storeCode.eq(storeCode))
     			.offset(pageRequest.getOffset())
 				.limit(pageRequest.getPageSize())
+				.orderBy(repair.repairDate.desc())
     			.fetch();
     }
     // 수리 요청 리스트 카운트
@@ -206,7 +208,8 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
 					                 repair.repairAnswer,
 					                 repair.repairAnswerDate,
 					                 repair.itemR.itemCode.as("itemCode"),
-					                 repair.itemR.itemName,  
+					                 repair.itemR.itemName,
+					                 repair.itemR.itemImageFile.fileName.as(("itemFileName")),
 					                 repair.itemR.itemMajorCategory.itemCategoryName.as("itemCategoryMajorName"),
 					                 repair.itemR.itemMiddleCategory.itemCategoryName.as("itemCategoryMiddleName"),
 					                 repair.itemR.itemSubCategory.itemCategoryName.as("itemCategorySubName")
@@ -220,6 +223,7 @@ public class RepairQuerydslRepositoryImpl implements RepairQuerydslRepository{
     			.where(builder) // 동적쿼리 활용
     			.offset(pageRequest.getOffset())
 				.limit(pageRequest.getPageSize())
+				.orderBy(repair.repairDate.desc())
     			.fetch();
     }
     
