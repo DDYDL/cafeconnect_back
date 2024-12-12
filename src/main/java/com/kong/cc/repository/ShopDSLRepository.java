@@ -773,9 +773,9 @@ public class ShopDSLRepository {
 				            item.itemName, // 상품명
 				            item.itemMajorCategory.itemCategoryName.as("majorCategoryName"),
 				            item.itemMajorCategory.itemCategoryNum.as("majorCategoryNum"),
-				            item.itemMiddleCategory.itemCategoryName.as("middleCategoryName"),
+				            item.itemMiddleCategory.itemCategoryName.coalesce("-").as("middleCategoryName"),
 				            item.itemMiddleCategory.itemCategoryNum.as("middleCategoryNum"),
-				            item.itemSubCategory.itemCategoryName.coalesce("없음").as("subCategoryName"),
+				            item.itemSubCategory.itemCategoryName.coalesce("-").as("subCategoryName"), // 없으면 "-" 으로 들어감 
 				            item.itemSubCategory.itemCategoryNum.as("subCategoryNum"),
 				            item.itemPrice, //단가
 				            order.orderCount.sum().as("totalOrderCount"), // 총 주문 개수

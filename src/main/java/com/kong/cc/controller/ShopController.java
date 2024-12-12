@@ -216,7 +216,6 @@ public class ShopController {
 	public ResponseEntity<Integer>selectCountAllCartItem(@RequestParam Integer storeCode){
 		try {
 			Integer count = shopService.selectAllCountCartItem(storeCode);
-			System.out.println("======================================================");
 			System.out.println("count="+count);
 			return new ResponseEntity<Integer>(count,HttpStatus.OK);
 		} catch (Exception e) {
@@ -472,7 +471,7 @@ public class ShopController {
 		}
     }
 
-//본사 주문내역 
+    //본사 주문내역 
   @PostMapping("/mainStoreOrderList") // OrderListForMainStore.js
   public ResponseEntity<Map<String,Object>>selectMainStoreOrderList( @RequestParam(name="startDate",required = false) String startDate,
         															 @RequestParam(name="endDate",required = false) String endDate,
