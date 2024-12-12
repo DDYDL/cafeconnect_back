@@ -95,6 +95,10 @@ public class MypageServiceImpl implements MypageService {
 		storeDto.setMemberNum(memberDto.getMemberNum());
 		System.out.println(storeDto);
 		storeRepository.save(storeDto.toEntity());
+		
+		// 처음 가맹점 추가이므로 멤버의 가맹점에도 넣어주기
+		memberDto.setStoreCode(storeDto.getStoreCode());
+		memberRepository.save(memberDto.toEntity());
 		return storeDto;
 	}
 

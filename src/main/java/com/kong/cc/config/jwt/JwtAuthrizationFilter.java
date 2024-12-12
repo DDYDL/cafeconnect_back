@@ -62,6 +62,11 @@ public class JwtAuthrizationFilter extends BasicAuthenticationFilter {
 			chain.doFilter(request, response);
 			return;
 		}
+		
+		if(uri.contains("/main/insert") || uri.contains("/main/checkId") || uri.contains("/joinStore")) {
+			chain.doFilter(request, response);
+			return;
+		}
 
 		String authentication = request.getHeader(JwtProperties.HEADER_STRING);
 		if(authentication==null) {
