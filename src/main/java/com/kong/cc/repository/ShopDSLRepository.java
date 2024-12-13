@@ -34,6 +34,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Repository
@@ -783,8 +784,8 @@ public class ShopDSLRepository {
 				            ))
 	    					.from(order)
 		    		        .leftJoin(order.itemO, item)
-		    		        .leftJoin(item.itemMajorCategory)
-					        .leftJoin(item.itemMiddleCategory)
+		    		       // .leftJoin(item.itemMajorCategory)
+					       // .leftJoin(item.itemMiddleCategory)
 		    		        .leftJoin(item.itemSubCategory,subCategory) // leftJoin으로 Null이 포함되도록 함 (소분류 없는 상품 존재함, 대,중분류는 Null없) 
 		    		        .join(order.storeO,store)
 		    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
@@ -799,7 +800,7 @@ public class ShopDSLRepository {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
 	    QStore store = QStore.store;
-
+	    QItemSubCategory subCategory = QItemSubCategory.itemSubCategory;
 	    if(startDate !=null ||endDate !=null) {
 
 	   return 	jpaQueryFactory.select(Projections.bean(ItemExpenseDto.class,
@@ -813,11 +814,13 @@ public class ShopDSLRepository {
     		        .join(order.storeO, store)
     		        .leftJoin(item.itemMajorCategory)
 			        .leftJoin(item.itemMiddleCategory)
-    		        .leftJoin(item.itemSubCategory) //대,중분류는 Null없음,소분류 없는 상품이 있으니 leftJoin으로 Null이 포함되도록 함 
+    		        .leftJoin(item.itemSubCategory,subCategory) //대,중분류는 Null없음,소분류 없는 상품이 있으니 leftJoin으로 Null이 포함되도록 함 
+    		        .join(order.storeO, store)
     		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
     		        .groupBy(item.itemMajorCategory.itemCategoryNum)
     		        .fetch();   
 	    }
+	    
 	    return null;
 	}
 	//중분류 주문 상품 통계
@@ -825,7 +828,7 @@ public class ShopDSLRepository {
 	    QShopOrder order = QShopOrder.shopOrder;
 	    QItem item = QItem.item;
 	    QStore store = QStore.store;
-
+	    QItemSubCategory subCategory = QItemSubCategory.itemSubCategory;
 	    if(startDate !=null ||endDate !=null) {
 
 	   return 	jpaQueryFactory.select(Projections.bean(ItemExpenseDto.class,
@@ -841,9 +844,11 @@ public class ShopDSLRepository {
     		        .join(order.storeO, store)
     		        .leftJoin(item.itemMajorCategory)
 			        .leftJoin(item.itemMiddleCategory)
-    		        .leftJoin(item.itemSubCategory) //대,중분류는 Null없음,소분류 없는 상품이 있으니 leftJoin으로 Null이 포함되도록 함 
+    		        .leftJoin(item.itemSubCategory,subCategory) //대,중분류는 Null없음,소분류 없는 상품이 있으니 leftJoin으로 Null이 포함되도록 함 
+    		        .join(order.storeO, store)
     		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
-    		        .groupBy(item.itemMiddleCategory.itemCategoryNum)
+    		        .groupBy( item.itemMajorCategory.itemCategoryNum,
+    		        	    item.itemMiddleCategory.itemCategoryNum) // 참조 걸려있어도 정확한 계층 구조로 group 시키는것을 명시해줬어야 함 
     		        .fetch();   
 	    }
 	    return null;
@@ -873,7 +878,9 @@ public class ShopDSLRepository {
     		        .leftJoin(item.itemSubCategory,subCategory) //대,중분류는 Null없음,소분류 없는 상품이 있으니 leftJoin으로 Null이 포함되도록 함 
     		        .join(order.storeO, store)
     		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
-    		        .groupBy(item.itemSubCategory.itemCategoryNum)
+    		        .groupBy( item.itemMajorCategory.itemCategoryNum,
+    		        	    item.itemMiddleCategory.itemCategoryNum,
+    		        	    item.itemSubCategory.itemCategoryNum)  // 참조 걸려있어도 정확한 계층 구조로 group 시키는것을 명시해줬어야 함 
     		        .fetch();   
 	    }
 	    return null;

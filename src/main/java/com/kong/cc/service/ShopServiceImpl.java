@@ -632,7 +632,7 @@ public class ShopServiceImpl implements ShopService {
 		// 가맹점 확인
 		storeRepo.findById(storeCode).orElseThrow(()->new Exception("가맹점 조회 실패!"));
 		
-		Map<String,Object> result = new HashMap<>();
+		Map<String,Object> result = new LinkedHashMap<>();
 		
 		// 기간 내 총 상품 주문 상품 단가,총 주문 개수 및 금액
 		List<ItemExpenseDto> items = shopDslRepo.selectExpnseItemList( storeCode,  startDate,  endDate);
