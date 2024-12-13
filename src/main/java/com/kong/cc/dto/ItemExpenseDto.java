@@ -22,6 +22,7 @@ public class ItemExpenseDto {
     private Integer middleCategoryNum;
     private String subCategoryName;
     private Integer subCategoryNum;
+
     
     private long rowspanCount; 
     
