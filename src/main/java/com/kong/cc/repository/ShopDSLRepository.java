@@ -774,9 +774,9 @@ public class ShopDSLRepository {
 				            item.itemName, // 상품명
 				            item.itemMajorCategory.itemCategoryName.as("majorCategoryName"),
 				            item.itemMajorCategory.itemCategoryNum.as("majorCategoryNum"),
-				            item.itemMiddleCategory.itemCategoryName.coalesce("-").as("middleCategoryName"),
+				            item.itemMiddleCategory.itemCategoryName.as("middleCategoryName"),
 				            item.itemMiddleCategory.itemCategoryNum.as("middleCategoryNum"),
-				            item.itemSubCategory.itemCategoryName.coalesce("-").as("subCategoryName"), // 없으면 "-" 으로 들어감 
+				            item.itemSubCategory.itemCategoryName.as("subCategoryName"), // 없으면 "-" 으로 들어감 
 				            item.itemSubCategory.itemCategoryNum.as("subCategoryNum"),
 				            item.itemPrice, //단가
 				            order.orderCount.sum().as("totalOrderCount"), // 총 주문 개수
@@ -784,12 +784,17 @@ public class ShopDSLRepository {
 				            ))
 	    					.from(order)
 		    		        .leftJoin(order.itemO, item)
-		    		       // .leftJoin(item.itemMajorCategory)
-					       // .leftJoin(item.itemMiddleCategory)
+		    		        .leftJoin(item.itemMajorCategory)
+					        .leftJoin(item.itemMiddleCategory)
 		    		        .leftJoin(item.itemSubCategory,subCategory) // leftJoin으로 Null이 포함되도록 함 (소분류 없는 상품 존재함, 대,중분류는 Null없) 
 		    		        .join(order.storeO,store)
 		    		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
 		    		        .groupBy(item.itemCode)
+		    		        .orderBy(
+		    		        	    item.itemMajorCategory.itemCategoryNum.asc(),
+		    		        	    item.itemMiddleCategory.itemCategoryNum.asc(),
+		    		        	    item.itemSubCategory.itemCategoryNum.coalesce(0).asc()
+		    		        	)
 		    		        .fetch();
 	   
 	    }
@@ -818,6 +823,9 @@ public class ShopDSLRepository {
     		        .join(order.storeO, store)
     		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
     		        .groupBy(item.itemMajorCategory.itemCategoryNum)
+    		        .orderBy(
+    		        	    item.itemMajorCategory.itemCategoryNum.asc()
+    		        	)
     		        .fetch();   
 	    }
 	    
@@ -849,6 +857,11 @@ public class ShopDSLRepository {
     		        .where(store.storeCode.eq(storeCode).and(order.orderDate.between(startDate, endDate).and(order.orderState.ne("주문취소"))))
     		        .groupBy( item.itemMajorCategory.itemCategoryNum,
     		        	    item.itemMiddleCategory.itemCategoryNum) // 참조 걸려있어도 정확한 계층 구조로 group 시키는것을 명시해줬어야 함 
+    		        .orderBy(
+    		        	    item.itemMajorCategory.itemCategoryNum.asc(),
+    		        	    item.itemMiddleCategory.itemCategoryNum.asc()
+    		        	)
+
     		        .fetch();   
 	    }
 	    return null;
@@ -881,6 +894,11 @@ public class ShopDSLRepository {
     		        .groupBy( item.itemMajorCategory.itemCategoryNum,
     		        	    item.itemMiddleCategory.itemCategoryNum,
     		        	    item.itemSubCategory.itemCategoryNum)  // 참조 걸려있어도 정확한 계층 구조로 group 시키는것을 명시해줬어야 함 
+    		        .orderBy(
+    		        	    item.itemMajorCategory.itemCategoryNum.asc(),
+    		        	    item.itemMiddleCategory.itemCategoryNum.asc(),
+    		        	    item.itemSubCategory.itemCategoryNum.coalesce(0).asc()
+    		        	)
     		        .fetch();   
 	    }
 	    return null;

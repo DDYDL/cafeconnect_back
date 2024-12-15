@@ -424,7 +424,7 @@ public class ShopServiceImpl implements ShopService {
 							.orderDate(new Date(System.currentTimeMillis()))
 							.orderState("주문접수")
 							.orderPayment(paymentMethod)
-							.orderDelivery(cart.getItemCa().getItemStorage()=="냉동"||cart.getItemCa().getItemStorage()=="신선"?"업체배송":"일반배송") // 상품 보관 타입에 따른 배송
+							.orderDelivery(cart.getItemCa().getItemStorage()=="냉동"?"업체배송":"일반배송") // 상품 보관 타입에 따른 배송
 							.storeO(cart.getStoreCa())
 							.itemO(cart.getItemCa())
 							.build())
