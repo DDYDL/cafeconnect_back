@@ -17,3 +17,7 @@ Skills
 - MariaDB, JPA, QueryDsl, HeidiSQL
 - AWS EC2
 - GitHub, PostMan, Confluence, Notion
+
+ERD
+
+<img width="1410" height="826" alt="ERD3_0" src="https://github.com/user-attachments/assets/d9505827-9557-408f-b11f-9dc413d9eca8" />
